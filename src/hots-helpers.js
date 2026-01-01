@@ -79,14 +79,14 @@ class HotsHelpers {
         let matchesNegative = [];
         
         // Top Left
-        let topLeftMatch = HotsHelpers.imagePixelMatch(image, 0, 0, matchesPositive, matchesNegative);
+        let topLeftMatch = HotsHelpers.imagePixelMatch(image, 0, 4, matchesPositive, matchesNegative);
         if (topLeftMatch) {
             matchCount++;
         }
-       // console.log("[imageBackgroundMatch] Top Left (0,0): " + (topLeftMatch ? "YES" : "NO"));
+        //console.log("[imageBackgroundMatch] Top Left (0,0): " + (topLeftMatch ? "YES" : "NO"));
         
         // Top Center
-        let topCenterMatch = HotsHelpers.imagePixelMatch(image, Math.floor(image.bitmap.width / 2), 0, matchesPositive, matchesNegative);
+        let topCenterMatch = HotsHelpers.imagePixelMatch(image, Math.floor(image.bitmap.width / 2), 4, matchesPositive, matchesNegative);
         if (topCenterMatch) {
             matchCount++;
         }

@@ -16,19 +16,10 @@
     }],
     "banActive": [
       {
-        "color": { "r": 250, "g": 200, "b": 255 },
-        "toleranceLum": 25,
-        "toleranceHue": 15
-      },
-      {
-        "color": { "r": 240, "g": 180, "b": 24 },
-        "toleranceLum": 25,
-        "toleranceHue": 15
-      },
-      {
-        "color": { "r": 240, "g": 0, "b": 210 },
-        "toleranceLum": 30,
-        "toleranceHue": 20
+        "comment": "Ban indicator color - dark red/purple when team is banning",
+        "color": { "r": 157, "g": 43, "b": 142 },
+        "toleranceLum": 50,
+        "toleranceHue": 35
       }
     ],
     "timer": {
@@ -152,7 +143,7 @@
         {
           "comment": "Red team is currently picking/banning",
           "color": { "r": 219, "g": 171, "b": 180 },
-          "toleranceLum": 40,
+          "toleranceLum": 60,
           "toleranceHue": 30
         }
       ],

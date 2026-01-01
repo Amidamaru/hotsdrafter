@@ -398,10 +398,15 @@ class HotsDraftScreen extends EventEmitter {
                 this.banActive = false;
                 resolve(true);
                 return;
-            } else if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["ban"])) {
+          } else if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["ban"])) {
                 // Banning, check which team is banning
                 console.log("[HotsDraftScreen] detectTimer() - Found BAN phase timer");
                 let sizeBanCheck = this.offsets["banCheckSize"];
+                
+                // Check BOTH teams and COUNT matches
+                let blueMatchCount = 0;
+                let redMatchCount = 0;
+                
                 for (let color in this.offsets["teams"]) {
                     // Get offsets
                     let teamOffsets = this.offsets["teams"][color];
@@ -409,30 +414,69 @@ class HotsDraftScreen extends EventEmitter {
                     // Check bans
                     let banCheckImg = this.screenshot.clone().crop({ x: posBanCheck.x, y: posBanCheck.y, w: sizeBanCheck.x, h: sizeBanCheck.y }).scale({ f: 0.5 });
                     // Debug output - always save
-                    banCheckImg.write("debug/111"+color+"_banCheck.png");
+                    await banCheckImg.write("debug/" + color + "_banCheck.png");
 
-                                   console.log(`[HotsDraftScreen] detectTimer() - Checking ${color} team ban area:`);
-                let samplePoints = [
-                    { x: Math.floor(banCheckImg.bitmap.width / 2), y: Math.floor(banCheckImg.bitmap.height / 2), name: "Center" },
-                    { x: 10, y: 10, name: "Top-Left" }
-                ];
-                for (let point of samplePoints) {
-                    let colorHex = banCheckImg.getPixelColor(point.x, point.y);
-                    let r = (colorHex >> 24) & 0xFF;
-                    let g = (colorHex >> 16) & 0xFF;
-                    let b = (colorHex >> 8) & 0xFF;
-                    console.log(`  ${point.name} (${point.x},${point.y}): RGB(${r}, ${g}, ${b})`);
-                }
-                console.log(`  Looking for banActive colors:`, JSON.stringify(DraftLayout["colors"]["banActive"]));
-                
-                
-                    if (HotsHelpers.imageFindColor(banCheckImg, DraftLayout["colors"]["banActive"])) {
-                        console.log("[HotsDraftScreen] detectTimer() - Found " + color + " team banning");
-                        this.teamActive = color;
-                        this.banActive = true;
-                        resolve(true);
-                        return;
+                    console.log(`[HotsDraftScreen] detectTimer() - Checking ${color} team ban area:`);
+                    
+                    // Sample MORE points to count matches
+                    let samplePoints = [
+                        { x: Math.floor(banCheckImg.bitmap.width / 2), y: Math.floor(banCheckImg.bitmap.height / 2), name: "Center" },
+                        { x: 10, y: 10, name: "Top-Left" },
+                        { x: banCheckImg.bitmap.width - 10, y: 10, name: "Top-Right" },
+                        { x: 10, y: banCheckImg.bitmap.height - 10, name: "Bottom-Left" },
+                        { x: banCheckImg.bitmap.width - 10, y: banCheckImg.bitmap.height - 10, name: "Bottom-Right" },
+                        { x: Math.floor(banCheckImg.bitmap.width / 4), y: Math.floor(banCheckImg.bitmap.height / 2), name: "Left-Center" },
+                        { x: Math.floor(banCheckImg.bitmap.width * 3 / 4), y: Math.floor(banCheckImg.bitmap.height / 2), name: "Right-Center" }
+                    ];
+                    
+                    let matchCount = 0;
+                    for (let point of samplePoints) {
+                        let colorHex = banCheckImg.getPixelColor(point.x, point.y);
+                        let r = (colorHex >> 24) & 0xFF;
+                        let g = (colorHex >> 16) & 0xFF;
+                        let b = (colorHex >> 8) & 0xFF;
+                        console.log(`  ${point.name} (${point.x},${point.y}): RGB(${r}, ${g}, ${b})`);
+                        
+                        // Check if this pixel matches banActive color
+                        if (HotsHelpers.imagePixelMatch(banCheckImg, point.x, point.y, DraftLayout["colors"]["banActive"], [])) {
+                            matchCount++;
+                            console.log(`    -> MATCH!`);
+                        }
                     }
+                    
+                    console.log(`  ${color} team match count: ${matchCount}/${samplePoints.length}`);
+                    
+                    if (color === "blue") {
+                        blueMatchCount = matchCount;
+                    } else {
+                        redMatchCount = matchCount;
+                    }
+                }
+                
+                // Decide based on which team has MORE matches
+                console.log(`[HotsDraftScreen] detectTimer() - Blue matches: ${blueMatchCount}, Red matches: ${redMatchCount}`);
+                
+                if (redMatchCount > blueMatchCount) {
+                    console.log("[HotsDraftScreen] detectTimer() - RED team is banning (more matches)");
+                    this.teamActive = "red";
+                    this.banActive = true;
+                    resolve(true);
+                    return;
+                } else if (blueMatchCount > redMatchCount) {
+                    console.log("[HotsDraftScreen] detectTimer() - BLUE team is banning (more matches)");
+                    this.teamActive = "blue";
+                    this.banActive = true;
+                    resolve(true);
+                    return;
+                } else if (blueMatchCount === redMatchCount && blueMatchCount > 0) {
+                    console.log("[HotsDraftScreen] detectTimer() - WARNING: Same match count! Defaulting to blue");
+                    this.teamActive = "blue";
+                    this.banActive = true;
+                    resolve(true);
+                    return;
+                } else {
+                    console.log("[HotsDraftScreen] detectTimer() - ERROR: No team has enough ban indicator matches!");
+                    // Fall through to error below
                 }
             }
             this.teamActive = null;
@@ -616,10 +660,10 @@ class HotsDraftScreen extends EventEmitter {
             });
             heroImgNameCropped.write("debug/ccc" + team.color + "_player" + index + "_Test.png");
 
-                console.log("active team: ", this.teamActive);
+            console.log("active team: ", this.teamActive);
             if (HotsHelpers.imageBackgroundMatch(heroImgNameCropped, DraftLayout["colors"]["heroBackgroundLocked"][colorIdent])) {
                 // Hero locked!
-                console.log("player: ", team.color, " is locked");
+                console.log("player: ", team.color, " -", index, " is locked");
                 if (HotsHelpers.imageCleanupName(heroImgNameCropped, DraftLayout["colors"]["heroNameLocked"][colorIdent], [], 0x000000FF, 0xFFFFFFFF)) {
                     HotsHelpers.imageOcrOptimize(heroImgNameCropped);
                     heroVisible = true;
@@ -629,7 +673,7 @@ class HotsDraftScreen extends EventEmitter {
             } else {
                 player.setLocked(false);
                 // Hero not locked!
-                console.log("player: ", team.color, " is NOT locked");
+                console.log("player: ", team.color,  " -", index, " is NOT locked");
                 if (team.getColor() === "blue") {
                     let heroImgNameCroppedOrg = heroImgNameCropped.clone();
                     if ((colorIdent == "blue-active") && HotsHelpers.imageCleanupName(heroImgNameCropped, DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"])) {

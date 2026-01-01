@@ -1,5 +1,5 @@
 node_modules
-debug
+debug/*
 debug/aaablue_player0_Test.png
 debug/aaablue_player1_Test.png
 debug/aaablue_player2_Test.png

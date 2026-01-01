@@ -3,9 +3,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Correct hero detection</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
             <div class="modal-body">
                 <select id="correct-hero-name" class="form-control">
@@ -15,8 +12,8 @@
                 </select>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" id="close-modal-btn" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-modal-btn">Save changes</button>
             </div>
         </div>
     </div>
@@ -24,47 +21,72 @@
 <script>
 jQuery(function() {
 
+    let buttonHandlerAttached = false;
+
     let initCorrectionElements = function(element) {
         // Manually correct failed detections
         jQuery(element).find("[data-failed]").on("click", function () {
             let heroNameFailed = jQuery(this).attr("data-failed");
-            if (heroNameFailed === "BAN") {
-                let imageData = jQuery(this).attr("src");
-                jQuery("#correct-hero-modal .btn-primary").off("click").on("click", function (e) {
+            let clickedElement = this;
+            
+            // Attach button handlers only once
+            if (!buttonHandlerAttached) {
+                buttonHandlerAttached = true;
+                
+                // Save button handler
+                jQuery("#save-modal-btn").on("click", function (e) {
                     e.preventDefault();
-                    // Save correction
-                    gui.saveHeroBanImage(jQuery("#correct-hero-modal select").val(), imageData);
+                    let selectedHeroId = jQuery("#correct-hero-modal select").val();
+                    
+                    // Check which type of correction to save
+                    let failedType = jQuery(clickedElement).attr("data-failed");
+                    if (failedType === "BAN") {
+                        gui.saveHeroBanImage(selectedHeroId, null);
+                    } else {
+                        gui.saveCorrection(failedType, selectedHeroId);
+                    }
+                    
                     // Hide modal
                     jQuery("#correct-hero-modal").modal("hide");
-                    // Update app
-                    gui.setModalActive(false);
-
                 });
-            } else {
-                jQuery("#correct-hero-modal .btn-primary").off("click").on("click", function (e) {
-                    e.preventDefault();
-                    // Save correction
-                    gui.saveCorrection(heroNameFailed, jQuery("#correct-hero-modal select").val());
-                    // Hide modal
+                
+                // Close button handler
+                jQuery("#close-modal-btn").on("click", function (e) {
                     jQuery("#correct-hero-modal").modal("hide");
-                    // Update app
-                    gui.setModalActive(false);
+                });
+                
+                // X button handler
+                jQuery("#correct-hero-modal .close").on("click", function (e) {
+                    jQuery("#correct-hero-modal").modal("hide");
                 });
             }
+            
+            // Show the modal
             jQuery("#correct-hero-modal").modal("show");
-            jQuery("#correct-hero-modal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-                // Update app
-                gui.setModalActive(false);
-            });
+            
             // Prevent re-rendering while the modal is open
             gui.setModalActive(true);
+            
+            // Update clickedElement for button handler
+            window.currentCorrectionElement = clickedElement;
         });
     };
+
+    // Handle modal close (for close button, X button, etc.)
+    jQuery("#correct-hero-modal").on("hidden.bs.modal", function () {
+        gui.setModalActive(false);
+    });
 
     jQuery(document).on("player.init ban.init", function(event, element) {
         initCorrectionElements(element);
     });
     initCorrectionElements(document);
+
+});
+</script>
+
+});
+</script>
 
 });
 </script>

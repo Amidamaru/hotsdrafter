@@ -641,7 +641,9 @@ class HotsDraftScreen extends EventEmitter {
                     console.log("[" + team.color + "] Ban "+i+": " + matchBestHero + " / distance:" + matchBestDistance + " (gap: " + distanceGap + ")");
                     this.banImages[matchBestHero].write("debug/" + team.color + "_ban" + i + "_BestCompare.png");
                     let heroNameTranslated = (matchBestHero === "_fail" ? "--FAIL--" : this.app.gameData.getHeroName(matchBestHero));
+                    console.log("[HeroName DEBUG] Ban " + i + " - matchBestHero: '" + matchBestHero + "', heroNameTranslated: '" + heroNameTranslated + "', previous value: '" + bans.names[i] + "' (empty: " + (heroNameTranslated === "") + ")");
                     if (bans.names[i] !== heroNameTranslated) {
+                        console.log("[HeroName DEBUG] Ban " + i + " - Updating from '" + bans.names[i] + "' to '" + heroNameTranslated + "'");
                         bans.names[i] = heroNameTranslated;
                     }
                     // Lock bans that are detected properly and can not change to save detection time
@@ -745,19 +747,24 @@ class HotsDraftScreen extends EventEmitter {
             } else {
                 player.setLocked(false);
                 // Hero not locked!
+                console.log("HERE");
                 console.log("player: ", team.color,  " -", index, " is NOT locked");
                 if (team.getColor() === "blue") {
                     let heroImgNameCroppedOrg = heroImgNameCropped.clone();
                     if ((colorIdent == "blue-active") && HotsHelpers.imageCleanupName(heroImgNameCropped, DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"])) {
                         HotsHelpers.imageOcrOptimize(heroImgNameCropped.invert());
                         heroVisible = true;
+                        console.log("player: ", team.color,  " -", index, " is NOT locked - if blue-active");
                         this.debugDataAdd(heroImgNameCropped, heroImgNameCropped, "heroNamePrepick-"+colorIdent+"-picking", DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"], [], true);
                     } else if (HotsHelpers.imageCleanupName(heroImgNameCroppedOrg, DraftLayout["colors"]["heroNamePrepick"][colorIdent])) {
                         heroImgNameCropped = heroImgNameCroppedOrg;
                         HotsHelpers.imageOcrOptimize(heroImgNameCropped.invert());
+                        console.log("player: ", team.color,  " -", index, " is NOT locked - if not blue-active");
                         heroVisible = true;
                         this.debugDataAdd(heroImgNameCropped, heroImgNameCropped, "heroNamePrepick-"+colorIdent, DraftLayout["colors"]["heroNamePrepick"][colorIdent], [], true);
                     }
+                    
+                console.log("AFTER HERE");
                 }
             }
             if (heroVisible) {
@@ -794,7 +801,7 @@ class HotsDraftScreen extends EventEmitter {
     }
     detectPlayerName(playerImgName, player, playerNameFinal, detections, index, team, colorIdent) {
         return new Promise(async (resolve, reject) => {
-            console.log("[PlayerName] " + team.color + " player " + index + " - Starting detection with colorIdent: " + colorIdent);
+            //console.log("[PlayerName] " + team.color + " player " + index + " - Starting detection with colorIdent: " + colorIdent);
             
             // Get rotation angle from layout
             let nameAngle = DraftLayout["teams"][team.getColor()]["name"]["angle"];
@@ -835,7 +842,7 @@ class HotsDraftScreen extends EventEmitter {
             }
             
             // Log the colors we're looking for
-            console.log("[PlayerName] " + team.color + " player " + index + " - Expected colors for colorIdent '" + colorIdent + "':");
+            //console.log("[PlayerName] " + team.color + " player " + index + " - Expected colors for colorIdent '" + colorIdent + "':");
             console.log("  playerName colors: " + JSON.stringify(DraftLayout["colors"]["playerName"][colorIdent]));
             console.log("  boost colors: " + JSON.stringify(DraftLayout["colors"]["boost"]));
             
@@ -844,11 +851,11 @@ class HotsDraftScreen extends EventEmitter {
                 playerImgNameCropped, DraftLayout["colors"]["playerName"][colorIdent], DraftLayout["colors"]["boost"]
             );
             
-            console.log("[PlayerName] " + team.color + " player " + index + " - imageCleanupName returned: " + cleanupResult);
+            //console.log("[PlayerName] " + team.color + " player " + index + " - imageCleanupName returned: " + cleanupResult);
             
             if (!cleanupResult) {
                 // Log the error but continue - player name detection may fail on some frames
-                console.log("[PlayerName] " + team.color + " player " + index + " - Image cleanup FAILED (colorIdent: " + colorIdent + ")");
+                //console.log("[PlayerName] " + team.color + " player " + index + " - Image cleanup FAILED (colorIdent: " + colorIdent + ")");
                 if (this.debugEnabled()) {
                     console.log("[Detection] Player name cleanup failed for " + team.color + " player " + index + " - skipping OCR");
                 }
@@ -856,7 +863,7 @@ class HotsDraftScreen extends EventEmitter {
                 resolve(player);
                 return;
             }
-            console.log("[PlayerName] " + team.color + " player " + index + " - Image cleanup OK, running OCR...");
+            //console.log("[PlayerName] " + team.color + " player " + index + " - Image cleanup OK, running OCR...");
             HotsHelpers.imageOcrOptimize(playerImgNameCropped.invert());
             this.debugDataAdd(playerImgNameOriginal, playerImgNameCropped, "playerName-"+colorIdent, DraftLayout["colors"]["playerName"][colorIdent], DraftLayout["colors"]["boost"], true);
             // Debug output - always save
@@ -872,18 +879,18 @@ class HotsDraftScreen extends EventEmitter {
                     return ocrCluster.recognize(buffer, this.tessLangs+"+lat+rus+kor", this.tessParams);
                 }).then((result) => {
                     if (!result || !result.text) {
-                        console.log("[PlayerName OCR] " + team.color + " player " + index + " - OCR returned null/empty result");
+                        // console.log("[PlayerName OCR] " + team.color + " player " + index + " - OCR returned null/empty result");
                         return null;
                     }
                     let playerName = result.text.trim();
-                    console.log("[PlayerName OCR] " + team.color + " player " + index + " - RAW: '" + playerName + "' (confidence: " + result.confidence + ")");
-                    console.log("[PlayerName OCR] " + team.color + " player " + index + " - Image saved to: debug/" + team.color + "_player" + index + "_PlayerNameTest.png");
+                    // console.log("[PlayerName OCR] " + team.color + " player " + index + " - RAW: '" + playerName + "' (confidence: " + result.confidence + ")");
+                    // console.log("[PlayerName OCR] " + team.color + " player " + index + " - Image saved to: debug/" + team.color + "_player" + index + "_PlayerNameTest.png");
                     player.setName(playerName, playerNameFinal);
                     player.setImagePlayerName(imagePlayerName);
                     this.app.gameData.updatePlayerRecentPicks(player);
                     return playerName;
                 }).catch((error) => {
-                    console.log("[PlayerName OCR] " + team.color + " player " + index + " - ERROR: " + error.message);
+                    // console.log("[PlayerName OCR] " + team.color + " player " + index + " - ERROR: " + error.message);
                     return null;
                 })
             );

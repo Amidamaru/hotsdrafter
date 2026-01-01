@@ -90,6 +90,13 @@
     min-width: 92px;
 }
 
+.team-blue .player-hero-image,
+.team-red .player-hero-image {
+    max-height: 60px;
+    width: auto;
+    object-fit: contain;
+}
+
 .team-blue-bans .card-img-top,
 .team-red-bans .card-img-top {
     height: 64px;

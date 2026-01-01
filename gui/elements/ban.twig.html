@@ -4,7 +4,7 @@
         {% if heroName != "???" %}
             <img class="card-img-top" src="{{ gui.getHeroImage( heroName ) }}" alt="{{ heroName }}">
         {% else %}
-            <img class="card-img-top" src="{{ heroImage }}" alt="{{ heroName }}" data-failed="BAN">
+            <img class="card-img-top" src="data:image/png;base64,{{ heroImage }}" alt="{{ heroName }}" data-failed="BAN">
         {% endif %}
     {% else %}
         <div class="ban-hero-none card-img-top">?</div>

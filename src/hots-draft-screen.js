@@ -3,6 +3,7 @@ const { Jimp } = require('jimp');
 const path = require('path');
 const fs = require('fs');
 const EventEmitter = require('events');
+const imghash = require('imghash');
 
 // Local classes
 const HotsDraftTeam = require('./hots-draft-team.js');
@@ -26,6 +27,7 @@ class HotsDraftScreen extends EventEmitter {
         this.tessParams = {};
         this.offsets = {};
         this.banImages = null;
+        this.banHashes = null; // Perceptual hashes for ban images
         this.banActive = false;
         this.screenshot = null;
         this.map = null;
@@ -89,6 +91,7 @@ class HotsDraftScreen extends EventEmitter {
                 return;
             }
             this.banImages = {};
+            this.banHashes = {};
             // Create cache directory if it does not exist
             let storageDir = HotsHelpers.getStorageDir();
             let banHeroDir = path.join(storageDir, "bans");
@@ -108,7 +111,7 @@ class HotsDraftScreen extends EventEmitter {
     }
     loadBanImagesFromDir(directoryPath) {
         return new Promise((resolve, reject) => {
-            fs.readdir(directoryPath, (errorMessage, files) => {
+            fs.readdir(directoryPath, async (errorMessage, files) => {
                 if (errorMessage) {
                     reject(new Error('Unable to scan directory: ' + errorMessage));
                     return;
@@ -117,11 +120,17 @@ class HotsDraftScreen extends EventEmitter {
                 files.forEach((file) => {
                     let match = file.match(/^(.+)\.png$/);
                     if (match) {
-                        // Load image
+                        // Load image and calculate hash
                         let heroId = match[1];
+                        let filePath = path.join(directoryPath, file);
                         loadPromises.push(
-                            Jimp.read(directoryPath+"/"+file).then(async (image) => {
+                            Promise.all([
+                                Jimp.read(filePath),
+                                imghash.hash(filePath)
+                            ]).then(([image, hash]) => {
                                 this.banImages[heroId] = image.resize({ w: this.offsets["banSizeCompare"].x, h: this.offsets["banSizeCompare"].y });
+                                this.banHashes[heroId] = hash;
+                                console.log(`[loadBanImages] Loaded ${heroId} (hash: ${hash.substring(0, 8)}...)`);
                             })
                         );
                     }
@@ -130,6 +139,7 @@ class HotsDraftScreen extends EventEmitter {
                     resolve(true);
                 } else {
                     Promise.all(loadPromises).then(() => {
+                        console.log(`[loadBanImages] Loaded ${loadPromises.length} hero images with hashes`);
                         resolve(true);
                     }).catch((error) => {
                         reject(error);
@@ -561,35 +571,61 @@ class HotsDraftScreen extends EventEmitter {
                     continue;
                 }
                 
-                // Ban slot has something - try to match hero
-                let banImgCompare = banImg.clone().resize({ w: this.offsets["banSizeCompare"].x, h: this.offsets["banSizeCompare"].y });
-                banImgCompare.write("debug/" + team.color + "_ban" + i + "_TestCompare.png");
+                // Ban slot has something - try to match hero using perceptual hash
+                let banImgCompare = banImg.clone();//.resize({ w: this.offsets["banSizeCompare"].x, h: this.offsets["banSizeCompare"].y });
+                const tempBanComparePath = "debug/" + team.color + "_ban" + i + "_TestCompare.png";
+                await banImgCompare.write(tempBanComparePath);
+                
+                // Calculate hash for the ban image
+                const banHash = await imghash.hash(tempBanComparePath);
+                
+                // Helper: Calculate Hamming distance between two hex hashes
+                const hammingDistance = (hash1, hash2) => {
+                    let distance = 0;
+                    for (let i = 0; i < hash1.length; i++) {
+                        const xor = parseInt(hash1[i], 16) ^ parseInt(hash2[i], 16);
+                        distance += xor.toString(2).split('1').length - 1;
+                    }
+                    return distance;
+                };
                 
                 let matchBestHero = null;
-                let matchBestValue = 180; // INCREASED threshold from 180 to 200 to be more strict
-                let matchSecondValue = 0; // Track second-best for gap analysis
+                let matchBestDistance = Infinity; // Lower is better with hash distance
+                let matchSecondDistance = Infinity;
                 let heroScores = {};
                 
-                for (let heroId in this.banImages) {
-                    let heroValue = HotsHelpers.imageCompare(banImgCompare, this.banImages[heroId]);
-                    heroScores[heroId] = heroValue;
-                    if (heroValue > matchBestValue) {
-                        matchSecondValue = matchBestValue; // Previous best becomes second
+                // Compare hash with all hero hashes
+                for (let heroId in this.banHashes) {
+                    const distance = hammingDistance(banHash, this.banHashes[heroId]);
+                    const score = 100 - distance; // Convert to score (higher is better)
+                    heroScores[heroId] = score;
+                    
+                    if (distance < matchBestDistance) {
+                        matchSecondDistance = matchBestDistance;
                         matchBestHero = heroId;
-                        matchBestValue = heroValue;
-                    } else if (heroValue > matchSecondValue) {
-                        matchSecondValue = heroValue; // Track second best
+                        matchBestDistance = distance;
+                    } else if (distance < matchSecondDistance) {
+                        matchSecondDistance = distance;
                     }
                 }
                 
+                let matchBestValue = 100 - matchBestDistance; // For display
+                let matchSecondValue = 100 - matchSecondDistance;
+                
                 // Debug: show all scores
                 let topScores = Object.entries(heroScores).sort((a, b) => b[1] - a[1]).slice(0, 5);
-                console.log("[" + team.color + "] Ban "+i+" scores - Top 5: " + topScores.map(e => e[0] + ":" + e[1].toFixed(2)).join(", "));
+                console.log("[" + team.color + "] Ban "+i+" [HASH] Top 5: " + topScores.map(e => e[0] + ":" + e[1].toFixed(2)).join(", "));
+                console.log("[" + team.color + "] Ban "+i+" [HASH] Best: " + matchBestHero + " distance:" + matchBestDistance + ", Second: distance:" + matchSecondDistance + ", Threshold: 15");
+                console.log("[" + team.color + "] Ban "+i+" [HASH] Ban hash: " + banHash.substring(0, 16) + "...");
+                if (matchBestHero) {
+                    console.log("[" + team.color + "] Ban "+i+" [HASH] Match hash: " + this.banHashes[matchBestHero].substring(0, 16) + "...");
+                }
                 
-                if (matchBestHero !== null) {
+                // Hash distance threshold: 0 = identical, 1-10 = very similar, 11-20 = similar, >20 = different
+                if (matchBestHero !== null && matchBestDistance <= 10) {
                     // Additional check: gap between best and second-best must be significant
-                    let scoreDifference = matchBestValue - matchSecondValue;
-                    console.log("[" + team.color + "] Ban "+i+": " + matchBestHero + " / " + matchBestValue.toFixed(2) + " (gap: " + scoreDifference.toFixed(2) + ")");
+                    let distanceGap = matchSecondDistance - matchBestDistance;
+                    console.log("[" + team.color + "] Ban "+i+": " + matchBestHero + " / distance:" + matchBestDistance + " (gap: " + distanceGap + ")");
                     this.banImages[matchBestHero].write("debug/" + team.color + "_ban" + i + "_BestCompare.png");
                     let heroNameTranslated = (matchBestHero === "_fail" ? "--FAIL--" : this.app.gameData.getHeroName(matchBestHero));
                     if (bans.names[i] !== heroNameTranslated) {
@@ -600,7 +636,7 @@ class HotsDraftScreen extends EventEmitter {
                         bans.locked++;
                     }
                 } else {
-                    console.log("[" + team.color + "] Ban "+i+": no matching hero found");
+                    console.log("[" + team.color + "] Ban "+i+": no matching hero found (best distance: " + matchBestDistance + ")");
                     bans.names[i] = "???";
                     // Save the ban image and read buffer
                     const tempBanPath = 'debug/banImg_temp_' + i + '.png';

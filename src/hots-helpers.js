@@ -117,16 +117,50 @@ class HotsHelpers {
         if (typeof rasterSize === "undefined") {
             rasterSize = 1;
         }
-        let score = 0;
-        let scoreCount = Math.floor(imageA.bitmap.width / rasterSize) * Math.floor(imageA.bitmap.height / rasterSize);
-        for (let x = 0; x < imageA.bitmap.width; x+=rasterSize) {
-            for (let y = 0; y < imageA.bitmap.height; y+=rasterSize) {
-                let pixelColorA = imageA.getPixelColor(x, y);
-                let pixelColorB = imageB.getPixelColor(x, y);
-                score += HotsHelpers.imagePixelCompare(pixelColorA, pixelColorB) / scoreCount;
-            }
+        
+        // Safety checks
+        if (!imageA || !imageA.bitmap || !imageB || !imageB.bitmap) {
+            console.log("[imageCompare] ERROR: Invalid image data");
+            return 0;
         }
-        return score;
+        
+        // Check if images have same dimensions
+        if (imageA.bitmap.width !== imageB.bitmap.width || imageA.bitmap.height !== imageB.bitmap.height) {
+            console.log("[imageCompare] WARNING: Image dimensions don't match. A: " + imageA.bitmap.width + "x" + imageA.bitmap.height + ", B: " + imageB.bitmap.width + "x" + imageB.bitmap.height);
+            // Still try to compare, but be careful with bounds
+        }
+        
+        let score = 0;
+        let scoreCount = 0;
+        let pixelCount = 0;
+        
+        try {
+            for (let x = 0; x < imageA.bitmap.width; x+=rasterSize) {
+                for (let y = 0; y < imageA.bitmap.height; y+=rasterSize) {
+                    // Make sure we don't go out of bounds on imageB
+                    if (x < imageB.bitmap.width && y < imageB.bitmap.height) {
+                        let pixelColorA = imageA.getPixelColor(x, y);
+                        let pixelColorB = imageB.getPixelColor(x, y);
+                        score += HotsHelpers.imagePixelCompare(pixelColorA, pixelColorB);
+                        scoreCount++;
+                        pixelCount++;
+                    }
+                }
+            }
+            
+            // Calculate average score
+            if (scoreCount > 0) {
+                score = score / scoreCount;
+            } else {
+                console.log("[imageCompare] WARNING: No pixels compared (scoreCount=0)");
+                return 0;
+            }
+            
+            return score;
+        } catch (error) {
+            console.log("[imageCompare] ERROR comparing images: " + error.message);
+            return 0;
+        }
     }
     static imageFindColor(image, matchesColor) {
         for (let x = 0; x < image.bitmap.width; x++) {

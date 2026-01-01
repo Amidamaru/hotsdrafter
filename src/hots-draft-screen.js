@@ -435,7 +435,7 @@ class HotsDraftScreen extends EventEmitter {
                         let r = (colorHex >> 24) & 0xFF;
                         let g = (colorHex >> 16) & 0xFF;
                         let b = (colorHex >> 8) & 0xFF;
-                        console.log(`  ${point.name} (${point.x},${point.y}): RGB(${r}, ${g}, ${b})`);
+                        //console.log(`  ${point.name} (${point.x},${point.y}): RGB(${r}, ${g}, ${b})`);
                         
                         // Check if this pixel matches banActive color
                         if (HotsHelpers.imagePixelMatch(banCheckImg, point.x, point.y, DraftLayout["colors"]["banActive"], [])) {
@@ -550,40 +550,63 @@ class HotsDraftScreen extends EventEmitter {
             for (let i = bans.locked; i < posBans.length; i++) {
                 let posBan = posBans[i];
                 let banImg = this.screenshot.clone().crop({ x: posBan.x, y: posBan.y, w: sizeBan.x, h: sizeBan.y });
-                if (!HotsHelpers.imageBackgroundMatch(banImg, DraftLayout["colors"]["banBackground"])) {
-                    let banImgCompare = banImg.clone().resize({ w: this.offsets["banSizeCompare"].x, h: this.offsets["banSizeCompare"].y });
-                    // Debug output - always save
-                    banImg.write("debug/" + team.color + "_ban" + i + "_Test.png");
-                    banImgCompare.write("debug/" + team.color + "_ban" + i + "_TestCompare.png");
-                    let matchBestHero = null;
-                    let matchBestValue = 180;
-                    for (let heroId in this.banImages) {
-                        let heroValue = HotsHelpers.imageCompare(banImgCompare, this.banImages[heroId]);
-                        if (heroValue > matchBestValue) {
-                            matchBestHero = heroId;
-                            matchBestValue = heroValue;
-                        }
+                
+                // Debug output - always save raw ban image
+                banImg.write("debug/" + team.color + "_ban" + i + "_Test.png");
+                
+                // Check if this ban slot is EMPTY (background only)
+                if (HotsHelpers.imageBackgroundMatch(banImg, DraftLayout["colors"]["banBackground"])) {
+                    console.log("[" + team.color + "] Ban "+i+": EMPTY (no hero selected yet)");
+                    // Ban slot is empty, skip it
+                    continue;
+                }
+                
+                // Ban slot has something - try to match hero
+                let banImgCompare = banImg.clone().resize({ w: this.offsets["banSizeCompare"].x, h: this.offsets["banSizeCompare"].y });
+                banImgCompare.write("debug/" + team.color + "_ban" + i + "_TestCompare.png");
+                
+                let matchBestHero = null;
+                let matchBestValue = 180; // INCREASED threshold from 180 to 200 to be more strict
+                let matchSecondValue = 0; // Track second-best for gap analysis
+                let heroScores = {};
+                
+                for (let heroId in this.banImages) {
+                    let heroValue = HotsHelpers.imageCompare(banImgCompare, this.banImages[heroId]);
+                    heroScores[heroId] = heroValue;
+                    if (heroValue > matchBestValue) {
+                        matchSecondValue = matchBestValue; // Previous best becomes second
+                        matchBestHero = heroId;
+                        matchBestValue = heroValue;
+                    } else if (heroValue > matchSecondValue) {
+                        matchSecondValue = heroValue; // Track second best
                     }
-                    if (matchBestHero !== null) {
-                        // Debug output - always save
-                        console.log("Ban "+i+": "+matchBestHero+" / "+matchBestValue);
-                        this.banImages[matchBestHero].write("debug/" + team.color + "_ban" + i + "_BestCompare.png");
-                        let heroNameTranslated = (matchBestHero === "_fail" ? "--FAIL--" : this.app.gameData.getHeroName(matchBestHero));
-                        if (bans.names[i] !== heroNameTranslated) {
-                            bans.names[i] = heroNameTranslated;
-                        }
-                        // Lock bans that are detected properly and can not change to save detection time
-                        if (!this.banActive && (bans.locked == i)) {
-                            bans.locked++;
-                        }
-                    } else {
-                        bans.names[i] = "???";
-                        // Save the ban image and read buffer
-                        const tempBanPath = 'debug/banImg_temp_' + i + '.png';
-                        await banImg.write(tempBanPath);
-                        const buffer = fs.readFileSync(tempBanPath);
-                        bans.images[i] = buffer;
+                }
+                
+                // Debug: show all scores
+                let topScores = Object.entries(heroScores).sort((a, b) => b[1] - a[1]).slice(0, 5);
+                console.log("[" + team.color + "] Ban "+i+" scores - Top 5: " + topScores.map(e => e[0] + ":" + e[1].toFixed(2)).join(", "));
+                
+                if (matchBestHero !== null) {
+                    // Additional check: gap between best and second-best must be significant
+                    let scoreDifference = matchBestValue - matchSecondValue;
+                    console.log("[" + team.color + "] Ban "+i+": " + matchBestHero + " / " + matchBestValue.toFixed(2) + " (gap: " + scoreDifference.toFixed(2) + ")");
+                    this.banImages[matchBestHero].write("debug/" + team.color + "_ban" + i + "_BestCompare.png");
+                    let heroNameTranslated = (matchBestHero === "_fail" ? "--FAIL--" : this.app.gameData.getHeroName(matchBestHero));
+                    if (bans.names[i] !== heroNameTranslated) {
+                        bans.names[i] = heroNameTranslated;
                     }
+                    // Lock bans that are detected properly and can not change to save detection time
+                    if (!this.banActive && (bans.locked == i)) {
+                        bans.locked++;
+                    }
+                } else {
+                    console.log("[" + team.color + "] Ban "+i+": no matching hero found");
+                    bans.names[i] = "???";
+                    // Save the ban image and read buffer
+                    const tempBanPath = 'debug/banImg_temp_' + i + '.png';
+                    await banImg.write(tempBanPath);
+                    const buffer = fs.readFileSync(tempBanPath);
+                    bans.images[i] = buffer;
                 }
             }
             // All ban images handled synchronously
@@ -699,6 +722,10 @@ class HotsDraftScreen extends EventEmitter {
                         imageHeroName = buffer;
                         return ocrCluster.recognize(buffer, this.tessLangs, this.tessParams);
                     }).then((result) => {
+                        if (!result || !result.text) {
+                            console.log("[HotsDraftScreen] detectHeroName() - OCR returned null/empty result for " + team.color + " player " + index);
+                            return null;
+                        }
                         let heroName = this.app.gameData.correctHeroName(result.text.trim());
                         if (heroName !== pickText) {
                             let detectionError = !this.app.gameData.heroExists(heroName);
@@ -707,6 +734,9 @@ class HotsDraftScreen extends EventEmitter {
                             player.setLocked(heroLocked);
                         }
                         return heroName;
+                    }).catch((error) => {
+                        console.log("[HotsDraftScreen] detectHeroName() - OCR error for " + team.color + " player " + index + ": " + error.message);
+                        return null;
                     })
                 )
             }
@@ -741,12 +771,19 @@ class HotsDraftScreen extends EventEmitter {
                     imagePlayerName = buffer;
                     return ocrCluster.recognize(buffer, this.tessLangs+"+lat+rus+kor", this.tessParams);
                 }).then((result) => {
+                    if (!result || !result.text) {
+                        console.log("[HotsDraftScreen] detectPlayerName() - OCR returned null/empty result for " + team.color + " player " + index);
+                        return null;
+                    }
                     let playerName = result.text.trim();
                     console.log(playerName+" / "+result.confidence);
                     player.setName(playerName, playerNameFinal);
                     player.setImagePlayerName(imagePlayerName);
                     this.app.gameData.updatePlayerRecentPicks(player);
                     return playerName;
+                }).catch((error) => {
+                    console.log("[HotsDraftScreen] detectPlayerName() - OCR error for " + team.color + " player " + index + ": " + error.message);
+                    return null;
                 })
             );
             resolve(player);

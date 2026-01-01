@@ -173,16 +173,16 @@
       ],
       "blue-inactive": [
         {
-          "comment": "Red team is currently picking/banning",
-          "color": { "r": 155, "g": 130, "b": 165 },
-          "toleranceLum": 25,
-          "toleranceHue": 20
+          "comment": "Blue player name when red team is picking - light purple/violet text",
+          "color": { "r": 158, "g": 136, "b": 172 },
+          "toleranceLum": 50,
+          "toleranceHue": 35
         },
         {
-          "comment": "Red team is currently picking/banning",
-          "color": { "r": 130, "g": 110, "b": 140 },
-          "toleranceLum": 35,
-          "toleranceHue": 20
+          "comment": "Blue player name variation - darker areas",
+          "color": { "r": 140, "g": 115, "b": 160 },
+          "toleranceLum": 50,
+          "toleranceHue": 35
         }
       ],
       "red-active": [
@@ -329,8 +329,8 @@
         "y": 300
       },
       "namePlayerRotated": {
-        "x": 200,
-        "y": 700
+        "x": 160,
+        "y": 460
       }
     },
     "red": {
@@ -391,8 +391,8 @@
         "y": 320
       },
       "namePlayerRotated": {
-        "x": 97,
-        "y": 495
+        "x": 75,
+        "y": 510
       }
     }
   },

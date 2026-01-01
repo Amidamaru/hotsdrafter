@@ -39,7 +39,6 @@ function createWindow () {
         icon: path.join(__dirname, 'build/icon_64x64.png'),
         show: false,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
             contextIsolation: false,
             enableRemoteModule: false,
@@ -58,7 +57,7 @@ function createWindow () {
         win.show();
     });
     // DevTools zum Debuggen
-    //win.webContents.openDevTools();
+    win.webContents.openDevTools();
 
     let backend = fork("./src/backend.js");
     let backendCallback = function(message) {

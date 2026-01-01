@@ -56,6 +56,7 @@ class HotsDraftGui extends EventEmitter {
                 break;
             case "draft":
                 this.draft = parameters[0];
+                console.log("[GUI] Received draft data: " + this.draft.bans.length + " bans, " + this.draft.players.length + " players");
                 this.refreshPage();
                 break;
             case "draft.status":
@@ -169,7 +170,8 @@ class HotsDraftGui extends EventEmitter {
         if (heroId === null) {
             return null;
         }
-        return path.join(HotsHelpers.getStorageDir(), "heroes", heroId+"_crop.png");
+        // Use local bans folder instead of AppData storage
+        return path.join(__dirname, "..", "data", "bans", heroId+".png");
     }
 
     reloadDraftProvider() {
@@ -398,8 +400,9 @@ class HotsDraftGui extends EventEmitter {
     }
 
     updateBan(banData) {
+        console.log("[GUI updateBan] team=" + banData.team + ", index=" + banData.index + ", heroName=" + banData.heroName);
         // Update local draft data
-        for (let i = 0; i < this.draft.players.length; i++) {
+        for (let i = 0; i < this.draft.bans.length; i++) {
             if ((this.draft.bans[i].team == banData.team) && (this.draft.bans[i].index == banData.index)) {
                 this.draft.bans[i] = banData;
                 break;

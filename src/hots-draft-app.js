@@ -251,7 +251,9 @@ class HotsDraftApp extends EventEmitter {
         this.sendEvent("gui", "config", HotsHelpers.getConfig().options);
     }
     sendDraftData() {
-        this.sendEvent("gui", "draft", this.collectDraftData());
+        let draftData = this.collectDraftData();
+        console.log("[HotsDraftApp] sendDraftData() - Sending draft with " + draftData.bans.length + " bans, " + draftData.players.length + " players");
+        this.sendEvent("gui", "draft", draftData);
     }
     sendTalentData() {
         this.sendEvent("gui", "talents", this.collectTalentData());
@@ -658,22 +660,26 @@ class HotsDraftApp extends EventEmitter {
     }
     collectBanData(team, index) {
         let banImage = team.getBanImageData(index);
-        return {
+        let banData = {
             index: index,
             team: team.getColor(),
             locked: team.getBansLocked() > index,
             heroName: team.getBanHero(index),
             heroImage: (banImage !== null ? banImage.toString('base64') : null)
         };
+        console.log("[collectBanData] team=" + team.getColor() + ", index=" + index + ", heroName=" + banData.heroName + ", locked=" + banData.locked);
+        return banData;
     }
     collectPlayerData(player) {
+        let playerNameImg = player.getImagePlayerName();
+        let heroNameImg = player.getImageHeroName();
         return {
             index: player.getIndex(),
             team: player.getTeam().getColor(),
             playerName: player.getName(),
-            playerNameImage: player.getImagePlayerName().toString('base64'),
+            playerNameImage: (playerNameImg ? playerNameImg.toString('base64') : null),
             heroName: player.getCharacter(),
-            heroNameImage: (player.isLocked() ? player.getImageHeroName().toString('base64') : null),
+            heroNameImage: (player.isLocked() && heroNameImg ? heroNameImg.toString('base64') : null),
             detectionFailed: player.isDetectionFailed(),
             locked: player.isLocked(),
             recentPicks: player.getRecentPicks()
@@ -742,11 +748,11 @@ class HotsDraftApp extends EventEmitter {
             }
             this.screen.detect(image).catch((error) => {
                 if (this.debugEnabled()) {
-                    console.error("[HotsDraftApp] Screenshot detection failed:", error.message);
-                    console.error(error.stack);
+                    console.error("[HotsDraftApp] Screenshot detection failed:", error ? error.message : "Unknown error");
+                    if (error && error.stack) console.error(error.stack);
                 } else {
                     // Always log detection failures, even if debug is disabled
-                    console.log("[HotsDraftApp] Screenshot detection failed: " + error.message);
+                    console.log("[HotsDraftApp] Screenshot detection failed: " + (error ? error.message : "Unknown error"));
                 }
             });
         }).catch((error) => {

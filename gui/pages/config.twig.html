@@ -9,11 +9,13 @@
             </label>
             <div class="col">
                 <select id="language" class="form-control">
-                {% for language in gui.gameData.languageOptions %}
-                    <option value="{{ language.id }}"{% if gui.config.language == language.id %} selected{% endif %}>
-                        {{ language.name }}
-                    </option>
-                {% endfor %}
+                {% if gui.gameData and gui.gameData.languageOptions %}
+                    {% for language in gui.gameData.languageOptions %}
+                        <option value="{{ language.id }}"{% if gui.config.language == language.id %} selected{% endif %}>
+                            {{ language.name }}
+                        </option>
+                    {% endfor %}
+                {% endif %}
                 </select>
             </div>
         </div>
@@ -23,10 +25,10 @@
             </label>
             <div class="col">
                 <select id="draftProvider" class="form-control">
-                    <option value="hotsdraft"{% if gui.config.draftProvider == "hotsdraft" %} selected{% endif %}>
+                    <option value="hotsdraft"{% if gui.config and gui.config.draftProvider == "hotsdraft" %} selected{% endif %}>
                         hotsdraft.com
                     </option>
-                    <option value="heroescounters"{% if gui.config.draftProvider == "heroescounters" %} selected{% endif %}>
+                    <option value="heroescounters"{% if gui.config and gui.config.draftProvider == "heroescounters" %} selected{% endif %}>
                         heroescounters.com
                     </option>
                 </select>
@@ -38,7 +40,7 @@
             </label>
             <div class="col">
                 <select id="draftProvider" class="form-control">
-                    <option value="icyveins"{% if gui.config.talentProvider == "icyveins" %} selected{% endif %}>
+                    <option value="icyveins"{% if gui.config and gui.config.talentProvider == "icyveins" %} selected{% endif %}>
                         icy-veins.com
                     </option>
                 </select>
@@ -50,11 +52,13 @@
             </label>
             <div class="col">
                 <select id="gameDisplay" class="form-control">
-                    {% for display in gui.getDisplays() %}
-                        <option value="{{ display.id }}"{% if gui.config.gameDisplay == display.id %} selected{% endif %}>
-                            {{ display.name }} [{{ display.width }}x{{ display.height }}]
-                        </option>
-                    {% endfor %}
+                    {% if gui.displays %}
+                        {% for display in gui.getDisplays() %}
+                            <option value="{{ display.id }}"{% if gui.config.gameDisplay == display.id %} selected{% endif %}>
+                                {{ display.name }} [{{ display.width }}x{{ display.height }}]
+                            </option>
+                        {% endfor %}
+                    {% endif %}
                 </select>
             </div>
         </div>
@@ -63,7 +67,7 @@
                 Your player name
             </label>
             <div class="col">
-                <input type="text" class="form-control" id="playerName" value="{{ gui.config.playerName }}" >
+                <input type="text" class="form-control" id="playerName" value="{% if gui.config %}{{ gui.config.playerName }}{% endif %}" >
             </div>
         </div>
         <div class="form-group row">
@@ -71,7 +75,7 @@
                 Hots storage directory
             </label>
             <div class="col">
-                <input type="text" class="form-control" id="gameStorageDir" value="{{ gui.config.gameStorageDir }}" >
+                <input type="text" class="form-control" id="gameStorageDir" value="{% if gui.config %}{{ gui.config.gameStorageDir }}{% endif %}" >
             </div>
         </div>
         <div class="form-group row">
@@ -79,7 +83,7 @@
                 Hots temp directory
             </label>
             <div class="col">
-                <input type="text" class="form-control" id="gameTempDir" value="{{ gui.config.gameTempDir }}" >
+                <input type="text" class="form-control" id="gameTempDir" value="{% if gui.config %}{{ gui.config.gameTempDir }}{% endif %}" >
             </div>
         </div>
         <div class="form-group row">
@@ -87,7 +91,7 @@
                 Google BigQuery project id
             </label>
             <div class="col">
-                <input type="text" class="form-control" id="googleBigQueryProject" value="{{ gui.config.googleBigQueryProject }}" >
+                <input type="text" class="form-control" id="googleBigQueryProject" value="{% if gui.config %}{{ gui.config.googleBigQueryProject }}{% endif %}" >
             </div>
         </div>
         <div class="form-group row">
@@ -95,7 +99,7 @@
                 Google BigQuery authentification file (for HotsApi.net data access)
             </label>
             <div class="col">
-                <input type="text" class="form-control" id="googleBigQueryAuth" value="{{ gui.config.googleBigQueryAuth }}" >
+                <input type="text" class="form-control" id="googleBigQueryAuth" value="{% if gui.config %}{{ gui.config.googleBigQueryAuth }}{% endif %}" >
             </div>
         </div>
         <div class="form-group row">
@@ -104,7 +108,7 @@
             </label>
             <div class="col">
                 <div class="form-check pt-2">
-                    <input class="form-check-input" type="checkbox" id="uploadProvider_hotsapi"{% if gui.config.uploadProvider_hotsapi %} checked{% endif %} />
+                    <input class="form-check-input" type="checkbox" id="uploadProvider_hotsapi"{% if gui.config and gui.config.uploadProvider_hotsapi %} checked{% endif %} />
                     <label class="form-check-label" for="uploadProvider_hotsapi">
                         Upload replays to hotsapi.net
                     </label>
@@ -117,7 +121,7 @@
             </label>
             <div class="col">
                 <div class="form-check py-2">
-                    <input class="form-check-input" type="checkbox" id="gameImproveDetection"{% if gui.config.gameImproveDetection %} checked{% endif %} />
+                    <input class="form-check-input" type="checkbox" id="gameImproveDetection"{% if gui.config and gui.config.gameImproveDetection %} checked{% endif %} />
                     <label class="form-check-label" for="gameImproveDetection">
                         Submit images of player- and hero-names to improve the text recognition
                     </label>
@@ -130,132 +134,20 @@
             </label>
             <div class="col">
                 <div class="form-check py-2">
-                    <input class="form-check-input" type="checkbox" id="debugEnabled"{% if gui.config.debugEnabled %} checked{% endif %} />
+                    <input class="form-check-input" type="checkbox" id="debugEnabled"{% if gui.config and gui.config.debugEnabled %} checked{% endif %} />
                     <label class="form-check-label" for="debugEnabled">
                         Enable debugging output to the console and file system
                     </label>
                 </div>
             </div>
         </div>
+        <div class="form-group row mt-4">
+            <div class="col-sm-3"></div>
+            <div class="col">
+                <button id="saveConfigButton" class="btn btn-primary">
+                    Save Configuration
+                </button>
+            </div>
+        </div>
     </div>
-    <script>
-    jQuery(function() {
-
-        const fs = require("fs");
-        const dialog = require('electron').remote.dialog;
-
-        // Change language
-        jQuery("#language").on("change", function() {
-            let value = jQuery(this).val();
-            gui.setConfigOption("language", value);
-        });
-        // Change draft provider
-        jQuery("#draftProvider").on("change", function() {
-            let value = jQuery(this).val();
-            gui.setConfigOption("draftProvider", value);
-        });
-        // Change talent provider
-        jQuery("#talentProvider").on("change", function() {
-            let value = jQuery(this).val();
-            gui.setConfigOption("talentProvider", value);
-        });
-        // Change game storage directory
-        jQuery("#gameDisplay").on("change", function() {
-            let value = jQuery(this).val();
-            gui.setConfigOption("gameDisplay", value);
-        });
-        // Change game storage directory
-        jQuery("#gameStorageDir").on("click", function() {
-            let value = jQuery(this).val();
-            let dialogOptions = { properties: ['openDirectory'] };
-            if (value !== "") {
-                dialogOptions.defaultPath = value;
-            }
-            dialog.showOpenDialog(dialogOptions, (result) => {
-                if (typeof result !== "undefined") {
-                    jQuery(this).val(result[0]).trigger("change");
-                }
-            });
-        });
-        jQuery("#gameStorageDir").on("change", function() {
-            let value = jQuery(this).val();
-            if (fs.existsSync(value)) {
-                gui.setConfigOption("gameStorageDir", (value !== "" ? value : null));
-                jQuery(this).addClass("is-valid").removeClass("is-invalid");
-            } else {
-                jQuery(this).addClass("is-invalid").removeClass("is-valid");
-            }
-        });
-        // Change game temp directory
-        jQuery("#gameTempDir").on("click", function() {
-            let value = jQuery(this).val();
-            let dialogOptions = { properties: ['openDirectory'] };
-            if (value !== "") {
-                dialogOptions.defaultPath = value;
-            }
-            dialog.showOpenDialog(dialogOptions, (result) => {
-                if (typeof result !== "undefined") {
-                    jQuery(this).val(result[0]).trigger("change");
-                }
-            });
-        });
-        jQuery("#gameTempDir").on("change", function() {
-            let value = jQuery(this).val();
-            if (fs.existsSync(value)) {
-                gui.setConfigOption("gameTempDir", (value !== "" ? value : null));
-                jQuery(this).addClass("is-valid").removeClass("is-invalid");
-            } else {
-                jQuery(this).addClass("is-invalid").removeClass("is-valid");
-            }
-        });
-        // Change google BigQuery project id
-        jQuery("#googleBigQueryProject").on("change keyup", function() {
-            let value = jQuery(this).val();
-            gui.setConfigOption("googleBigQueryProject", (value !== "" ? value : null));
-        });
-        // Change google BigQuery authentification file
-        jQuery("#googleBigQueryAuth").on("click", function() {
-            let value = jQuery(this).val();
-            let dialogOptions = { properties: ['openFile'] };
-            if (value !== "") {
-                dialogOptions.defaultPath = value;
-            }
-            dialog.showOpenDialog(dialogOptions, (result) => {
-                if (typeof result !== "undefined") {
-                    jQuery(this).val(result[0]).trigger("change");
-                }
-            });
-        });
-        jQuery("#googleBigQueryAuth").on("change", function() {
-            let value = jQuery(this).val();
-            if (fs.existsSync(value)) {
-                gui.setConfigOption("googleBigQueryAuth", (value !== "" ? value : null));
-                jQuery(this).addClass("is-valid").removeClass("is-invalid");
-            } else {
-                jQuery(this).addClass("is-invalid").removeClass("is-valid");
-            }
-        });
-        // Change own player name (for talent suggestions)
-        jQuery("#playerName").on("change keyup", function() {
-            let value = jQuery(this).val();
-            gui.setConfigOption("playerName", value);
-        });
-        // Automatic replay upload
-        jQuery("#uploadProvider_hotsapi").on("change", function() {
-            let value = jQuery(this).is(":checked");
-            gui.setConfigOption("uploadProvider_hotsapi", value);
-        });
-        // Enable or disable submission of training data
-        jQuery("#gameImproveDetection").on("change", function() {
-            let value = jQuery(this).is(":checked");
-            gui.setConfigOption("gameImproveDetection", value);
-        });
-        // Enable or disable debugging
-        jQuery("#debugEnabled").on("change", function() {
-            let value = jQuery(this).is(":checked");
-            gui.setConfigOption("debugEnabled", value);
-        });
-
-    });
-    </script>
 {% endblock %}

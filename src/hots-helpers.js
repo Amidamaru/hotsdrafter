@@ -55,6 +55,12 @@ class HotsHelpers {
         }
         return configuration;
     }
+    static debugLog(message) {
+        // Only log if debug is enabled in config
+        if (HotsHelpers.getConfig().getOption("debugEnabled")) {
+            console.log(message);
+        }
+    }
     static screenshotVirtualScreen(screen, x, y, width, height) {
         let result = Object.assign({}, screen);
         result.offsetX += x;

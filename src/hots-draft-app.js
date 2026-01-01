@@ -1,6 +1,5 @@
 // Nodejs dependencies
 const path = require('path');
-const request = require('request');
 const screenshot = require('screenshot-desktop');
 const Twig = require('twig');
 const HotsReplay = require('hots-replay');
@@ -28,6 +27,7 @@ class HotsDraftApp extends EventEmitter {
         this.talentProvider = null;
         this.displays = null;
         // Status fields
+        this.ready = false;  // Initialize ready state
         this.statusGameDataPending = false;
         this.statusGameActive = false;
         this.statusGameActiveLock = null;
@@ -41,6 +41,15 @@ class HotsDraftApp extends EventEmitter {
         this.statusUpdatePending = false;
         // Initialize
         this.registerEvents();
+    }
+    
+    // Call init after a small delay to allow registerEvents to finish
+    startInit() {
+        console.log("[HotsDraftApp] startInit() - Called, scheduling init() after 100ms");
+        setTimeout(() => {
+            console.log("[HotsDraftApp] startInit() - Now calling init()");
+            this.init();
+        }, 100);
     }
     debugEnabled() {
         return HotsHelpers.getConfig().getOption("debugEnabled");
@@ -175,6 +184,11 @@ class HotsDraftApp extends EventEmitter {
         this.gameData.on("replay.update", (index) => {
             this.sendReplayData(index);
         });
+        // Send initial game data and displays to GUI (before update.done)
+        console.log("[HotsDraftApp] registerEvents() - Sending initial gameData and displays to GUI");
+        this.sendGameData();
+        // Now that all event listeners are registered, start the initialization
+        this.startInit();
     }
     handleEvent(type, parameters) {
         switch (type) {
@@ -182,6 +196,7 @@ class HotsDraftApp extends EventEmitter {
                 this.screen.saveHeroBanImage(...parameters);
                 break;
             case "config.option.set":
+                console.log("[HotsDraftApp] handleEvent() - config.option.set: " + parameters[0] + " = " + parameters[1]);
                 HotsHelpers.getConfig().setOption(...parameters);
                 switch (parameters[0]) {
                     case "language":
@@ -229,6 +244,7 @@ class HotsDraftApp extends EventEmitter {
         }
     }
     sendEvent(channel, type, ...parameters) {
+        if (this.debugEnabled()) console.log("[HotsDraftApp] sendEvent() - channel=" + channel + ", type=" + type);
         process.send([channel, type, ...parameters]);
     }
     sendConfig() {
@@ -241,6 +257,7 @@ class HotsDraftApp extends EventEmitter {
         this.sendEvent("gui", "talents", this.collectTalentData());
     }
     sendGameData() {
+        console.log("[HotsDraftApp] sendGameData() - Sending languageOptions, heroes, maps, etc. to GUI");
         this.sendEvent("gui", "gameData", {
             languageOptions: this.gameData.languageOptions,
             heroes: this.gameData.heroes,
@@ -272,6 +289,7 @@ class HotsDraftApp extends EventEmitter {
         this.sendEvent("gui", "talentProvider.update", this.collectProviderData(provider));
     }
     sendReadyState() {
+        console.log("[HotsDraftApp] sendReadyState() - Sending ready.status=" + this.ready + " to GUI");
         this.sendEvent("gui", "ready.status", this.ready);
     }
     sendDraftState() {
@@ -282,6 +300,8 @@ class HotsDraftApp extends EventEmitter {
         this.initTalentProvider();
         this.downloadGameData();
         this.detectDisplays();
+        // Send initial game data to GUI immediately (for config page dropdowns to work)
+        this.sendGameData();
     }
     initDraftProvider() {
         // Remove old provider
@@ -315,6 +335,7 @@ class HotsDraftApp extends EventEmitter {
     }
     detectDisplays() {
         screenshot.listDisplays().then((displays) => {
+            console.log("[HotsDraftApp] detectDisplays() - Found " + displays.length + " display(s)");
             this.displays = displays;
             this.sendEvent("gui", "displays.detected", displays);
             // Update config
@@ -347,7 +368,7 @@ class HotsDraftApp extends EventEmitter {
         this.gameData.update();
     }
     setDebugStep(step) {
-        this.sendEvent("gui", "debug.step.update", step);
+        // Debug step logging disabled
     }
     updateForced() {
         this.screen.clear();
@@ -359,12 +380,19 @@ class HotsDraftApp extends EventEmitter {
         this.sendDraftData();
     }
     updateReadyState() {
+        console.log("[HotsDraftApp] updateReadyState() - ready=" + this.ready + ", statusGameDataPending=" + this.statusGameDataPending + ", displays=" + (this.displays !== null ? "YES" : "NO"));
         if (!this.ready) {
+            console.log("[HotsDraftApp] updateReadyState() - Check: !statusGameDataPending=" + (!this.statusGameDataPending) + ", displays!==null=" + (this.displays !== null));
             if (!this.statusGameDataPending && (this.displays !== null)) {
+                console.log("[HotsDraftApp] updateReadyState() - Setting ready=true and emitting 'ready' event");
                 this.ready = true;
                 this.emit("ready");
                 this.sendReadyState();
+            } else {
+                console.log("[HotsDraftApp] updateReadyState() - NOT ready yet: statusGameDataPending=" + this.statusGameDataPending + ", displays=" + (this.displays !== null));
             }
+        } else {
+            console.log("[HotsDraftApp] updateReadyState() - Already ready, skipping");
         }
     }
     updatePage() {
@@ -481,53 +509,65 @@ class HotsDraftApp extends EventEmitter {
         });
     }
     update() {
+        if (this.debugEnabled()) console.log("[HotsDraftApp] update() - Starting...");
         this.statusUpdatePending = false;
         // Update game files
-        this.updateGameFiles();
-        // Update status
-        if (this.statusGameActive) {
-            if (this.statusDraftActive) {
-                // Draft just ended
-                this.statusDraftActive = false;
-                this.emit("draft.ended");
-                this.sendDraftState();
-                if (this.debugEnabled()) {
-                    console.log("=== DRAFT ENDED ===");
-                }
-            }
-        } else {
-            // Check draft status
-            if (this.screen.getMap() !== null) {
-                // Draft is active
-                if (!this.statusDraftActive) {
-                    // Draft just started
-                    this.statusDraftActive = true;
-                    this.emit("draft.started");
-                    this.sendDraftState();
-                    if (this.debugEnabled()) {
-                        console.log("=== DRAFT STARTED ===");
-                    }
-                }
-            } else {
-                // Draft not active
+        if (this.debugEnabled()) console.log("[HotsDraftApp] update() - Calling updateGameFiles...");
+        this.updateGameFiles().then(() => {
+            if (this.debugEnabled()) console.log("[HotsDraftApp] update() - updateGameFiles done");
+            // Update status
+            if (this.statusGameActive) {
                 if (this.statusDraftActive) {
                     // Draft just ended
                     this.statusDraftActive = false;
                     this.emit("draft.ended");
+                    this.sendDraftState();
                     if (this.debugEnabled()) {
                         console.log("=== DRAFT ENDED ===");
                     }
                 }
+            } else {
+                // Check draft status
+                if (this.screen.getMap() !== null) {
+                    // Draft is active
+                    if (!this.statusDraftActive) {
+                        // Draft just started
+                        this.statusDraftActive = true;
+                        this.emit("draft.started");
+                        this.sendDraftState();
+                        if (this.debugEnabled()) {
+                            console.log("=== DRAFT STARTED ===");
+                        }
+                    }
+                } else {
+                    // Draft not active
+                    if (this.statusDraftActive) {
+                        // Draft just ended
+                        this.statusDraftActive = false;
+                        this.emit("draft.ended");
+                        if (this.debugEnabled()) {
+                            console.log("=== DRAFT ENDED ===");
+                        }
+                    }
+                }
+                if (this.debugEnabled()) console.log("[HotsDraftApp] update() - Calling updateScreenshot...");
+                this.updateScreenshot();
             }
-            this.updateScreenshot();
-        }
-        this.checkNextUpdate();
+            if (this.debugEnabled()) console.log("[HotsDraftApp] update() - Calling checkNextUpdate...");
+            this.checkNextUpdate();
+        }).catch((error) => {
+            if (this.debugEnabled()) console.warn("[HotsDraftApp] update() - Error in updateGameFiles:", error);
+            if (this.debugEnabled()) console.log("[HotsDraftApp] update() - Calling checkNextUpdate anyway...");
+            this.checkNextUpdate();
+        });
     }
     updateGameFiles() {
-        this.gameData.updateSaves().then(() => {
+        if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - Starting...");
+        return this.gameData.updateSaves().then(() => {
+            if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - updateSaves done, calling updateReplays...");
             return this.gameData.updateReplays();
         }).then(() => {
-            // Get updated save and replay file info
+            if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - updateReplays done, updating status...");
             this.statusTempModTime = this.gameData.updateTempModTime();
             this.statusGameSaveFile = this.gameData.getLatestSave();
             this.statusGameLastReplay = this.gameData.getLatestReplay();
@@ -536,19 +576,27 @@ class HotsDraftApp extends EventEmitter {
             if (this.statusGameActive !== gameActive) {
                 this.statusGameActive = gameActive
                 if (gameActive) {
+                    if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - Game started");
                     this.triggerGameStart();
                 } else {
+                    if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - Game ended");
                     this.triggerGameEnd();
                 }
             }
             // Upload missing replays
+            if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - Calling uploadReplays...");
             return this.gameData.uploadReplays();
         }).then((uploadCount) => {
+            if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - uploadReplays done, count=" + uploadCount);
             if (uploadCount > 0) {
                 // Save updated game data and send it to the gui
                 this.gameData.save();
                 this.sendGameData();
             }
+            if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - Done");
+        }).catch((error) => {
+            if (this.debugEnabled()) console.warn("[HotsDraftApp] updateGameFiles() - Error:", error);
+            // Continue anyway
         });
     }
     triggerGameStart() {
@@ -648,9 +696,40 @@ class HotsDraftApp extends EventEmitter {
         }
         this.statusDetectionRunning = true;
         let screenshotOptions = { format: 'png' };
-        if (this.displays.length > 0) {
+        
+        // Use the configured gameDisplay from settings
+        let gameDisplayConfig = HotsHelpers.getConfig().getOption("gameDisplay");
+        if (gameDisplayConfig !== null && this.displays && this.displays.length > 0) {
+            // Find the display with matching ID
+            let foundDisplay = null;
+            for (let i = 0; i < this.displays.length; i++) {
+                if (this.displays[i].id === gameDisplayConfig) {
+                    foundDisplay = this.displays[i];
+                    break;
+                }
+            }
+            if (foundDisplay) {
+                screenshotOptions.screen = foundDisplay.id;
+                console.log("[HotsDraftApp] Taking screenshot from configured display ID: " + foundDisplay.id + " (" + foundDisplay.width + "x" + foundDisplay.height + ")");
+            } else {
+                // Fallback: use the OTHER display (not Display 0, which is where the app runs)
+                if (this.displays.length > 1) {
+                    screenshotOptions.screen = this.displays[1].id;
+                    console.log("[HotsDraftApp] Configured display not found, using secondary display: " + this.displays[1].id + " (" + this.displays[1].width + "x" + this.displays[1].height + ")");
+                } else {
+                    screenshotOptions.screen = this.displays[0].id;
+                    console.log("[HotsDraftApp] Only one display available, using: " + this.displays[0].id + " (" + this.displays[0].width + "x" + this.displays[0].height + ")");
+                }
+            }
+        } else if (this.displays && this.displays.length > 1) {
+            // No display configured: use the OTHER display (assume app runs on Display 0, game runs on Display 1)
+            screenshotOptions.screen = this.displays[1].id;
+            console.log("[HotsDraftApp] No display configured, using secondary display (LG): " + this.displays[1].id + " (" + this.displays[1].width + "x" + this.displays[1].height + ")");
+        } else if (this.displays && this.displays.length > 0) {
             screenshotOptions.screen = this.displays[0].id;
+            console.log("[HotsDraftApp] Using available display: " + this.displays[0].id + " (" + this.displays[0].width + "x" + this.displays[0].height + ")");
         }
+        
         this.setDebugStep("Capturing screenshot...");
         screenshot(screenshotOptions).then((image) => {
             if (this.statusGameActive) {
@@ -663,19 +742,20 @@ class HotsDraftApp extends EventEmitter {
             }
             this.screen.detect(image).catch((error) => {
                 if (this.debugEnabled()) {
-                    if ((error.message === "Failed to detect pick counter") || (error.message === "No map text found at the expected location!")) {
-                        console.log("Screenshot not detected: No draft found (Pick counter or map name not found)");
-                    } else {
-                        console.error(error);
-                        console.error(error.stack);
-                    }
+                    console.error("[HotsDraftApp] Screenshot detection failed:", error.message);
+                    console.error(error.stack);
+                } else {
+                    // Always log detection failures, even if debug is disabled
+                    console.log("[HotsDraftApp] Screenshot detection failed: " + error.message);
                 }
             });
         }).catch((error) => {
             this.statusDetectionRunning = false;
             if (this.debugEnabled()) {
-                console.error(error);
+                console.error("[HotsDraftApp] Screenshot capture failed:", error);
                 console.error(error.stack);
+            } else {
+                console.log("[HotsDraftApp] Screenshot capture failed: " + error.message);
             }
         });
     }

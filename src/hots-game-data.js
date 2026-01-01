@@ -1,12 +1,10 @@
 // Nodejs dependencies
-const request = require('request');
+const https = require('follow-redirects').https;
 const cheerio = require('cheerio');
-const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const jimp = require('jimp');
 const EventEmitter = require('events');
-const {BigQuery} = require('@google-cloud/bigquery');
 
 // Local classes
 const HotsReplay = require('hots-replay');
@@ -15,18 +13,33 @@ const HotsReplayUploaders = {
 };
 const HotsHelpers = require('./hots-helpers.js');
 
-// BigQuery Instance
-let bigQueryHotsApi = new BigQuery({
-    projectId: HotsHelpers.getConfig().getOption("googleBigQueryProject"),
-    keyFilename: HotsHelpers.getConfig().getOption("googleBigQueryAuth")
-});
+// BigQuery Instance (lazy load)
+let bigQueryHotsApi = null;
+
+function getBigQuery() {
+    if (!bigQueryHotsApi && HotsHelpers.getConfig().getOption("googleBigQueryProject")) {
+        try {
+            const {BigQuery} = require('@google-cloud/bigquery');
+            bigQueryHotsApi = new BigQuery({
+                projectId: HotsHelpers.getConfig().getOption("googleBigQueryProject"),
+                keyFilename: HotsHelpers.getConfig().getOption("googleBigQueryAuth")
+            });
+        } catch (error) {
+            console.warn("BigQuery not available:", error.message);
+        }
+    }
+    return bigQueryHotsApi;
+}
 
 class HotsGameData extends EventEmitter {
 
     constructor(language) {
         super();
         this.language = language;
-        this.languageOptions = [{ id: "en-us", name: "English (US)" }];
+        this.languageOptions = [
+            { id: "en-us", name: "English (US)" },
+            { id: "de", name: "Deutsch" }
+        ];
         this.heroes = {
             name: {},
             details: {},
@@ -38,6 +51,27 @@ class HotsGameData extends EventEmitter {
         this.substitutions = {
             "ETC": "E.T.C.",
             "LUCIO": "LÚCIO"
+        };
+        this.mapTranslations = {
+            "de": {
+                "TEMPEL VON HANAMURA": "HANAMURA TEMPLE",
+                "ALTERACPASS": "ALTERAC PASS",
+                "SCHLACHTFELD DER EWIGKEIT": "BATTLEFIELD OF ETERNITY",
+                "SCHWARZHERZS BUCHT": "BLACKHEART'S BAY",
+                "BRAXIS WAFFENPLATZ": "BRAXIS HOLDOUT",
+                "DER VERFLUCHTE HOHLE": "CURSED HOLLOW",
+                "DAS DRACHENHEIM": "DRAGON SHIRE",
+                "GARTEN DES SCHRECKENS": "GARDEN OF TERROR",
+                "VERFLUCHTE GRUBENBAU": "HAUNTED MINES",
+                "HÖLLENFEUER-SCHREINE": "INFERNAL SHRINES",
+                "HÖHLEN DES VERLORENEN FELDZUGES": "LOST CAVERNS",
+                "HIMMELSTEMPEL": "SKY TEMPLE",
+                "GRABKAMMER DER SPINNENKONIGIN": "TOMB OF THE SPIDER QUEEN",
+                "GRABKAMMER DER SPINNENKÖNIGIN": "TOMB OF THE SPIDER QUEEN",
+                "TÜRME DES VERDERBENS": "TOWERS OF DOOM",
+                "VOLSKAYA-FABRIK": "VOLSKAYA FOUNDRY",
+                "SPRENGSTOFFFRACHTER": "WARHEAD JUNCTION"
+            }
         };
         this.replays = {
             details: [],
@@ -155,6 +189,11 @@ class HotsGameData extends EventEmitter {
                         fs.mkdirSync(heroesDir, { recursive: true });
                     }
                     https.get(heroImageUrl, function(response) {
+                        if (response.statusCode !== 200) {
+                            console.warn("Failed to download hero image from " + heroImageUrl + " with status " + response.statusCode);
+                            resolve(); // Skip image, continue
+                            return;
+                        }
                         const file = fs.createWriteStream(filename);
                         const stream = response.pipe(file);
                         stream.on("finish", () => {
@@ -165,12 +204,16 @@ class HotsGameData extends EventEmitter {
                                 console.error("Error loading image '"+heroImageUrl+"'");
                                 console.error(error);
                                 console.error(error.stack);
-                                reject(error);
+                                resolve(); // Skip image on error, continue
                             })
                         })
+                    }).on('error', (error) => {
+                        console.warn("Failed to download hero image from " + heroImageUrl + ": " + error.message);
+                        resolve(); // Skip image, continue
                     });
                 } catch(error) {
-                    reject(error);
+                    console.warn("Failed to process hero image from " + heroImageUrl + ": " + error.message);
+                    resolve(); // Skip image, continue
                 }
             } else {
                 resolve();
@@ -202,7 +245,10 @@ class HotsGameData extends EventEmitter {
         return (this.getMapId(name, language) !== null);
     }
     fixMapName(name) {
-        name = name.toUpperCase();
+        name = name.toUpperCase().trim();
+        // Remove "VIEW BEST HEROES" and other web scraping artifacts
+        name = name.split("\n")[0].trim();
+        name = name.replace(/\s*VIEW BEST HEROES\s*/gi, "").trim();
         return name;
     }
     fixHeroName(name) {
@@ -253,6 +299,30 @@ class HotsGameData extends EventEmitter {
             this.maps.name[language] = {};
         }
         return this.maps.name[language];
+    }
+    translateMapName(mapName, fromLanguage, toLanguage) {
+        // Try to find the map ID using the from language, then return the name in the to language
+        if (typeof fromLanguage === "undefined") {
+            fromLanguage = this.language;
+        }
+        if (typeof toLanguage === "undefined") {
+            toLanguage = "en-us";
+        }
+        
+        // Check if we have a direct translation in mapTranslations table
+        if (this.mapTranslations.hasOwnProperty(fromLanguage)) {
+            if (this.mapTranslations[fromLanguage].hasOwnProperty(mapName)) {
+                return this.mapTranslations[fromLanguage][mapName];
+            }
+        }
+        
+        // If no translation found, try to get the map ID from the source language
+        let mapId = this.getMapId(mapName, fromLanguage);
+        if (mapId !== null) {
+            // Now get the map name in the target language
+            return this.getMapName(mapId, toLanguage);
+        }
+        return null;
     }
     getHeroName(heroId, language) {
         if (typeof language === "undefined") {
@@ -326,13 +396,33 @@ class HotsGameData extends EventEmitter {
         let cacheContent = fs.readFileSync(storageFile);
         try {
             let cacheData = JSON.parse(cacheContent.toString());
+            console.log("[GameData] load() - Cache version: " + cacheData.formatVersion + ", languageOptions count: " + (cacheData.languageOptions ? cacheData.languageOptions.length : 0));
             if (cacheData.formatVersion == 5) {
+                // Before loading, merge languageOptions from this.languageOptions (the defaults)
+                // This ensures new languages are added even if cache is old
+                if (cacheData.languageOptions && Array.isArray(cacheData.languageOptions)) {
+                    // Check if we need to add new languages from defaults
+                    for (let defaultLang of this.languageOptions) {
+                        let found = false;
+                        for (let cacheLang of cacheData.languageOptions) {
+                            if (cacheLang.id === defaultLang.id) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            console.log("[GameData] load() - Adding missing language: " + defaultLang.id);
+                            cacheData.languageOptions.push(defaultLang);
+                        }
+                    }
+                }
                 this.languageOptions = cacheData.languageOptions;
                 this.maps = cacheData.maps;
                 this.heroes = cacheData.heroes;
                 this.replays = cacheData.replays;
                 this.playerPicks = cacheData.playerPicks;
                 this.playerBattleTags = cacheData.playerBattleTags;
+                console.log("[GameData] load() - After load, languageOptions count: " + this.languageOptions.length);
             }
         } catch (e) {
             console.error("Failed to read gameData data!");
@@ -374,9 +464,15 @@ class HotsGameData extends EventEmitter {
         }) );
     }
     update() {
+        console.log("[GameData] Starting update()...");
+        this.emit("update.start");  // Signal that update is starting
         this.progressReset();
         this.progressTaskNew();
         return new Promise((resolve, reject) => {
+            console.log("[GameData] update() - Starting updateReplays...");
+            console.log("[GameData] update() - Starting updateSaves...");
+            console.log("[GameData] update() - Starting updateMaps(en-us)...");
+            console.log("[GameData] update() - Starting updateHeroes(en-us)...");
             let updatePromises = [
               this.updateReplays(),
               this.updateSaves(),
@@ -384,166 +480,179 @@ class HotsGameData extends EventEmitter {
               this.updateHeroes("en-us")
             ];
             if (this.language !== "en-us") {
+                console.log("[GameData] update() - Adding language-specific updates for " + this.language);
                 updatePromises.push( this.updateMaps(this.language) );
                 updatePromises.push( this.updateHeroes(this.language) );
             }
-            Promise.all(updatePromises).then((result) => {
+            // Use allSettled instead of all so one failure doesn't break everything
+            Promise.allSettled(updatePromises).then((result) => {
+                console.log("[GameData] update() - All promises settled, resolving...");
                 resolve(result);
             }).catch((error) => {
-                if (this.updateProgress.retries++ < 3) {
-                    // Retry
-                    this.update().then((result) => {
-                        resolve(result)
-                    }).catch((error) => {
-                        reject(error);
-                    });
-                } else {
-                    reject(error);
-                }
+                console.warn("[GameData] update() - Update error (non-critical):", error);
+                resolve([]);  // Continue anyway
             }).finally(() => {
+                console.log("[GameData] update() - Emitting update.done");
                 this.emit("update.done");
             });
         }).then((result) => {
+            console.log("[GameData] update() - Final then(), calling progressTaskDone()");
             this.progressTaskDone();
             return result;
         }).catch((error) => {
-            this.progressTaskFailed();
-            throw error;
-        }).finally(() => {
-            this.emit("update.done");
+            console.warn("[GameData] update() - Game data update failed (non-critical):", error);
+            this.progressTaskDone();
+            // Don't throw - app can work with cached data
+            return null;
         });
     }
     updateMaps(language) {
+        console.log("[GameData] updateMaps(" + language + ") - Starting...");
         this.progressTaskNew();
-        let url = "https://heroesofthestorm.com/"+language+"/battlegrounds/";
+        // Only fetch maps for en-us, heroescounters doesn't have other languages
+        if (language !== "en-us") {
+            console.log("[GameData] updateMaps(" + language + ") - Skipping (only en-us supported)");
+            this.progressTaskDone();
+            return Promise.resolve();
+        }
+        let url = "https://www.heroescounters.com/map";
+        console.log("[GameData] updateMaps(" + language + ") - Fetching from " + url);
         return new Promise((resolve, reject) => {
-            request({
-                'method': 'GET',
-                'uri': url,
-                'headers': {
+            https.get(url, {
+                headers: {
                     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'
-                },
-                'jar': true
-            }, (error, response, body) => {
-                if (error || (typeof response === "undefined")) {
-                    reject(error);
-                    return;
                 }
+            }, (response) => {
+                console.log("[GameData] updateMaps(" + language + ") - Got response with status " + response.statusCode);
                 if (response.statusCode !== 200) {
-                    reject('Invalid status code <' + response.statusCode + '>\n'+body);
+                    console.warn("[GameData] updateMaps(" + language + ") - Maps fetch failed with status <" + response.statusCode + "> for " + url);
+                    reject("Invalid status code <" + response.statusCode + ">");
                     return;
                 }
-                this.updateMapsFromResponse(language, body).then(() => {
-                    resolve();
-                }).catch((error) => {
-                    reject(error);
+                let data = "";
+                response.on("data", (chunk) => {
+                    data += chunk;
                 });
+                response.on("end", () => {
+                    console.log("[GameData] updateMaps(" + language + ") - Got " + data.length + " bytes, parsing...");
+                    this.updateMapsFromResponse(language, data).then(() => {
+                        console.log("[GameData] updateMaps(" + language + ") - Maps parsing done");
+                        resolve();
+                    }).catch((error) => {
+                        console.warn("[GameData] updateMaps(" + language + ") - Maps parsing error: " + error);
+                        reject(error);
+                    });
+                });
+            }).on("error", (error) => {
+                console.warn("[GameData] updateMaps(" + language + ") - Network error: " + error.message);
+                reject(error);
             });
         }).then((result) => {
+            console.log("[GameData] updateMaps(" + language + ") - Done, calling progressTaskDone()");
             this.progressTaskDone();
             return result;
         }).catch((error) => {
-            this.progressTaskFailed();
-            throw error;
+            console.warn("[GameData] updateMaps(" + language + ") - Maps update failed (non-critical):", error);
+            this.progressTaskDone();
+            // Don't throw - continue with cached data
         });
     }
     updateMapsFromResponse(language, content) {
         return new Promise((resolve, reject) => {
             let self = this;
             let page = cheerio.load(content);
-            let languages = [];
-            page(".BattlegroundText-header").each(function() {
-                let mapId = page(this).closest(".BattlegroundWrapper-container").attr("data-battleground-id");
-                self.addMap( mapId, page(this).text(), language );
+            
+            // Parse maps from heroescounters.com structure
+            // Maps are in links like: <a href="/map/cursedhollow">Cursed Hollow</a>
+            let mapCount = 0;
+            page('a[href^="/map/"]').each(function() {
+                let href = page(this).attr('href');
+                let mapName = page(this).text().trim();
+                
+                // Skip "VIEW BEST HEROES" links
+                if (mapName === 'VIEW BEST HEROES') {
+                    return;
+                }
+                
+                // Extract map ID from URL (e.g., /map/cursedhollow -> cursedhollow)
+                let mapIdMatch = href.match(/^\/map\/([a-z]+)$/);
+                if (mapIdMatch) {
+                    let mapId = mapIdMatch[1];
+                    self.addMap(mapId, mapName, language);
+                    mapCount++;
+                }
             });
-            page(".NavbarFooter-selectorLocales [data-id]").each(function() {
-                languages.push({
-                    id: page(this).attr("data-id"),
-                    name: page(this).find(".NavbarFooter-selectorOptionLabel").text()
-                });
-            });
-            this.languageOptions = languages;
+            
+            console.log("Loaded " + mapCount + " maps from heroescounters.com");
             resolve();
             this.save();
         });
     }
     updateHeroes(language) {
+        console.log("[GameData] updateHeroes(" + language + ") - Starting...");
         this.progressTaskNew();
-        let url = "https://heroesofthestorm.com/"+language+"/heroes/";
+        // Load heroes from hardcoded list (web scraping is unreliable due to dynamic content)
         return new Promise((resolve, reject) => {
-            request({
-                'method': 'GET',
-                'uri': url,
-                'headers': {
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'
-                },
-                'jar': true
-            }, (error, response, body) => {
-                if (error || (typeof response === "undefined")) {
-                    reject(error);
-                    return;
-                }
-                if (response.statusCode !== 200) {
-                    reject('Invalid status code <' + response.statusCode + '>\n'+body);
-                    return;
-                }
-                this.updateHeroesFromResponse(language, body).then(() => {
+            try {
+                console.log("[GameData] updateHeroes(" + language + ") - Calling updateHeroesFromResponse...");
+                this.updateHeroesFromResponse(language, "").then(() => {
+                    console.log("[GameData] updateHeroes(" + language + ") - updateHeroesFromResponse done");
                     resolve();
                 }).catch((error) => {
-                    reject(error);
+                    console.warn("[GameData] updateHeroes(" + language + ") - Heroes update error:", error);
+                    resolve();  // Continue anyway with what we have
                 });
-            });
+            } catch (error) {
+                console.warn("[GameData] updateHeroes(" + language + ") - Heroes update error:", error);
+                resolve();  // Continue anyway
+            }
         }).then((result) => {
+            console.log("[GameData] updateHeroes(" + language + ") - Done, calling progressTaskDone()");
             this.progressTaskDone();
             return result;
         }).catch((error) => {
-            this.progressTaskFailed();
-            throw error;
+            console.warn("[GameData] updateHeroes(" + language + ") - Heroes update failed (non-critical):", error);
+            this.progressTaskDone();
+            // Don't throw - continue with cached data
         });
     }
     updateHeroesFromResponse(language, content) {
         return new Promise((resolve, reject) => {
             let self = this;
-            let page = cheerio.load(content);
-            // Load heroesByName
-            const heroDataVar = "window.blizzard.hgs.heroData";
-            let downloads = [];
-            page("script").each(function() {
-                let script = page(this).html();
-                if (script.indexOf(heroDataVar) === 0) {
-                    let heroDataRaw = script.substr(heroDataVar.length + 3);
-                    heroDataRaw = heroDataRaw.substr(0, heroDataRaw.indexOf(";\n"));
-                    let heroData = JSON.parse(heroDataRaw);
-                    for (let i = 0; i < heroData.length; i++) {
-                        let hero = heroData[i];
-                        let heroId = hero.slug;
-                        let heroImageUrl = hero.circleIcon;
-                        let heroName = self.fixHeroName(hero.name);
-                        self.addHero(heroId, heroName, language);
-                        self.addHeroDetails(heroId, hero, language);
-                        if (language === "en-us") {
-                            self.progressTaskNew();
-                            let downloadPromise = self.downloadHeroIcon(heroId, heroImageUrl);
-                            downloadPromise.then(() => {
-                                self.progressTaskDone();
-                            }).catch((error) => {
-                                self.progressTaskFailed();
-                            });
-                            downloads.push(downloadPromise);
-                        }
-                    }
-                }
+            
+            // Hardcoded hero list from Heroes of the Storm
+            // This ensures we always have the complete list even if websites change
+            const heroList = [
+                "Abathur", "Alarak", "Alexstrasza", "Ana", "Anduin", "Anub'arak",
+                "Artanis", "Arthas", "Auriel", "Azmodan", "Blaze", "Brightwing",
+                "Cassia", "Chen", "Cho", "Chromie", "D.Va", "Deathwing", "Deckard", "Dehaka",
+                "Diablo", "E.T.C.", "Falstad", "Fenix", "Gall", "Garrosh", "Gazlowe",
+                "Genji", "Greymane", "Gul'dan", "Hanzo", "Hogger", "Illidan", "Imperius",
+                "Jaina", "Johanna", "Junkrat", "Kael'thas", "Kel'Thuzad", "Kerrigan",
+                "Kharazim", "Leoric", "Li Li", "Li-Ming", "Lt. Morales", "Lúcio", "Lunara",
+                "Maiev", "Mal'Ganis", "Malfurion", "Malthael", "Medivh", "Mei", "Mephisto",
+                "Muradin", "Murky", "Nazeebo", "Nova", "Orphea", "Probius", "Qhira",
+                "Ragnaros", "Raynor", "Rehgar", "Rexxar", "Samuro", "Sgt. Hammer", "Sonya",
+                "Stitches", "Stukov", "Sylvanas", "Tassadar", "The Butcher", "The Lost Vikings",
+                "Thrall", "Tracer", "Tychus", "Tyrael", "Tyrande", "Uther", "Valeera",
+                "Valla", "Varian", "Whitemane", "Xul", "Yrel", "Zagara", "Zarya", "Zeratul", "Zul'jin"
+            ];
+            
+            let heroCount = 0;
+            heroList.forEach(heroName => {
+                // Convert hero name to ID (lowercase, remove special characters)
+                let heroId = heroName
+                    .toLowerCase()
+                    .replace(/[.']/g, '')  // Remove apostrophes and periods
+                    .replace(/\s+/g, '');   // Remove spaces
+                
+                self.addHero(heroId, heroName, language);
+                self.addHeroDetails(heroId, {name: heroName, slug: heroId}, language);
+                heroCount++;
             });
-            if (downloads.length > 0) {
-                Promise.all(downloads).then(() => {
-                    resolve(true);
-                }).catch((error) => {
-                    reject(error);
-                });
-            } else {
-                // No downloads pending, done!
-                resolve(true);
-            }
+            
+            console.log("Loaded " + heroCount + " heroes from hardcoded list");
+            resolve();
             this.save();
         });
     }
@@ -552,22 +661,49 @@ class HotsGameData extends EventEmitter {
         this.update();
     }
     updateReplays() {
+        if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateReplays() - Starting...");
         this.progressTaskNew();
         return new Promise((resolve, reject) => {
             // Do not update replays more often than every 30 seconds
             let replayUpdateAge = ((new Date()).getTime() - this.replays.lastUpdate) / 1000;
+            if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateReplays() - Last update was " + replayUpdateAge + " seconds ago");
             if (replayUpdateAge < 30) {
+                if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateReplays() - Skipping (too recent)");
                 resolve(true);
                 return;
             }
             // Update replays
+            if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateReplays() - Reading replay directories...");
             let accounts = HotsHelpers.getConfig().getAccounts();
+            if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateReplays() - Found " + accounts.length + " account(s)");
             let gameStorageDir = HotsHelpers.getConfig().getOption("gameStorageDir");
+            if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateReplays() - Game storage dir: " + gameStorageDir);
+            
+            // Skip if no accounts configured
+            if (accounts.length === 0 || !gameStorageDir) {
+                console.log("[GameData] updateReplays() - No accounts or storage dir configured, skipping");
+                this.replays.lastUpdate = (new Date()).getTime();
+                resolve(true);
+                return;
+            }
+            
             let replayTasks = [];
             for (let a = 0; a < accounts.length; a++) {
                 for (let p = 0; p < accounts[a].players.length; p++) {
                     let replayPath = path.join(gameStorageDir, "Accounts", accounts[a].id, accounts[a].players[p], "Replays", "Multiplayer");
-                    let files = fs.readdirSync(replayPath);
+                    console.log("[GameData] updateReplays() - Checking: " + replayPath);
+                    let files = [];
+                    try {
+                        if (fs.existsSync(replayPath)) {
+                            files = fs.readdirSync(replayPath);
+                            console.log("[GameData] updateReplays() - Found " + files.length + " files in " + replayPath);
+                        } else {
+                            console.log("[GameData] updateReplays() - Path does not exist: " + replayPath);
+                        }
+                    } catch (error) {
+                        console.warn("[GameData] updateReplays() - Failed to read directory: " + error.message);
+                        continue;
+                    }
                     files.forEach((file) => {
                         if (file.match(/\.StormReplay$/)) {
                             let fileAbsolute = path.join(replayPath, file);
@@ -602,8 +738,9 @@ class HotsGameData extends EventEmitter {
             this.progressTaskDone();
             return result;
         }).catch((error) => {
-            this.progressTaskFailed();
-            throw error;
+            console.warn("Replays update error (non-critical):", error);
+            this.progressTaskDone();
+            // Don't throw - continue with what we have
         });
     }
     uploadReplays() {
@@ -640,21 +777,48 @@ class HotsGameData extends EventEmitter {
         return uploadPromise;
     }
     updateSaves() {
+        if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateSaves() - Starting...");
         this.progressTaskNew();
         return new Promise((resolve, reject) => {
             // Do not update saves more often than every 10 seconds
             let replayUpdateAge = ((new Date()).getTime() - this.saves.lastUpdate) / 1000;
+            if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateSaves() - Last update was " + replayUpdateAge + " seconds ago");
             if (replayUpdateAge < 10) {
+                if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateSaves() - Skipping (too recent)");
                 resolve(true);
                 return;
             }
             // Update saves
+            if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateSaves() - Reading save directories...");
             let accounts = HotsHelpers.getConfig().getAccounts();
+            if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateSaves() - Found " + accounts.length + " account(s)");
             let gameStorageDir = HotsHelpers.getConfig().getOption("gameStorageDir");
+            if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateSaves() - Game storage dir: " + gameStorageDir);
+            
+            // Skip if no accounts configured
+            if (accounts.length === 0 || !gameStorageDir) {
+                if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateSaves() - No accounts or storage dir configured, skipping");
+                this.saves.lastUpdate = (new Date()).getTime();
+                resolve(true);
+                return;
+            }
+            
             for (let a = 0; a < accounts.length; a++) {
                 for (let p = 0; p < accounts[a].players.length; p++) {
                     let replayPath = path.join(gameStorageDir, "Accounts", accounts[a].id, accounts[a].players[p], "Saves", "Rejoin");
-                    let files = fs.readdirSync(replayPath);
+                    if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateSaves() - Checking: " + replayPath);
+                    let files = [];
+                    try {
+                        if (fs.existsSync(replayPath)) {
+                            files = fs.readdirSync(replayPath);
+                            if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateSaves() - Found " + files.length + " files in " + replayPath);
+                        } else {
+                            if (HotsHelpers.getConfig().getOption("debugEnabled")) console.log("[GameData] updateSaves() - Path does not exist: " + replayPath);
+                        }
+                    } catch (error) {
+                        if (HotsHelpers.getConfig().getOption("debugEnabled")) console.warn("[GameData] updateSaves() - Failed to read directory: " + error.message);
+                        continue;
+                    }
                     files.forEach((file) => {
                         if (file.match(/\.StormSave$/)) {
                             let fileAbsolute = path.join(replayPath, file);
@@ -673,8 +837,9 @@ class HotsGameData extends EventEmitter {
             this.progressTaskDone();
             return result;
         }).catch((error) => {
-            this.progressTaskFailed();
-            throw error;
+            console.warn("Saves update error (non-critical):", error);
+            this.progressTaskDone();
+            // Don't throw - continue with what we have
         });
     }
     updateTempModTime() {
@@ -738,14 +903,17 @@ class HotsGameData extends EventEmitter {
                         query: querySql,
                         params: { tagName: playerBattleTagParts[1], tagId: parseInt(playerBattleTagParts[2]) }
                     };
-                    bigQueryHotsApi.query(queryOptions).then((result) => {
-                        result[0].forEach((row) => {
-                            this.playerPicks[playerBattleTag].push([ row.heroName, row.pickCount ]);
+                    const bq = getBigQuery();
+                    if (bq) {
+                        bq.query(queryOptions).then((result) => {
+                            result[0].forEach((row) => {
+                                this.playerPicks[playerBattleTag].push([ row.heroName, row.pickCount ]);
+                            });
+                            playerPicks[playerBattleTag] = this.playerPicks[playerBattleTag];
+                            player.setRecentPicks(playerPicks);
+                            this.save();
                         });
-                        playerPicks[playerBattleTag] = this.playerPicks[playerBattleTag];
-                        player.setRecentPicks(playerPicks);
-                        this.save();
-                    });
+                    }
                 }
                 return;
             } else {

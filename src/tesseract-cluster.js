@@ -1,7 +1,6 @@
 // Nodejs dependencies
 const fs = require('fs');
 const path = require('path');
-const {TesseractWorker, TesseractUtils, ...TesseractTypes} = require('tesseract.js');
 const fork = require('child_process').fork;
 
 const cacheDir = path.resolve("./cache/tesseract");
@@ -25,6 +24,14 @@ class TesseractCluster {
       job: null,
       process: fork("./src/tesseract-thread.js", [ threadCache ])
     };
+    // Add error handler for worker crashes
+    thread.process.on("error", (error) => {
+      console.error("Tesseract worker error:", error);
+      if (thread.job && thread.job.callback) {
+        thread.job.callback(error);
+      }
+      thread.job = null;
+    });
     thread.process.on("message", (message) => {
       let result = message.shift();
       switch(result) {

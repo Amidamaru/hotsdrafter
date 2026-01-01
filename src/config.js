@@ -14,7 +14,7 @@ class Config {
 
     constructor() {
         this.options = {
-            language: "en-us",
+            language: "de",
             debugEnabled: false,
             draftProvider: "heroescounters",
             talentProvider: "icyveins",
@@ -76,17 +76,23 @@ class Config {
         switch (this.options.language) {
             default:
             case "en-us":
+            case "en":
                 return "eng";
             case "de-de":
+            case "de":
                 return "deu";
             case "es-es":
             case "es-mx":
+            case "es":
                 return "spa";
             case "fr-fr":
+            case "fr":
                 return "fra";
             case "it-it":
+            case "it":
                 return "ita";
             case "pt-br":
+            case "pt":
                 return "por";
             case "pl-pl":
                 return "pol";

@@ -1,29 +1,64 @@
 // Nodejs dependencies
-const {TesseractWorker, TesseractUtils, ...TesseractTypes} = require('tesseract.js');
-const worker = new TesseractWorker({
-  //dataPath: process.argv[2],
-  cachePath: process.argv[2]
-  //cacheMethod: "none"
-});
+const Tesseract = require('tesseract.js');
 
-// send incoming messages from the main process to the app
-process.on("message", (message) => {
+let worker = null;
+let workerReady = false;
+let messageQueue = [];
+
+// Initialize worker async
+(async () => {
+  try {
+    worker = await Tesseract.createWorker();
+    workerReady = true;
+    
+    // Process any queued messages
+    while (messageQueue.length > 0) {
+      processMessage(messageQueue.shift());
+    }
+  } catch (error) {
+    console.error("Worker init error:", error);
+    process.send(["error", "Worker initialization failed: " + error.toString()]);
+  }
+})();
+
+function processMessage(message) {
+  if (!worker || !workerReady) {
+    process.send(["error", "Worker not initialized"]);
+    return;
+  }
+  
   let action = message.shift();
   switch(action) {
     case "recognize":
-      let image = Buffer.from(message.shift(), "base64");
+      let imageBase64 = message.shift();
+      let langs = message.shift();
+      
       try {
-        worker.recognize(image, ...message).then((result) => {
-          process.send(["success", {
-            confidence: result.confidence,
-            text: result.text
-          }])
-        }).catch((error) => {
-          process.send(["error", error.toString()])
-        });
+        (async () => {
+          try {
+            // Convert Base64 to Data URI for Tesseract.js
+            const imageDataURI = "data:image/png;base64," + imageBase64;
+            const result = await worker.recognize(imageDataURI, langs);
+            process.send(["success", {
+              confidence: result.data.confidence,
+              text: result.data.text
+            }]);
+          } catch (error) {
+            process.send(["error", error.toString()]);
+          }
+        })();
       } catch (error) {
-        process.send(["error", error.toString()])
+        process.send(["error", error.toString()]);
       }
       break;
   }
+}
+
+// send incoming messages from the main process to the app
+process.on("message", (message) => {
+  if (!workerReady) {
+    messageQueue.push(message);
+    return;
+  }
+  processMessage(message);
 });

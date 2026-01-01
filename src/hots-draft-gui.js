@@ -1,8 +1,8 @@
 // Nodejs dependencies
-const { ipcRenderer } = require('electron');
 const path = require('path');
 const Twig = require('twig');
 const EventEmitter = require('events');
+const { ipcRenderer } = require('electron');
 
 // Local classes
 const HotsHelpers = require('./hots-helpers.js');
@@ -27,6 +27,7 @@ class HotsDraftGui extends EventEmitter {
         this.window = window;
         // GUI relevant fields
         this.page = "main";
+        this.ready = false;
         this.config = null;
         this.displays = null;
         this.draft = null;
@@ -45,7 +46,7 @@ class HotsDraftGui extends EventEmitter {
     }
     registerEvents() {
         ipcRenderer.on("gui", (event, type, ...parameters) => {
-            this.handleEvent(event, type, parameters);
+            this.handleEvent(null, type, parameters);
         });
     }
     handleEvent(event, type, parameters) {
@@ -88,15 +89,15 @@ class HotsDraftGui extends EventEmitter {
                 this.refreshPage();
                 break;
             case "gameData":
+                console.log("[HotsDraftGui] handleEvent() - Received gameData with " + (parameters[0].languageOptions ? parameters[0].languageOptions.length : 0) + " language options");
                 this.gameData = parameters[0];
+                this.refreshPage();
                 break;
             case "debugData":
                 this.debugData = parameters[0];
                 break;
-            case "debug.step.update":
-                this.setDebugStep(parameters[0]);
-                break;
             case "displays.detected":
+                console.log("[HotsDraftGui] handleEvent() - Received displays.detected with " + (parameters[0] ? parameters[0].length : 0) + " display(s)");
                 this.setDisplays(parameters[0]);
                 break;
             case "ready.status":
@@ -121,6 +122,7 @@ class HotsDraftGui extends EventEmitter {
         }
     }
     sendEvent(channel, type, ...parameters) {
+        console.log("[HotsDraftGui] sendEvent() - channel=" + channel + ", type=" + type + ", params=" + JSON.stringify(parameters));
         ipcRenderer.send(channel, type, ...parameters);
     }
 
@@ -186,6 +188,7 @@ class HotsDraftGui extends EventEmitter {
     }
 
     setConfigOption(name, value) {
+        console.log("[HotsDraftGui] setConfigOption() - " + name + " = " + JSON.stringify(value));
         if (this.config === null) {
             console.error("Trying to modify config before receiving it!");
             return;
@@ -225,21 +228,145 @@ class HotsDraftGui extends EventEmitter {
     }
 
     renderPage() {
+        console.log("[GUI] renderPage() - Rendering page: " + this.page);
         if (this.modalActive) {
+            console.log("[GUI] renderPage() - Modal is active, skipping render");
             return;
         }
         Twig.renderFile(templates[this.page], {
             gui: this
         }, (error, html) => {
             if (error) {
-                console.error(error);
+                console.error("[GUI] renderPage() - Twig render error:", error);
             } else {
+                console.log("[GUI] renderPage() - Page rendered successfully, inserting into DOM");
                 jQuery(".page").html(html);
+                // After rendering, manually bind events for config page
+                if (this.page === "config") {
+                    console.log("[GUI] renderPage() - Config page detected, calling bindConfigPageEvents()");
+                    this.bindConfigPageEvents();
+                } else {
+                    console.log("[GUI] renderPage() - Page is '" + this.page + "', not config");
+                }
             }
         });
     }
+
+    bindConfigPageEvents() {
+        // Bind all form field change events for config page
+        console.log("[GUI] bindConfigPageEvents() - Binding config page events...");
+        console.log("[GUI] this.gameData = " + JSON.stringify(this.gameData));
+        
+        // Simple text/select fields
+        jQuery("#playerBattleTag").on("change keyup", (e) => {
+            this.setConfigOption("playerBattleTag", e.target.value);
+        });
+
+        jQuery("#displayMode").on("change", (e) => {
+            this.setConfigOption("displayMode", e.target.value);
+        });
+
+        jQuery("#language").on("change", (e) => {
+            console.log("[GUI] Language changed to: " + e.target.value);
+            this.setConfigOption("language", e.target.value);
+        });
+        
+        // Debug: Check if language dropdown has options
+        let languageOptions = jQuery("#language option").length;
+        let languageValue = jQuery("#language").val();
+        console.log("[GUI] Language dropdown found with " + languageOptions + " options, current value: " + languageValue);
+        
+        // Log all available options
+        jQuery("#language option").each((index, option) => {
+            console.log("[GUI]   Option " + index + ": value='" + option.value + "', text='" + option.text + "'");
+        });
+
+        jQuery("#draftProvider").on("change", (e) => {
+            this.setConfigOption("draftProvider", e.target.value);
+        });
+
+        jQuery("#talentProvider").on("change", (e) => {
+            this.setConfigOption("talentProvider", e.target.value);
+        });
+
+        jQuery("#gameDisplay").on("change", (e) => {
+            this.setConfigOption("gameDisplay", e.target.value);
+        });
+
+        jQuery("#playerName").on("change keyup", (e) => {
+            this.setConfigOption("playerName", e.target.value);
+        });
+
+        jQuery("#googleBigQueryProject").on("change keyup", (e) => {
+            this.setConfigOption("googleBigQueryProject", (e.target.value !== "" ? e.target.value : null));
+        });
+
+        // Checkbox fields
+        jQuery("#uploadProvider_hotsapi").on("change", (e) => {
+            this.setConfigOption("uploadProvider_hotsapi", e.target.checked);
+        });
+
+        jQuery("#gameImproveDetection").on("change", (e) => {
+            this.setConfigOption("gameImproveDetection", e.target.checked);
+        });
+
+        jQuery("#debugEnabled").on("change", (e) => {
+            this.setConfigOption("debugEnabled", e.target.checked);
+        });
+
+        // File/Directory selection buttons
+        jQuery("#gameStorageDir").on("click", (e) => {
+            this.openDirectoryDialog("gameStorageDir");
+        });
+
+        jQuery("#gameTempDir").on("click", (e) => {
+            this.openDirectoryDialog("gameTempDir");
+        });
+
+        jQuery("#googleBigQueryAuth").on("click", (e) => {
+            this.openFileDialog("googleBigQueryAuth");
+        });
+
+        // Save button
+        jQuery("#saveConfigButton").on("click", () => {
+            jQuery("#saveConfigButton").text("✓ Gespeichert!").prop("disabled", true).css("color", "green");
+            setTimeout(() => {
+                jQuery("#saveConfigButton").text("Konfiguration speichern").prop("disabled", false).css("color", "");
+            }, 2000);
+        });
+    }
+
+    openDirectoryDialog(fieldId) {
+        const { ipcRenderer } = require('electron');
+        const currentValue = jQuery("#" + fieldId).val();
+        
+        ipcRenderer.invoke('open-directory-dialog', { defaultPath: currentValue }).then((result) => {
+            if (result.filePaths && result.filePaths.length > 0) {
+                jQuery("#" + fieldId).val(result.filePaths[0]);
+                this.setConfigOption(fieldId, (result.filePaths[0] !== "" ? result.filePaths[0] : null));
+                jQuery("#" + fieldId).addClass("is-valid").removeClass("is-invalid");
+            }
+        }).catch((err) => {
+            console.error("[GUI] Directory dialog error:", err);
+        });
+    }
+
+    openFileDialog(fieldId) {
+        const { ipcRenderer } = require('electron');
+        const currentValue = jQuery("#" + fieldId).val();
+        
+        ipcRenderer.invoke('open-file-dialog', { defaultPath: currentValue }).then((result) => {
+            if (result.filePaths && result.filePaths.length > 0) {
+                jQuery("#" + fieldId).val(result.filePaths[0]);
+                this.setConfigOption(fieldId, (result.filePaths[0] !== "" ? result.filePaths[0] : null));
+                jQuery("#" + fieldId).addClass("is-valid").removeClass("is-invalid");
+            }
+        }).catch((err) => {
+            console.error("[GUI] File dialog error:", err);
+        });
+    }
     refreshPage() {
-        if (this.modalActive || (this.page !== "main")) {
+        if (this.modalActive) {
             return;
         }
         this.renderPage();

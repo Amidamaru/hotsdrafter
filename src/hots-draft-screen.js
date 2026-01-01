@@ -3,7 +3,6 @@ const jimp = require('jimp');
 const path = require('path');
 const fs = require('fs');
 const EventEmitter = require('events');
-const {TesseractWorker, TesseractUtils, ...TesseractTypes} = require('tesseract.js');
 
 // Local classes
 const HotsDraftTeam = require('./hots-draft-team.js');
@@ -14,7 +13,7 @@ const TesseractCluster = require('./tesseract-cluster.js');
 const ocrCluster = new TesseractCluster(4);
 
 // Data files
-const DraftLayout = require('../data/draft-layout');
+const DraftLayout = require('../data/draft-layout-3440x1440');
 
 class HotsDraftScreen extends EventEmitter {
 
@@ -23,12 +22,8 @@ class HotsDraftScreen extends EventEmitter {
         this.app = app;
         this.debugData = [];
         this.updateActive = false;
-        this.jimpScaleMode = jimp.RESIZE_HERMITE;
-        this.jimpRotateMode = jimp.RESIZE_HERMITE;
         this.tessLangs = HotsHelpers.getConfig().getTesseractLanguage();
-        this.tessParams = {
-            tessedit_pageseg_mode: TesseractTypes.PSM.SINGLE_LINE
-        };
+        this.tessParams = {};
         this.offsets = {};
         this.banImages = null;
         this.banActive = false;
@@ -274,10 +269,21 @@ class HotsDraftScreen extends EventEmitter {
         return new Promise((resolve, reject) => {
             let mapPos = this.offsets["mapPos"];
             let mapSize = this.offsets["mapSize"];
+            console.log("[HotsDraftScreen] detectMap() - Looking for map at pos(" + mapPos.x + "," + mapPos.y + ") size(" + mapSize.x + "x" + mapSize.y + ")");
             let mapNameImg = this.screenshot.clone().crop(mapPos.x, mapPos.y, mapSize.x, mapSize.y);
-            let mapNameImgOriginal = (this.debugEnabled() ? mapNameImg.clone() : null);
+            let mapNameImgOriginal = mapNameImg.clone();
+            
+            // Save raw screenshot of map area (ALWAYS for debugging/testing)
+            console.log("[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png");
+            mapNameImg.clone().write("debug/mapName_raw.png");
+            
             // Cleanup and trim map name
             if (!HotsHelpers.imageCleanupName(mapNameImg, DraftLayout["colors"]["mapName"])) {
+                console.log("[HotsDraftScreen] detectMap() - ERROR: No map text found at expected location");
+                console.log("[HotsDraftScreen] detectMap() - Debug: mapNameColors = " + JSON.stringify(DraftLayout["colors"]["mapName"]));
+                // Save what we tried to cleanup
+                console.log("[HotsDraftScreen] detectMap() - Saving attempted cleanup to debug/mapName_after_cleanup_failed.png");
+                mapNameImg.write("debug/mapName_after_cleanup_failed.png");
                 reject(new Error("No map text found at the expected location!"));
                 return;
             }
@@ -289,22 +295,57 @@ class HotsDraftScreen extends EventEmitter {
             }
             // Convert to black on white for optimal detection
             HotsHelpers.imageOcrOptimize(mapNameImg.scale(2).invert());
-            if (this.debugEnabled()) {
-                // Debug output
-                mapNameImg.write("debug/mapName.png");
-            }
+            // Debug output (ALWAYS save for testing)
+            console.log("[HotsDraftScreen] detectMap() - Saving processed map image to debug/mapName.png");
+            mapNameImg.write("debug/mapName.png");
+            
             this.debugDataAdd(mapNameImgOriginal, mapNameImg, "mapName", DraftLayout["colors"]["mapName"], [], true);
             // Detect map name using tesseract
-            mapNameImg.getBufferAsync(jimp.MIME_PNG).then((buffer) => {
+            mapNameImg.getBuffer(jimp.MIME_PNG, (error, buffer) => {
+                if (error) {
+                    if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - Error getting buffer: " + error);
+                    reject(error);
+                    return;
+                }
+                if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - Running OCR on map name image...");
+                if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - Buffer type: " + typeof buffer);
+                if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - Buffer is Buffer: " + Buffer.isBuffer(buffer));
+                if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - Buffer size: " + buffer.length + " bytes");
+                if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - OCR languages: " + JSON.stringify(this.tessLangs));
                 ocrCluster.recognize(buffer, this.tessLangs, this.tessParams).then((result) => {
-                    let mapName = this.app.gameData.fixMapName( result.text.trim() );
-                    if ((mapName !== "") && (this.app.gameData.mapExists(mapName))) {
+                    if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - OCR result: '" + result.text.trim() + "'");
+                    let ocrMapName = result.text.trim();
+                    // If OCR language is not English, try to translate to English
+                    let mapName = ocrMapName;
+                    if (this.tessLangs && this.tessLangs[0] !== "eng") {
+                        if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - OCR returned non-English result, attempting translation...");
+                        let translatedName = this.app.gameData.translateMapName(ocrMapName, this.app.gameData.language, "en-us");
+                        if (translatedName) {
+                            if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - Translated '" + ocrMapName + "' to '" + translatedName + "'");
+                            mapName = translatedName;
+                        }
+                    }
+                    mapName = this.app.gameData.fixMapName(mapName);
+                    if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - After fixMapName: '" + mapName + "'");
+                    if ((mapName !== "") && (this.app.gameData.mapExists(mapName, "en-us"))) {
+                        if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - SUCCESS: Found map '" + mapName + "'");
                         this.mapLock = timeNow + 20000;
                         resolve(mapName);
                     } else {
+                        if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - ERROR: Map name '" + mapName + "' not recognized");
                         reject(new Error("Map name could not be detected!"));
                     }
                 }).catch((error) => {
+                    if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - OCR ERROR caught!");
+                    if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - Error type: " + typeof error);
+                    if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - Error: " + JSON.stringify(error));
+                    if (error) {
+                        if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - Error message: " + (error.message || "no message"));
+                        if (this.debugEnabled()) console.log("[HotsDraftScreen] detectMap() - Error toString: " + error.toString());
+                        if (error.stack && this.debugEnabled()) {
+                            console.log("[HotsDraftScreen] detectMap() - Stack: " + error.stack);
+                        }
+                    }
                     reject(error);
                 });
             });
@@ -315,24 +356,28 @@ class HotsDraftScreen extends EventEmitter {
             let timerPos = this.offsets["timerPos"];
             let timerSize = this.offsets["timerSize"];
             let timerImg = this.screenshot.clone().crop(timerPos.x, timerPos.y, timerSize.x, timerSize.y).scale(0.5, this.jimpScaleMode);
-            if (this.debugEnabled()) {
+           // if (this.debugEnabled()) {
                 // Debug output
                 timerImg.write("debug/pickTimer.png");
-            }
+                console.log("[HotsDraftScreen] detectTimer() - Checking timer area at pos(" + timerPos.x + "," + timerPos.y + ") size(" + timerSize.x + "x" + timerSize.y + ")");
+            //}
             if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["blue"])) {
                 // Blue team active
+                if (this.debugEnabled()) console.log("[HotsDraftScreen] detectTimer() - Found BLUE team timer");
                 this.teamActive = "blue";
                 this.banActive = false;
                 resolve(true);
                 return;
             } else if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["red"])) {
                 // Red team active
+                if (this.debugEnabled()) console.log("[HotsDraftScreen] detectTimer() - Found RED team timer");
                 this.teamActive = "red";
                 this.banActive = false;
                 resolve(true);
                 return;
             } else if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["ban"])) {
                 // Banning, check which team is banning
+                if (this.debugEnabled()) console.log("[HotsDraftScreen] detectTimer() - Found BAN phase timer");
                 let sizeBanCheck = this.offsets["banCheckSize"];
                 for (let color in this.offsets["teams"]) {
                     // Get offsets
@@ -340,11 +385,10 @@ class HotsDraftScreen extends EventEmitter {
                     let posBanCheck = teamOffsets["banCheck"];
                     // Check bans
                     let banCheckImg = this.screenshot.clone().crop(posBanCheck.x, posBanCheck.y, sizeBanCheck.x, sizeBanCheck.y).scale(0.5, this.jimpScaleMode);
-                    if (this.debugEnabled()) {
-                        // Debug output
-                        banCheckImg.write("debug/"+color+"_banCheck.png");
-                    }
+                    // Debug output - always save
+                    banCheckImg.write("debug/"+color+"_banCheck.png");
                     if (HotsHelpers.imageFindColor(banCheckImg, DraftLayout["colors"]["banActive"])) {
+                        if (this.debugEnabled()) console.log("[HotsDraftScreen] detectTimer() - Found " + color + " team banning");
                         this.teamActive = color;
                         this.banActive = true;
                         resolve(true);
@@ -353,6 +397,7 @@ class HotsDraftScreen extends EventEmitter {
                 }
             }
             this.teamActive = null;
+            console.log("[HotsDraftScreen] detectTimer() - ERROR: Could not find any timer colors (blue/red/ban)");
             reject(new Error("Failed to detect pick counter"));
         });
     }
@@ -424,11 +469,9 @@ class HotsDraftScreen extends EventEmitter {
                 let banImg = this.screenshot.clone().crop(posBan.x, posBan.y, sizeBan.x, sizeBan.y);
                 if (!HotsHelpers.imageBackgroundMatch(banImg, DraftLayout["colors"]["banBackground"])) {
                     let banImgCompare = banImg.clone().resize(this.offsets["banSizeCompare"].x, this.offsets["banSizeCompare"].y);
-                    if (this.debugEnabled()) {
-                        // Debug output
-                        banImg.write("debug/" + team.color + "_ban" + i + "_Test.png");
-                        banImgCompare.write("debug/" + team.color + "_ban" + i + "_TestCompare.png");
-                    }
+                    // Debug output - always save
+                    banImg.write("debug/" + team.color + "_ban" + i + "_Test.png");
+                    banImgCompare.write("debug/" + team.color + "_ban" + i + "_TestCompare.png");
                     let matchBestHero = null;
                     let matchBestValue = 180;
                     for (let heroId in this.banImages) {
@@ -439,11 +482,9 @@ class HotsDraftScreen extends EventEmitter {
                         }
                     }
                     if (matchBestHero !== null) {
-                        if (this.debugEnabled()) {
-                            // Debug output
-                            console.log("Ban "+i+": "+matchBestHero+" / "+matchBestValue);
-                            this.banImages[matchBestHero].write("debug/" + team.color + "_ban" + i + "_BestCompare.png");
-                        }
+                        // Debug output - always save
+                        console.log("Ban "+i+": "+matchBestHero+" / "+matchBestValue);
+                        this.banImages[matchBestHero].write("debug/" + team.color + "_ban" + i + "_BestCompare.png");
                         let heroNameTranslated = (matchBestHero === "_fail" ? "--FAIL--" : this.app.gameData.getHeroName(matchBestHero));
                         if (bans.names[i] !== heroNameTranslated) {
                             bans.names[i] = heroNameTranslated;
@@ -501,18 +542,22 @@ class HotsDraftScreen extends EventEmitter {
             let sizePlayerNameRot = this.offsets["namePlayerSizeRotated"];
             let detections = [];
             let playerImg = this.screenshot.clone().crop(posPlayer.x, posPlayer.y, sizePlayer.x, sizePlayer.y);
-            if (this.debugEnabled()) {
-                // Debug output
-                playerImg.write("debug/" + team.color + "_player" + index + "_Test.png");
-            }
+            // Debug output - always save
+            playerImg.write("debug/" + team.color + "_player" + index + "_Test.png");
             let playerImgNameRaw = playerImg.clone().crop(posName.x, posName.y, sizeName.x, sizeName.y).scale(4, this.jimpScaleMode).rotate(posName.angle, this.jimpRotateMode);
-            if (this.debugEnabled()) {
-                // Debug output
-                playerImgNameRaw.write("debug/" + team.color + "_player" + index + "_NameTest.png");
-            }
+            // Debug output - always save
+            //playerImgNameRaw.write("debug/" + team.color + "_player" + index + "_NameTest.png");
             if (!player.isLocked() || !this.app.gameData.heroExists(player.getCharacter())) {
                 // Cleanup and trim hero name
                 let heroImgName = playerImgNameRaw.clone().crop(posHeroNameRot.x, posHeroNameRot.y, sizeHeroNameRot.x, sizeHeroNameRot.y);
+                
+                // DEBUG: Show hero name extraction coordinates
+                console.log("[HotsDraftScreen] detectPlayer() - HERONAME EXTRACTION for player " + index + " (" + team.color + ")");
+                console.log("  Crop position: x=" + posHeroNameRot.x + ", y=" + posHeroNameRot.y);
+                console.log("  Crop size: width=" + sizeHeroNameRot.x + ", height=" + sizeHeroNameRot.y);
+                console.log("  Extraction region: from (" + posHeroNameRot.x + "," + posHeroNameRot.y + ") to (" + 
+                                    (posHeroNameRot.x + sizeHeroNameRot.x) + "," + (posHeroNameRot.y + sizeHeroNameRot.y) + ")");
+                
                 let heroImgNameOriginal = (this.debugEnabled() ? heroImgName.clone() : null);
                 let heroVisible = false;
                 let heroLocked = false;
@@ -541,10 +586,8 @@ class HotsDraftScreen extends EventEmitter {
                         }
                     }
                 }
-                if (this.debugEnabled()) {
-                    // Debug output
-                    heroImgName.write("debug/" + team.color + "_player" + index + "_HeroNameTest.png");
-                }
+                // Debug output - always save
+                heroImgName.write("debug/" + team.color + "_player" + index + "_HeroNameTest.png");
                 if (heroVisible) {
                     // Detect hero name using tesseract
                     let imageHeroName = null;
@@ -569,17 +612,28 @@ class HotsDraftScreen extends EventEmitter {
                 // Cleanup and trim player name
                 let playerImgName = playerImgNameRaw.clone().crop(posPlayerNameRot.x, posPlayerNameRot.y, sizePlayerNameRot.x, sizePlayerNameRot.y);
                 let playerImgNameOriginal = (this.debugEnabled() ? playerImgName.clone() : null);
+                
+                // DEBUG: Show player name extraction coordinates
+                console.log("[HotsDraftScreen] detectPlayer() - PLAYERNAME EXTRACTION for player " + index + " (" + team.color + ")");
+                console.log("  Crop position: x=" + posPlayerNameRot.x + ", y=" + posPlayerNameRot.y);
+                console.log("  Crop size: width=" + sizePlayerNameRot.x + ", height=" + sizePlayerNameRot.y);
+                console.log("  Extraction region: from (" + posPlayerNameRot.x + "," + posPlayerNameRot.y + ") to (" + 
+                                    (posPlayerNameRot.x + sizePlayerNameRot.x) + "," + (posPlayerNameRot.y + sizePlayerNameRot.y) + ")");
+                
                 if (!HotsHelpers.imageCleanupName(
                     playerImgName, DraftLayout["colors"]["playerName"][colorIdent], DraftLayout["colors"]["boost"]
                 )) {
-                    reject(new Error("Player name not found!"));
+                    // Log the error but continue - player name detection may fail on some frames
+                    if (this.debugEnabled()) {
+                        console.log("[Detection] Player name cleanup failed for " + team.color + " player " + index + " - skipping OCR");
+                    }
+                    // Don't set a name, just continue to next detection
+                    return;
                 }
                 HotsHelpers.imageOcrOptimize(playerImgName.invert());
                 this.debugDataAdd(playerImgNameOriginal, playerImgName, "playerName-"+colorIdent, DraftLayout["colors"]["playerName"][colorIdent], DraftLayout["colors"]["boost"], true);
-                if (this.debugEnabled()) {
-                    // Debug output
-                    playerImgName.write("debug/" + team.color + "_player" + index + "_PlayerNameTest.png");
-                }
+                // Debug output - always save
+                playerImgName.write("debug/" + team.color + "_player" + index + "_PlayerNameTest.png");
                 // Detect player name using tesseract
                 let imagePlayerName = null;
                 detections.push(
@@ -641,6 +695,7 @@ class HotsDraftScreen extends EventEmitter {
     updateLanguage() {
         this.tessLangs = HotsHelpers.getConfig().getTesseractLanguage();
     }
+
 
 }
 

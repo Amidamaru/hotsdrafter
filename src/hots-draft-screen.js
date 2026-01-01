@@ -383,24 +383,24 @@ class HotsDraftScreen extends EventEmitter {
                 // Debug output
                 timerImg.write("debug/pickTimer.png");
                 console.log("[HotsDraftScreen] detectTimer() - Checking timer area at pos(" + timerPos.x + "," + timerPos.y + ") size(" + timerSize.x + "x" + timerSize.y + ")");
-            //}
+
             if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["blue"])) {
                 // Blue team active
-                if (this.debugEnabled()) console.log("[HotsDraftScreen] detectTimer() - Found BLUE team timer");
+                console.log("[HotsDraftScreen] detectTimer() - Found BLUE team timer");
                 this.teamActive = "blue";
                 this.banActive = false;
                 resolve(true);
                 return;
             } else if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["red"])) {
                 // Red team active
-                if (this.debugEnabled()) console.log("[HotsDraftScreen] detectTimer() - Found RED team timer");
+                console.log("[HotsDraftScreen] detectTimer() - Found RED team timer");
                 this.teamActive = "red";
                 this.banActive = false;
                 resolve(true);
                 return;
             } else if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["ban"])) {
                 // Banning, check which team is banning
-                if (this.debugEnabled()) console.log("[HotsDraftScreen] detectTimer() - Found BAN phase timer");
+                console.log("[HotsDraftScreen] detectTimer() - Found BAN phase timer");
                 let sizeBanCheck = this.offsets["banCheckSize"];
                 for (let color in this.offsets["teams"]) {
                     // Get offsets
@@ -409,9 +409,25 @@ class HotsDraftScreen extends EventEmitter {
                     // Check bans
                     let banCheckImg = this.screenshot.clone().crop({ x: posBanCheck.x, y: posBanCheck.y, w: sizeBanCheck.x, h: sizeBanCheck.y }).scale({ f: 0.5 });
                     // Debug output - always save
-                    banCheckImg.write("debug/"+color+"_banCheck.png");
+                    banCheckImg.write("debug/111"+color+"_banCheck.png");
+
+                                   console.log(`[HotsDraftScreen] detectTimer() - Checking ${color} team ban area:`);
+                let samplePoints = [
+                    { x: Math.floor(banCheckImg.bitmap.width / 2), y: Math.floor(banCheckImg.bitmap.height / 2), name: "Center" },
+                    { x: 10, y: 10, name: "Top-Left" }
+                ];
+                for (let point of samplePoints) {
+                    let colorHex = banCheckImg.getPixelColor(point.x, point.y);
+                    let r = (colorHex >> 24) & 0xFF;
+                    let g = (colorHex >> 16) & 0xFF;
+                    let b = (colorHex >> 8) & 0xFF;
+                    console.log(`  ${point.name} (${point.x},${point.y}): RGB(${r}, ${g}, ${b})`);
+                }
+                console.log(`  Looking for banActive colors:`, JSON.stringify(DraftLayout["colors"]["banActive"]));
+                
+                
                     if (HotsHelpers.imageFindColor(banCheckImg, DraftLayout["colors"]["banActive"])) {
-                        if (this.debugEnabled()) console.log("[HotsDraftScreen] detectTimer() - Found " + color + " team banning");
+                        console.log("[HotsDraftScreen] detectTimer() - Found " + color + " team banning");
                         this.teamActive = color;
                         this.banActive = true;
                         resolve(true);
@@ -583,28 +599,48 @@ class HotsDraftScreen extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             let heroVisible = false;
             let heroLocked = false;
-            if (HotsHelpers.imageBackgroundMatch(heroImgName, DraftLayout["colors"]["heroBackgroundLocked"][colorIdent])) {
+            let teamOffsets = this.offsets["teams"][team.getColor()];
+            let nameAngle = DraftLayout["teams"][team.getColor()]["name"]["angle"];
+            let posHeroNameRotated = HotsHelpers.scaleOffset(DraftLayout["teams"][team.getColor()]["nameHeroRotated"], DraftLayout["screenSizeBase"], { "x": this.screenshot.bitmap.width, "y": this.screenshot.bitmap.height });
+            let sizeHeroNameRotated = this.offsets["nameHeroSizeRotated"];
+            
+            // Rotate the image first
+            let heroImgNameRotated = heroImgName.clone().rotate({ deg: nameAngle, resize: false });
+            
+            // Then crop the hero name region
+            let heroImgNameCropped = heroImgNameRotated.clone().crop({ 
+                x: posHeroNameRotated.x, 
+                y: posHeroNameRotated.y, 
+                w: sizeHeroNameRotated.x, 
+                h: sizeHeroNameRotated.y 
+            });
+            heroImgNameCropped.write("debug/ccc" + team.color + "_player" + index + "_Test.png");
+
+                console.log("active team: ", this.teamActive);
+            if (HotsHelpers.imageBackgroundMatch(heroImgNameCropped, DraftLayout["colors"]["heroBackgroundLocked"][colorIdent])) {
                 // Hero locked!
-                if (HotsHelpers.imageCleanupName(heroImgName, DraftLayout["colors"]["heroNameLocked"][colorIdent], [], 0x000000FF, 0xFFFFFFFF)) {
-                    HotsHelpers.imageOcrOptimize(heroImgName);
+                console.log("player: ", team.color, " is locked");
+                if (HotsHelpers.imageCleanupName(heroImgNameCropped, DraftLayout["colors"]["heroNameLocked"][colorIdent], [], 0x000000FF, 0xFFFFFFFF)) {
+                    HotsHelpers.imageOcrOptimize(heroImgNameCropped);
                     heroVisible = true;
                     heroLocked = true;
                 }
-                this.debugDataAdd(heroImgName, heroImgName, "heroNameLocked-"+colorIdent, DraftLayout["colors"]["heroNameLocked"][colorIdent], [], false);
+                this.debugDataAdd(heroImgNameCropped, heroImgNameCropped, "heroNameLocked-"+colorIdent, DraftLayout["colors"]["heroNameLocked"][colorIdent], [], false);
             } else {
                 player.setLocked(false);
+                // Hero not locked!
+                console.log("player: ", team.color, " is NOT locked");
                 if (team.getColor() === "blue") {
-                    // Hero not locked!
-                    let heroImgNameOrg = heroImgName.clone();
-                    if ((colorIdent == "blue-active") && HotsHelpers.imageCleanupName(heroImgName, DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"])) {
-                        HotsHelpers.imageOcrOptimize(heroImgName.invert());
+                    let heroImgNameCroppedOrg = heroImgNameCropped.clone();
+                    if ((colorIdent == "blue-active") && HotsHelpers.imageCleanupName(heroImgNameCropped, DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"])) {
+                        HotsHelpers.imageOcrOptimize(heroImgNameCropped.invert());
                         heroVisible = true;
-                        this.debugDataAdd(heroImgName, heroImgName, "heroNamePrepick-"+colorIdent+"-picking", DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"], [], true);
-                    } else if (HotsHelpers.imageCleanupName(heroImgNameOrg, DraftLayout["colors"]["heroNamePrepick"][colorIdent])) {
-                        heroImgName = heroImgNameOrg;
-                        HotsHelpers.imageOcrOptimize(heroImgName.invert());
+                        this.debugDataAdd(heroImgNameCropped, heroImgNameCropped, "heroNamePrepick-"+colorIdent+"-picking", DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"], [], true);
+                    } else if (HotsHelpers.imageCleanupName(heroImgNameCroppedOrg, DraftLayout["colors"]["heroNamePrepick"][colorIdent])) {
+                        heroImgNameCropped = heroImgNameCroppedOrg;
+                        HotsHelpers.imageOcrOptimize(heroImgNameCropped.invert());
                         heroVisible = true;
-                        this.debugDataAdd(heroImgName, heroImgName, "heroNamePrepick-"+colorIdent, DraftLayout["colors"]["heroNamePrepick"][colorIdent], [], true);
+                        this.debugDataAdd(heroImgNameCropped, heroImgNameCropped, "heroNamePrepick-"+colorIdent, DraftLayout["colors"]["heroNamePrepick"][colorIdent], [], true);
                     }
                 }
             }
@@ -612,7 +648,7 @@ class HotsDraftScreen extends EventEmitter {
                 // Detect hero name using tesseract
                 let imageHeroName = null;
                 const tempHeroPath = "debug/" + team.color + "_player" + index + "_HeroName_temp.png";
-                await heroImgName.write(tempHeroPath);
+                await heroImgNameCropped.write(tempHeroPath);
                 const buffer = fs.readFileSync(tempHeroPath);
                 detections.push(
                     Promise.resolve(buffer).then((buffer) => {

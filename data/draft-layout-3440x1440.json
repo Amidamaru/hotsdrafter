@@ -35,25 +35,25 @@
       "blue": [
         {
           "comment": "Timer when blue team is picking",
-          "color": { "r": 20, "g": 30, "b": 75 },
-          "toleranceLum": 25,
-          "toleranceHue": 5
+          "color": { "r": 100, "g": 150, "b": 220 },
+          "toleranceLum": 50,
+          "toleranceHue": 30
         }
       ],
       "red": [
         {
           "comment": "Timer when red team is picking",
-          "color": { "r": 70, "g": 10, "b": 30 },
-          "toleranceLum": 25,
-          "toleranceHue": 5
+          "color": { "r": 220, "g": 100, "b": 130 },
+          "toleranceLum": 50,
+          "toleranceHue": 30
         }
       ],
       "ban": [
         {
           "comment": "Timer when a team banning",
-          "color": { "r": 140, "g": 40, "b": 170 },
-          "toleranceLum": 25,
-          "toleranceHue": 5
+          "color": { "r": 180, "g": 130, "b": 210 },
+          "toleranceLum": 50,
+          "toleranceHue": 30
         }
       ]
     },
@@ -142,23 +142,23 @@
       ],
       "blue-inactive": [
         {
-          "comment": "Red team is currently picking/banning",
-          "color": { "r": 168, "g": 143, "b": 193 },
-          "toleranceLum": 30,
-          "toleranceHue": 15
+          "comment": "Blue team is locked, red team is currently picking/banning",
+          "color": { "r": 168, "g": 142, "b": 194 },
+          "toleranceLum": 50,
+          "toleranceHue": 25
         }
       ],
       "red-active": [
         {
           "comment": "Red team is currently picking/banning",
-          "color": { "r": 230, "g": 150, "b": 160 },
+          "color": { "r": 219, "g": 171, "b": 180 },
           "toleranceLum": 40,
           "toleranceHue": 30
         }
       ],
       "red-inactive": [
         {
-          "comment": "Blue team is currently picking/banning",
+          "comment": "Red team is locked, blue team is currently picking/banning",
           "color": { "r": 166, "g": 134, "b": 197 },
           "toleranceLum": 35,
           "toleranceHue": 25
@@ -239,11 +239,11 @@
     "y": 50
   },
   "timerPos": {
-    "x": 1624,
+    "x": 1650,
     "y": 53
   },
   "timerSize": {
-    "x": 193,
+    "x": 160,
     "y": 150
   },
   "banSize": {
@@ -255,8 +255,8 @@
     "y": 27
   },
   "banCheckSize": {
-    "x": 260,
-    "y": 85
+    "x": 230,
+    "y": 75
   },
   "banCropSize": {
     "x": 175,
@@ -284,27 +284,27 @@
         {
           "index": 0,
           "x": 3,
-          "y": 50
+          "y": 70
         },
         {
           "index": 1,
           "x": 133,
-          "y": 290
+          "y": 295
         },
         {
           "index": 2,
           "x": 3,
-          "y": 520
+          "y": 530
         },
         {
           "index": 3,
           "x": 133,
-          "y": 740
+          "y": 745
         },
         {
           "index": 4,
           "x": 3,
-          "y": 970
+          "y": 975
         }
       ],
       "bans": [
@@ -321,21 +321,21 @@
         }
       ],
       "banCheck": {
-        "x": 473,
-        "y": 40
+        "x": 400,
+        "y": 45
       },
       "banCropPos": {
         "x": 120,
         "y": 80
       },
       "name": {
-        "x": 15,
-        "y": 120,
+        "x": 5,
+        "y": 130,
         "angle": 30.5
       },
       "nameHeroRotated": {
         "x": 100,
-        "y": 500
+        "y": 300
       },
       "namePlayerRotated": {
         "x": 200,
@@ -346,28 +346,28 @@
       "players": [
         {
           "index": 0,
-          "x": 3154,
-          "y": 50
+          "x": 3140,
+          "y": 75
         },
         {
           "index": 1,
-          "x": 3034,
+          "x": 3030,
           "y": 290
         },
         {
           "index": 2,
-          "x": 3154,
-          "y": 520
+          "x": 3140,
+          "y": 530
         },
         {
           "index": 3,
-          "x": 3034,
-          "y": 740
+          "x": 3030,
+          "y": 745
         },
         {
           "index": 4,
-          "x": 3154,
-          "y": 940
+          "x": 3140,
+          "y": 980
         }
       ],
       "bans": [
@@ -383,21 +383,21 @@
         }
       ],
       "banCheck": {
-        "x": 2444,
-        "y": 40
+        "x": 2818,
+        "y": 45
       },
       "banCropPos": {
         "x": 70,
         "y": 80
       },
       "name": {
-        "x": 130,
+        "x": 120,
         "y": 120,
         "angle": -30.5
       },
       "nameHeroRotated": {
         "x": 188,
-        "y": 331
+        "y": 320
       },
       "namePlayerRotated": {
         "x": 97,

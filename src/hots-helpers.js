@@ -77,39 +77,41 @@ class HotsHelpers {
         let matchCount = 0;
         let matchesPositive = colorMatches;
         let matchesNegative = [];
+        
         // Top Left
-        if (HotsHelpers.imagePixelMatch(image, 0, 0, matchesPositive, matchesNegative)) {
+        let topLeftMatch = HotsHelpers.imagePixelMatch(image, 0, 0, matchesPositive, matchesNegative);
+        if (topLeftMatch) {
             matchCount++;
         }
+        console.log("[imageBackgroundMatch] Top Left (0,0): " + (topLeftMatch ? "YES" : "NO"));
+        
         // Top Center
-        if (HotsHelpers.imagePixelMatch(image, Math.floor(image.bitmap.width / 2), 0, matchesPositive, matchesNegative)) {
+        let topCenterMatch = HotsHelpers.imagePixelMatch(image, Math.floor(image.bitmap.width / 2), 0, matchesPositive, matchesNegative);
+        if (topCenterMatch) {
             matchCount++;
         }
-        // Top Right
-        if (HotsHelpers.imagePixelMatch(image, image.bitmap.width-1, 0, matchesPositive, matchesNegative)) {
-            matchCount++;
-        }
+        console.log("[imageBackgroundMatch] Top Center (" + Math.floor(image.bitmap.width / 2) + ",0): " + (topCenterMatch ? "YES" : "NO"));
+        
         // Center Left
-        if (HotsHelpers.imagePixelMatch(image, 0, Math.floor(image.bitmap.height / 2), matchesPositive, matchesNegative)) {
+        let centerLeftMatch = HotsHelpers.imagePixelMatch(image, 0, Math.floor(image.bitmap.height / 2), matchesPositive, matchesNegative);
+        if (centerLeftMatch) {
             matchCount++;
         }
-        // Center Right
-        if (HotsHelpers.imagePixelMatch(image, image.bitmap.width-1, Math.floor(image.bitmap.height / 2), matchesPositive, matchesNegative)) {
-            matchCount++;
-        }
-        // Bottom Left
-        if (HotsHelpers.imagePixelMatch(image, 0, image.bitmap.height-1, matchesPositive, matchesNegative)) {
-            matchCount++;
-        }
+        console.log("[imageBackgroundMatch] Center Left (0," + Math.floor(image.bitmap.height / 2) + "): " + (centerLeftMatch ? "YES" : "NO"));
+        
         // Bottom Center
-        if (HotsHelpers.imagePixelMatch(image, 0, Math.floor(image.bitmap.height / 2), matchesPositive, matchesNegative)) {
+        let bottomCenterMatch = HotsHelpers.imagePixelMatch(image, Math.floor(image.bitmap.width / 2), image.bitmap.height-1, matchesPositive, matchesNegative);
+        if (bottomCenterMatch) {
             matchCount++;
         }
-        // Bottom Right
-        if (HotsHelpers.imagePixelMatch(image, image.bitmap.width-1, image.bitmap.height-1, matchesPositive, matchesNegative)) {
-            matchCount++;
-        }
-        return matchCount >= (9 - tolerance);
+        console.log("[imageBackgroundMatch] Bottom Center (" + Math.floor(image.bitmap.width / 2) + "," + (image.bitmap.height-1) + "): " + (bottomCenterMatch ? "YES" : "NO"));
+        
+        console.log("[imageBackgroundMatch] Color expectations:", colorMatches);
+        let required = (5 - tolerance);
+        let result = matchCount >= required;
+        console.log("[imageBackgroundMatch] Total: " + matchCount + " matches, Required: " + required + ", Tolerance: " + tolerance + " => " + (result ? "MATCHED" : "NOT matched"));
+        
+        return result;
     }
     static imageCompare(imageA, imageB, rasterSize) {
         if (typeof rasterSize === "undefined") {

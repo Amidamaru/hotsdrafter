@@ -82,7 +82,7 @@ jQuery(function() {
             let imageCleanup = imageRow.find("[data-image=\"cleanup\"]");
             let bufferOriginal = Buffer.from(imageOriginalBase64.substr( imageOriginalBase64.indexOf("base64,") + 7 ), 'base64');
             imageConversions.push(
-                jimp.read(bufferOriginal).then((image) => {
+                Jimp.read(bufferOriginal).then((image) => {
                     // Cleanup and trim map name
                     HotsHelpers.imageCleanupName(image, config.colorsPositive, config.colorsNegative);
                     // Invert?
@@ -92,7 +92,7 @@ jQuery(function() {
                     // Convert to black on white for optimal detection
                     HotsHelpers.imageOcrOptimize(image);
                     // Get base64 of new image
-                    return image.getBase64Async(jimp.MIME_PNG);
+                    return image.getBase64Async('image/png');
                 }).then((imageDataBase64) => {
                     imageCleanup.attr("src", imageDataBase64)
                     return true;

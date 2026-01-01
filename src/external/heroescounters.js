@@ -1,5 +1,5 @@
 // Nodejs dependencies
-const request = require('request');
+const axios = require('axios');
 const cheerio = require('cheerio');
 
 // Local classes
@@ -157,22 +157,20 @@ class HeroesCountersProvider extends HotsDraftSuggestions {
         this.updateActive = true;
         let url = "https://www.heroescounters.com/teampicker";
         return new Promise((resolve, reject) => {
-            request({
-                'method': 'GET',
-                'uri': url
-            }, (error, response, body) => {
-                this.updateActive = false;
-                if (error || (typeof response === "undefined")) {
+            axios.get(url)
+                .then(response => {
+                    this.updateActive = false;
+                    if (response.status !== 200) {
+                        reject('Invalid status code <' + response.status + '>');
+                        return;
+                    }
+                    this.loadCoreData(response.data);
+                    resolve(true);
+                })
+                .catch(error => {
+                    this.updateActive = false;
                     reject(error);
-                    return;
-                }
-                if (response.statusCode !== 200) {
-                    reject('Invalid status code <' + response.statusCode + '>');
-                    return;
-                }
-                this.loadCoreData(body);
-                resolve(true);
-            });
+                });
         });
     }
     update() {
@@ -261,23 +259,20 @@ class HeroesCountersProvider extends HotsDraftSuggestions {
         }
         this.suggestionsForm = url;
         return new Promise((resolve, reject) => {
-            request({
-                'method': 'GET',
-                'uri': url,
-                'json': true
-            }, (error, response, body) => {
-                this.updateActive = false;
-                if (error || (typeof response === "undefined")) {
+            axios.get(url)
+                .then(response => {
+                    this.updateActive = false;
+                    if (response.status !== 200) {
+                        reject('Invalid status code <' + response.status + '>');
+                        return;
+                    }
+                    this.loadUpdateData(response.data);
+                    resolve(true);
+                })
+                .catch(error => {
+                    this.updateActive = false;
                     reject(error);
-                    return;
-                }
-                if (response.statusCode !== 200) {
-                    reject('Invalid status code <' + response.statusCode + '>');
-                    return;
-                }
-                this.loadUpdateData(body);
-                resolve(true);
-            });
+                });
         });
     }
 

@@ -3,8 +3,11 @@ const https = require('follow-redirects').https;
 const cheerio = require('cheerio');
 const fs = require('fs');
 const path = require('path');
-const jimp = require('jimp');
+const { Jimp } = require('jimp');
 const EventEmitter = require('events');
+
+// Static heroes data - loaded from data/heroes.json
+const STATIC_HEROES = require('../data/heroes.json');
 
 // Local classes
 const HotsReplay = require('hots-replay');
@@ -197,8 +200,8 @@ class HotsGameData extends EventEmitter {
                         const file = fs.createWriteStream(filename);
                         const stream = response.pipe(file);
                         stream.on("finish", () => {
-                            jimp.read(filename).then(async (image) => {
-                                image.crop(10, 32, 108, 64).write(filenameCrop);
+                            Jimp.read(filename).then(async (image) => {
+                                image.crop({ x: 10, y: 32, w: 108, h: 64 }).write(filenameCrop);
                                 resolve();
                             }).catch((error) => {
                                 console.error("Error loading image '"+heroImageUrl+"'");
@@ -391,6 +394,7 @@ class HotsGameData extends EventEmitter {
         // Read the data from file
         if (!fs.existsSync(storageFile)) {
             // Cache file does not exist! Initialize empty data object.
+            this.initializeStaticHeroes();
             return;
         }
         let cacheContent = fs.readFileSync(storageFile);
@@ -423,11 +427,29 @@ class HotsGameData extends EventEmitter {
                 this.playerPicks = cacheData.playerPicks;
                 this.playerBattleTags = cacheData.playerBattleTags;
                 console.log("[GameData] load() - After load, languageOptions count: " + this.languageOptions.length);
+                // Ensure static heroes are loaded
+                this.initializeStaticHeroes();
             }
         } catch (e) {
             console.error("Failed to read gameData data!");
             console.error(e);
+            // Still initialize static heroes even if loading fails
+            this.initializeStaticHeroes();
         }
+    }
+    initializeStaticHeroes() {
+        // Initialize static heroes from the heroes data file
+        // This ensures all 90 heroes are always available without web requests
+        if (!this.heroes.name.hasOwnProperty("en-us")) {
+            this.heroes.name["en-us"] = {};
+        }
+        // Merge static heroes into the en-us list (don't overwrite existing ones)
+        for (let heroId in STATIC_HEROES["en-us"]) {
+            if (!this.heroes.name["en-us"].hasOwnProperty(heroId)) {
+                this.heroes.name["en-us"][heroId] = STATIC_HEROES["en-us"][heroId];
+            }
+        }
+        console.log("[GameData] initializeStaticHeroes() - Loaded " + Object.keys(this.heroes.name["en-us"]).length + " heroes");
     }
     save() {
         // Sort hero names alphabetically

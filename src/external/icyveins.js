@@ -1,5 +1,5 @@
 // Nodejs dependencies
-const request = require('request');
+const axios = require('axios');
 const cheerio = require('cheerio');
 
 // Local classes
@@ -63,23 +63,20 @@ class IcyVeinsProvider extends HotsTalentSuggestions {
         this.updateActive = true;
         let url = "https://www.icy-veins.com/heroes/";
         return new Promise((resolve, reject) => {
-            request({
-                'method': 'GET',
-                'uri': url,
-                'jar': true
-            }, (error, response, body) => {
-                this.updateActive = false;
-                if (error || (typeof response === "undefined")) {
+            axios.get(url, { withCredentials: true })
+                .then(response => {
+                    this.updateActive = false;
+                    if (response.status !== 200) {
+                        reject('Invalid status code <' + response.status + '>');
+                        return;
+                    }
+                    this.loadCoreData(response.data);
+                    resolve(true);
+                })
+                .catch(error => {
+                    this.updateActive = false;
                     reject(error);
-                    return;
-                }
-                if (response.statusCode !== 200) {
-                    reject('Invalid status code <' + response.statusCode + '>');
-                    return;
-                }
-                this.loadCoreData(body);
-                resolve(true);
-            });
+                });
         });
     }
     update() {
@@ -126,22 +123,18 @@ class IcyVeinsProvider extends HotsTalentSuggestions {
     }
     parseBuildSection(url, section) {
         return new Promise((resolve, reject) => {
-            request({
-                'method': 'GET',
-                'uri': url,
-                'jar': true
-            }, (error, response, body) => {
-                if (error || (typeof response === "undefined")) {
+            axios.get(url, { withCredentials: true })
+                .then(response => {
+                    if (response.status !== 200) {
+                        reject('Invalid status code <' + response.status + '>');
+                        return;
+                    }
+                    this.parseBuildSectionData(response.data, section);
+                    resolve(true);
+                })
+                .catch(error => {
                     reject(error);
-                    return;
-                }
-                if (response.statusCode !== 200) {
-                    reject('Invalid status code <' + response.statusCode + '>');
-                    return;
-                }
-                this.parseBuildSectionData(body, section);
-                resolve(true);
-            });
+                });
         });
     }
     parseBuildSectionData(body, section) {

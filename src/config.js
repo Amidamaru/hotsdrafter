@@ -16,7 +16,7 @@ class Config {
         this.options = {
             language: "de",
             debugEnabled: false,
-            draftProvider: "heroescounters",
+            draftProvider: "disabled",
             talentProvider: "icyveins",
             playerName: "",
             gameDisplay: null,

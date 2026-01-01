@@ -1,5 +1,5 @@
 // Nodejs dependencies
-const request = require('request');
+const axios = require('axios');
 const cheerio = require('cheerio');
 
 // Local classes
@@ -127,23 +127,20 @@ class HeroesCountersProvider extends HotsDraftSuggestions {
         this.updateActive = true;
         let url = "https://hotsdraft.com/draft/";
         return new Promise((resolve, reject) => {
-            request({
-                'method': 'GET',
-                'uri': url,
-                'jar': true
-            }, (error, response, body) => {
-                this.updateActive = false;
-                if (error || (typeof response === "undefined")) {
+            axios.get(url, { withCredentials: true })
+                .then(response => {
+                    this.updateActive = false;
+                    if (response.status !== 200) {
+                        reject('Invalid status code <' + response.status + '>');
+                        return;
+                    }
+                    this.loadCoreData(response.data);
+                    resolve(true);
+                })
+                .catch(error => {
+                    this.updateActive = false;
                     reject(error);
-                    return;
-                }
-                if (response.statusCode !== 200) {
-                    reject('Invalid status code <' + response.statusCode + '>');
-                    return;
-                }
-                this.loadCoreData(body);
-                resolve(true);
-            });
+                });
         });
     }
     update() {
@@ -234,6 +231,14 @@ class HeroesCountersProvider extends HotsDraftSuggestions {
             this.updateActive = false;
             return true;
         }
+        // Don't send request if we have no meaningful data
+        if (!this.activeMap || (this.bans.length === 0 && this.picksBlue.length === 0 && this.picksRed.length === 0)) {
+            this.updateActive = false;
+            this.suggestions = { picks: [], bans: [] };
+            this.emit("update.done");
+            this.emit("change");
+            return true;
+        }
         this.suggestionsForm = formJson;
         let formDataBans = Object.assign({}, formData, { banlist: 1, enemies: formData.allies, allies: formData.enemies });
         let requests = [
@@ -255,24 +260,24 @@ class HeroesCountersProvider extends HotsDraftSuggestions {
     }
     updateRequest(formData) {
         return new Promise((resolve, reject) => {
-            request({
-                'method': 'POST',
-                'uri': 'https://hotsdraft.com/draft/list/',
-                'form': formData,
-                'jar': true,
-                'json': true
-            }, (error, response, body) => {
-                this.updateActive = false;
-                if (error || (typeof response === "undefined")) {
+            const formDataEncoded = new URLSearchParams(formData).toString();
+            axios.post('https://hotsdraft.com/draft/list/', formDataEncoded, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .then(response => {
+                    this.updateActive = false;
+                    if (response.status !== 200) {
+                        reject('Invalid status code <' + response.status + '>');
+                        return;
+                    }
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    this.updateActive = false;
                     reject(error);
-                    return;
-                }
-                if (response.statusCode !== 200) {
-                    reject('Invalid status code <' + response.statusCode + '>');
-                    return;
-                }
-                resolve(body);
-            });
+                });
         });
     }
 };

@@ -180,12 +180,12 @@ class HotsHelpers {
         if (textMaxX < textMinX) {
             return false;
         } else {
-            image.crop(textMinX, textMinY, textMaxX - textMinX, textMaxY - textMinY);
+            image.crop({ x: textMinX, y: textMinY, w: textMaxX - textMinX, h: textMaxY - textMinY });
             return true;
         }
     }
     static imageOcrOptimize(image) {
-        return image.greyscale().contrast(0.4).normalize().blur(1).scale(0.5);
+        return image.greyscale().contrast(0.4).normalize().blur(1).scale({ f: 0.5 });
     }
     static imagePixelCompare(pixelColorA, pixelColorB) {
         let colorA = { b: (pixelColorA >> 8) & 0xFF, g: (pixelColorA >> 16) & 0xFF, r: (pixelColorA >> 24) & 0xFF };

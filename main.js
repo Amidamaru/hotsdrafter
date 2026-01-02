@@ -57,7 +57,7 @@ function createWindow () {
         win.show();
     });
     // DevTools zum Debuggen
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
 
     let backend = fork("./src/backend.js");
     let backendCallback = function(message) {

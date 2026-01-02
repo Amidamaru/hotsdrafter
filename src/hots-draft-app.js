@@ -41,6 +41,7 @@ class HotsDraftApp extends EventEmitter {
         this.statusUpdatePending = false;
         this.lastPlayerHero = null;  // Track hero changes for auto-refresh
         this.talentUpdateTimeout = null;  // Debounce talent provider updates
+        this.lastDraftDataHash = null;  // Prevent sending duplicate draft data
         // Initialize
         this.registerEvents();
     }
@@ -227,6 +228,7 @@ class HotsDraftApp extends EventEmitter {
                 this.statusDetectionPaused = false;
                 break;
             case "draft.reset":
+                console.log("[HotsDraftApp] handleEvent() - draft.reset received");
                 this.resetDraft();
                 break;
             case "hero.correct":
@@ -252,6 +254,7 @@ class HotsDraftApp extends EventEmitter {
                 });
                 break;
             case "update.forced":
+                console.log("[HotsDraftApp] handleEvent() - update.forced received");
                 this.updateForced();
                 break;
             case "window.ready":
@@ -351,7 +354,10 @@ class HotsDraftApp extends EventEmitter {
         this.statusGameActiveLock = null;
         this.screen.clear();
         this.sendDraftState();
-        this.sendDraftData();
+        // Update draft provider to get fresh data
+        this.draftProvider.update();
+        // Tell GUI to clear talent tabs and refresh
+        this.sendEvent("gui", "draft.cleared");
         console.log("[HotsDraftApp] resetDraft() - Draft reset complete, waiting for new draft");
     }
 
@@ -431,10 +437,19 @@ class HotsDraftApp extends EventEmitter {
         // Debug step logging disabled
     }
     updateForced() {
+        console.log("[HotsDraftApp] updateForced() - Starting");
         this.screen.clear();
         this.draftProvider.update();
-        this.talentProvider.update();
-        this.statusGameActive = false;
+        // Update talent provider and send talents even if statusGameActive is false
+        console.log("[HotsDraftApp] updateForced() - Calling talentProvider.update()");
+        this.talentProvider.update().then(() => {
+            console.log("[HotsDraftApp] updateForced() - Talent provider update completed, sending talents");
+            console.log("[HotsDraftApp] updateForced() - Sending talent provider data");
+            // Directly send talent provider data (don't wait for change event since statusGameActive might be false)
+            this.sendTalentProvider(this.talentProvider);
+        }).catch((err) => {
+            console.error("[HotsDraftApp] updateForced() - Talent provider update error:", err);
+        });
         this.statusGameActiveLock = null;
         this.update();
         this.sendDraftData();

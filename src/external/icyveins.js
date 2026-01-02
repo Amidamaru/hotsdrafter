@@ -13,6 +13,8 @@ class IcyVeinsProvider extends HotsTalentSuggestions {
         this.heroesByName = {};
         this.heroesById = {};
         this.talents = {};
+        this.lastTalentsHash = null;  // Track talent changes to avoid unnecessary updates
+        this.talentsCache = {};  // In-memory cache for parsed talents
         this.updateActive = false;
         this.updatePending = false;
     }
@@ -80,6 +82,7 @@ class IcyVeinsProvider extends HotsTalentSuggestions {
         });
     }
     update() {
+        console.log("[IcyVeins] update() - START");
         return new Promise((resolve, reject) => {
             this.talents = null;
             let playerName = this.app.getConfig().getOption("playerName");
@@ -105,6 +108,28 @@ class IcyVeinsProvider extends HotsTalentSuggestions {
                 if (playerHero !== null) {
                     console.log("[IcyVeins] update() - Setting talents to: " + playerHero.name);
                     this.talents = playerHero;
+                    
+                    // Try to load cached talents from memory cache first
+                    let cacheKey = playerHero.id;
+                    console.log("[IcyVeins] update() - Looking for cache key: " + cacheKey);
+                    console.log("[IcyVeins] update() - Cache keys available: " + Object.keys(this.talentsCache).join(", "));
+                    if (this.talentsCache[cacheKey]) {
+                        console.log("[IcyVeins] update() - Found cached talents for " + playerHero.name + ", using cache");
+                        this.talents.parsed = this.talentsCache[cacheKey];
+                        let talentsHash = JSON.stringify(this.talents).substring(0, 100);
+                        if (this.lastTalentsHash === talentsHash) {
+                            console.log("[IcyVeins] update() - Cached talents unchanged, not emitting");
+                            resolve();
+                        } else {
+                            console.log("[IcyVeins] update() - Using cached talents");
+                            this.lastTalentsHash = talentsHash;
+                            this.emit("change");
+                            resolve();
+                        }
+                        return;  // Skip fresh parsing
+                    } else {
+                        console.log("[IcyVeins] update() - No cache found, will parse from IcyVeins");
+                    }
                 } else {
                     console.log("[IcyVeins] update() - No hero found for player: " + playerName);
                 }
@@ -114,19 +139,37 @@ class IcyVeinsProvider extends HotsTalentSuggestions {
             
             if (this.talents === null) {
                 console.log("[IcyVeins] update() - No talents to display");
-                this.emit("change");
+                let talentsHash = "null";
+                if (this.lastTalentsHash === talentsHash) {
+                    console.log("[IcyVeins] update() - Talents unchanged, not emitting change event");
+                } else {
+                    this.lastTalentsHash = talentsHash;
+                    this.emit("change");
+                }
                 resolve();
             } else {
-                console.log("[IcyVeins] update() - Parsing build for: " + this.talents.name);
-                this.parseBuild(this.talents).then(() => {
-                    console.log("[IcyVeins] update() - Build parsed successfully");
-                    this.emit("change");
+                let talentsHash = JSON.stringify(this.talents).substring(0, 100);
+                if (this.lastTalentsHash === talentsHash) {
+                    console.log("[IcyVeins] update() - Talents unchanged, not emitting change event");
                     resolve();
-                }).catch((error) => {
-                    console.error("Failed to parse build data for icy-veins provider, falling back to iframe.");
-                    this.emit("change");
-                    resolve();
-                });
+                } else {
+                    console.log("[IcyVeins] update() - Parsing build for: " + this.talents.name);
+                    this.lastTalentsHash = talentsHash;
+                    this.parseBuild(this.talents).then(() => {
+                        console.log("[IcyVeins] update() - Build parsed successfully");
+                        // Cache the parsed data
+                        let cacheKey = this.talents.id;
+                        this.talentsCache[cacheKey] = this.talents.parsed;
+                        console.log("[IcyVeins] update() - Cached talents in memory for key: " + cacheKey);
+                        console.log("[IcyVeins] update() - Cache now contains keys: " + Object.keys(this.talentsCache).join(", "));
+                        this.emit("change");
+                        resolve();
+                    }).catch((error) => {
+                        console.error("Failed to parse build data for icy-veins provider, falling back to iframe.");
+                        this.emit("change");
+                        resolve();
+                    });
+                }
             }
         });
     }
@@ -166,6 +209,8 @@ class IcyVeinsProvider extends HotsTalentSuggestions {
                     talentCheatsheet: [],
                     tips: []
                 };
+
+                
                 // Strengths and Weaknesses
                 page('.heroes_strengths ul li span').each(function() {
                     buildData.strengths.push( self.processContentElements(page, this).html() );
@@ -195,10 +240,37 @@ class IcyVeinsProvider extends HotsTalentSuggestions {
     }
     processContentElements(page, element) {
         let cheerioElement = page(element);
-        // Disable links to not break the app
-        cheerioElement.find("a").each(function() {
-            page(this).attr("href", "#disabled");
+
+        //set footer full width
+        cheerioElement.find(".talent_build_footer").each(function() {
+            let copyButtonFooter = page(this);
+            copyButtonFooter.css("width", "100%");
         });
+        // Extract build code from copy button and add our own simple copy button
+        cheerioElement.find(".talent_build_copy_button").each(function() {
+            let copyButton = page(this);
+            let buildCode = copyButton.find("input[type='hidden']").val();
+            if (buildCode) {
+                // Move the copy button div to the left and replace button
+                copyButton.css("padding-left", "20px");
+                copyButton.html(
+                    '<button class="btn btn-sm btn-info" onclick="navigator.clipboard.writeText(\'' + buildCode.replace(/'/g, "\\'") + '\'); alert(\'Build code copied!\');">📋 Copy</button>'
+                );
+            }
+        });
+        // Remove talent calculator and other calculator links
+        cheerioElement.find("a").each(function() {
+            let link = page(this);
+            let text = link.text().toLowerCase();
+            if (text.includes("calculator") || text.includes("talent calc")) {
+                link.remove();
+            } else {
+                // Disable other links to not break the app
+                link.attr("href", "#disabled");
+            }
+        });
+        // Remove any remaining buttons that might cause issues
+        cheerioElement.find("button:not([onclick])").remove();
         // Fix image paths
         cheerioElement.find("img").each(function() {
             page(this).attr("src", page(this).attr("src").replace(/^\/\//, "https://"));

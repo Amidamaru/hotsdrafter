@@ -1,7 +1,8 @@
 <div class="container">
-    <div class="text-center mb-3">
-        <h2 style="display: inline-block; margin-right: 10px;">{{ talents.name }} - Builds and Tips</h2>
-        <button class="btn btn-sm btn-info" onclick="send('talentProvider.refresh')">🔄 Refresh</button>
+    <div class="mb-3 d-flex align-items-center justify-content-between">
+        <button class="btn btn-sm btn-info" data-action="refreshTalents">🔄 Refresh</button>
+        <h2 style="flex: 1; text-align: center; margin: 0;">{{ talents.name }} - Builds and Tips</h2>
+        <div style="width: 100px;"></div>
     </div>
 
     {% if (talents.parsed.strengths is not empty) or (talents.parsed.weaknesses is not empty) %}
@@ -76,6 +77,11 @@
     {% endif %}
 </div>
 <script type="text/javascript">
+jQuery("[data-action=\"refreshTalents\"]").on("click", function() {
+    document.getElementById('talentLoadingSpinner').style.display = 'block';
+    gui.sendEvent("gui", "talentProvider.refresh");
+});
+
 jQuery("#icyveins-hero-builds a").on("click", function(e) {
     e.preventDefault();
     jQuery(this).tab('show');

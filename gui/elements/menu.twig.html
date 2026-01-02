@@ -1,5 +1,5 @@
 <nav class="navbar navbar-main-menu navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary">
-    <a href="#" class="navbar-brand">
+    <a href="#" class="navbar-brand ps-4">
         <img class="navbar-brand-icon" src="../build/icon_64x64.png" class="img-fluid">
         Hots-Drafter
         {% if gui.debugEnabled() %}
@@ -8,7 +8,7 @@
             </span>
         {% endif %}
     </a>
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ms-auto">
         <li class="nav-item{% if gui.page=="main" %} active{% endif %}">
             <a href="#draft" data-action="draft" class="nav-link">
                 <i class="fa fa-users"></i>
@@ -51,35 +51,9 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="#quit" data-action="quit" class="nav-link">
+            <a href="#quit" data-action="quit" class="nav-link pe-4">
                 <i class="fa fa-times-circle"></i>
             </a>
         </li>
     </ul>
 </nav>
-
-
-<script>
-jQuery(function() {
-
-    jQuery("[data-action=\"draft\"]").on("click", function() {
-        gui.changePage("main");
-    });
-    jQuery("[data-action=\"replays\"]").on("click", function() {
-        gui.changePage("replays");
-    });
-    jQuery("[data-action=\"config\"]").on("click", function() {
-        gui.changePage("config");
-    });
-    jQuery("[data-action=\"forceUpdate\"]").on("click", function() {
-        gui.forceUpdate();
-    });
-    jQuery("[data-action=\"resetDraft\"]").on("click", function() {
-        gui.resetDraft();
-    });
-    jQuery("[data-action=\"quit\"]").on("click", function() {
-        gui.quit();
-    });
-
-});
-</script>

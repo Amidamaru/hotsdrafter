@@ -21,6 +21,7 @@ const templates = {
 class HotsDraftGui extends EventEmitter {
 
     constructor(window) {
+        console.log("[HotsDraftGui] Constructor called");
         super();
         this.debugStep = "Initializing...";
         this.document = window.document;
@@ -37,6 +38,7 @@ class HotsDraftGui extends EventEmitter {
         this.debugData = [];
         this.modalActive = false;
         this.updateProgress = 0;
+        this.lastTalentProviderHash = null;  // Track talent provider data to avoid unnecessary updates
         this.registerEvents();
         this.sendEvent("gui", "window.ready");
         this.renderPage();
@@ -45,9 +47,40 @@ class HotsDraftGui extends EventEmitter {
         return HotsHelpers.getConfig().getOption("debugEnabled");
     }
     registerEvents() {
+        console.log("[GUI] registerEvents() - Starting, jQuery available=" + (typeof jQuery !== 'undefined'));
         ipcRenderer.on("gui", (event, type, ...parameters) => {
             this.handleEvent(null, type, parameters);
         });
+        
+        // Register menu button events once (not in template to avoid duplicate registration)
+        console.log("[GUI] registerEvents() - Registering menu button events");
+        jQuery(document).on("click", "[data-action=\"draft\"]", (e) => {
+            e.preventDefault();
+            this.changePage("main");
+        });
+        jQuery(document).on("click", "[data-action=\"replays\"]", (e) => {
+            e.preventDefault();
+            this.changePage("replays");
+        });
+        jQuery(document).on("click", "[data-action=\"config\"]", (e) => {
+            e.preventDefault();
+            this.changePage("config");
+        });
+        jQuery(document).on("click", "[data-action=\"forceUpdate\"]", (e) => {
+            e.preventDefault();
+            this.forceUpdate();
+        });
+        jQuery(document).on("click", "[data-action=\"resetDraft\"]", (e) => {
+            e.preventDefault();
+            console.log("[GUI] Reset button clicked");
+            this.sendEvent("gui", "draft.reset");
+            this.sendEvent("gui", "update.forced");
+        });
+        jQuery(document).on("click", "[data-action=\"quit\"]", (e) => {
+            e.preventDefault();
+            this.quit();
+        });
+        console.log("[GUI] registerEvents() - Menu button events registered");
     }
     handleEvent(event, type, parameters) {
         switch (type) {
@@ -57,15 +90,24 @@ class HotsDraftGui extends EventEmitter {
             case "draft":
                 this.draft = parameters[0];
                 console.log("[GUI] Received draft data: " + this.draft.bans.length + " bans, " + this.draft.players.length + " players, teamActive=" + this.draft.teamActive + ", banActive=" + this.draft.banActive);
-                this.refreshPage();
+                // If page not rendered yet, do initial render
+                if (jQuery(".page").html() === "" || jQuery(".page").find("[data-type='draft']").length === 0) {
+                    console.log("[GUI] Initial draft data - rendering page");
+                    this.refreshPage();
+                } else {
+                    // Page already rendered, don't refresh to preserve tabs
+                    console.log("[GUI] Page already rendered - skipping full refresh");
+                }
                 break;
             case "draft.status":
                 this.draftActive = parameters[0];
-                this.refreshPage();
+                // Don't refresh - already handled by draft updates
+                console.log("[GUI] Draft status: " + this.draftActive);
                 break;
             case "talents":
                 this.talents = parameters[0];
-                this.refreshPage();
+                // Don't refresh - talentProvider handles its own rendering
+                console.log("[GUI] Talents data received");
                 break;
             case "ban.update":
                 this.updateBan(...parameters);
@@ -78,6 +120,14 @@ class HotsDraftGui extends EventEmitter {
                 break;
             case "talentProvider.update":
                 this.updateTalentProvider(...parameters);
+                break;
+            case "draft.cleared":
+                console.log("[GUI] draft.cleared - Clearing talent tabs and refreshing page");
+                // Clear talent tabs
+                jQuery("[data-type=\"talent-provider\"] .nav-link").parent().remove();
+                jQuery("[data-type=\"talent-provider\"] .tab-content").html("");
+                // Force page refresh
+                this.refreshPage();
                 break;
             case "replay.update":
                 this.updateReplay(...parameters);
@@ -247,6 +297,16 @@ class HotsDraftGui extends EventEmitter {
             } else {
                 console.log("[GUI] renderPage() - Page rendered successfully, inserting into DOM");
                 jQuery(".page").html(html);
+                // Execute inline scripts (jQuery.html() doesn't execute them automatically)
+                jQuery(".page").find("script").each((index, element) => {
+                    let scriptContent = jQuery(element).text();
+                    console.log("[GUI] renderPage() - Executing script #" + index);
+                    try {
+                        eval(scriptContent);
+                    } catch (err) {
+                        console.error("[GUI] renderPage() - Script execution error:", err);
+                    }
+                });
                 // After rendering, manually bind events for config page
                 if (this.page === "config") {
                     console.log("[GUI] renderPage() - Config page detected, calling bindConfigPageEvents()");
@@ -375,7 +435,25 @@ class HotsDraftGui extends EventEmitter {
         if (this.modalActive) {
             return;
         }
+        
+        // Don't refresh page if we have talent tabs (active or not) - preserve user's selection
+        // Check for any nav-link in the talent provider, not just active ones
+        if (this.page === "main" && jQuery("[data-type=\"talent-provider\"] .nav-link").length > 0) {
+            console.log("[GUI] refreshPage() - Talent tabs exist, skipping full refresh to preserve state");
+            return;
+        }
+        
         this.renderPage();
+    }
+    
+    updateDraftDisplay() {
+        // Update draft display without full page refresh to preserve UI state
+        // This is a minimal update that preserves tabs and other UI elements
+        console.log("[HotsDraftGui] updateDraftDisplay() - Minimal draft update");
+        
+        // For now, just log that we're doing a minimal update
+        // The template will automatically reflect changes via binding
+        // If needed, specific elements can be updated here
     }
 
     renderDetectionTunerContent(targetElement, cbDone) {
@@ -496,21 +574,62 @@ class HotsDraftGui extends EventEmitter {
     }
 
     updateTalentProvider(providerData) {
+        // Initialize talents object if not already done
+        if (this.talents === null) {
+            this.talents = { provider: null };
+        }
+        
         // Update local draft data
         this.talents.provider = providerData;
+        
         // Update gui
         let selector = "[data-type=\"talent-provider\"]";
         if (jQuery(selector).length === 0) {
             // No element available. Skip.
-            // TODO: Render the whole page in this case?
             return;
         }
+        
+        // Don't update if tabs already exist - preserve user's tab selection
+        if (jQuery(selector).find(".nav-link").length > 0) {
+            // Tabs already exist, check if this is a refresh
+            // Hide content, show spinner
+            jQuery(selector).find(".container").hide();
+            jQuery("#talentLoadingSpinner").show();
+            
+            // Small delay before reloading
+            setTimeout(() => {
+                // Clear tabs so they reload
+                jQuery(selector).find(".nav-link").parent().remove();
+                jQuery(selector).find(".tab-content").html("");
+                
+                // Re-render
+                let providerTemplate = path.resolve(__dirname, "..", "gui", providerData.template);
+                Twig.renderFile(providerTemplate, Object.assign({ gui: this }, providerData.templateData), (error, html) => {
+                    if (error) {
+                        console.error(error);
+                        jQuery("#talentLoadingSpinner").hide();
+                    } else {
+                        jQuery(selector).html(jQuery(html).html());
+                        jQuery("#talentLoadingSpinner").hide();
+                        jQuery(selector).find(".container").show();
+                        jQuery(document).trigger("talentProvider.init", jQuery(selector));
+                    }
+                });
+            }, 300);
+            return;
+        }
+        
+        // First render - show spinner while loading
+        jQuery("#talentLoadingSpinner").show();
+        
         let providerTemplate = path.resolve(__dirname, "..", "gui", providerData.template);
         Twig.renderFile(providerTemplate, Object.assign({ gui: this }, providerData.templateData), (error, html) => {
             if (error) {
                 console.error(error);
+                jQuery("#talentLoadingSpinner").hide();
             } else {
-                jQuery(selector).replaceWith(html);
+                jQuery(selector).html(jQuery(html).html());
+                jQuery("#talentLoadingSpinner").hide();
                 jQuery(document).trigger("talentProvider.init", jQuery(selector));
             }
         });

@@ -1,0 +1,25 @@
+
+> hotsdrafter@1.2.6 start
+> electron-forge start
+
+[33mÔØ»[39m Checking your system
+[33mÔØ»[39m Checking package manager version
+[32mÔ£ö[39m Found npm@11.6.2
+[32mÔ£ö[39m Checking your system
+[?25h[33mÔØ»[39m Locating application
+[32mÔ£ö[39m Locating application
+[33mÔØ»[39m Loading configuration
+[32mÔ£ö[39m Loading configuration
+[33mÔØ»[39m Preparing native dependencies
+[32mÔ£ö[39m Preparing native dependencies
+[33mÔØ»[39m Running generateAssets hook
+[32mÔ£ö[39m Running generateAssets hook
+[33mÔØ»[39m Running preStart hook
+[32mÔ£ö[39m Running preStart hook
+[32mÔ£ö[39m Launched Electron app. Type rs in terminal to restart main process.
+[?25h
+
+[Main] Found 2 display(s)
+[Main] Display 0: HP 25x - bounds: x=2039, y=175, width=1423, height=801
+[Main] Display 1: LG ULTRAGEAR - bounds: x=0, y=0, width=2039, height=854
+[Main] Opening app on primary display (HP 25x): 1423x801

@@ -119,9 +119,63 @@
     border-bottom-right-radius: 0;
 }
 
+.provider-heroesprofile .heroesprofile-hero {
+    height: 100px;
+    width: 100px;
+    position: relative;
+    margin: 5px;
+}
+
+.provider-heroesprofile .heroesprofile-hero-image {
+    position: relative;
+    height: 80px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.provider-heroesprofile .heroesprofile-hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.provider-heroesprofile .heroesprofile-star {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 24px;
+    color: #ffc107;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    z-index: 10;
+}
+
+.provider-heroesprofile .heroesprofile-hero-stats {
+    position: absolute;
+    bottom: 2px;
+    right: 0;
+    left: 0;
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    background: rgba(0,0,0,0.5);
+}
+
+.provider-heroesprofile .heroesprofile-sort-value {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    border-radius: 3px;
+}
+
+.provider-heroesprofile .badge-warning {
+    font-size: 10px;
+    padding: 2px 4px;
+}
+
 .provider-hotsdraft .bonus {
     color: #28a745;
 }
+
 
 .provider-hotsdraft .malus {
     color: #dc3545;

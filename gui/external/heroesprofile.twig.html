@@ -1,0 +1,32 @@
+<div data-type="draft-provider" class="provider-heroesprofile">
+    {% if suggestions.tips is not empty %}
+        <div class="alert alert-info">
+            <b>Tips:</b>
+            <ul>
+                {% for tip in suggestions.tips %}
+                    <li>{{ tip }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="d-flex">
+        <div class="heroesprofile-blue text-left flex-fill p-1 pr-2">
+            <h4 class="text-info">Picks for your team</h4>
+            {% include "heroesprofile-sort.twig.html" with { team: "blue" } %}
+            <div class="heroesprofile-hero-list d-flex justify-content-start flex-wrap">
+                {% for heroSuggestion in suggestions.friend %}
+                    {% include "heroesprofile-hero.twig.html" with { team: "blue", sortField: sortField["blue"] } %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="heroesprofile-red text-right flex-fill p-1 pl-2">
+            <h4 class="text-danger">Picks for the enemy team</h4>
+            {% include "heroesprofile-sort.twig.html" with { team: "red" } %}
+            <div class="heroesprofile-hero-list d-flex justify-content-end flex-wrap">
+                {% for heroSuggestion in suggestions.enemy %}
+                    {% include "heroesprofile-hero.twig.html" with { team: "red", sortField: sortField["red"] } %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

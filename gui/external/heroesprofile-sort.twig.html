@@ -1,0 +1,17 @@
+<div class="heroesprofile-sort btn-group btn-group-sm mb-2" role="group">
+    <button type="button" 
+            class="btn btn-outline-secondary {% if sortField[team] == 'value' %}active{% endif %}" 
+            data-action="external.heroesprofile.sortBy" data-team="{{ team }}" data-field="value">
+        Value
+    </button>
+    <button type="button" 
+            class="btn btn-outline-secondary {% if sortField[team] == 'winrate' %}active{% endif %}" 
+            data-action="external.heroesprofile.sortBy" data-team="{{ team }}" data-field="winrate">
+        Winrate
+    </button>
+    <button type="button" 
+            class="btn btn-outline-secondary {% if sortField[team] == 'popularity' %}active{% endif %}" 
+            data-action="external.heroesprofile.sortBy" data-team="{{ team }}" data-field="popularity">
+        Pick Rate
+    </button>
+</div>

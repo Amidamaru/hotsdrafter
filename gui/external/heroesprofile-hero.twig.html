@@ -1,0 +1,16 @@
+<div class="heroesprofile-hero m-1" style="order: {{ heroSuggestion.order }};" title="{{ hero.name }} - Value: {{ heroSuggestion.value }}">
+    <div class="heroesprofile-hero-image" style="position: relative;">
+        <img class="img-fluid" src="{{ heroSuggestion.image }}" alt="{{ heroSuggestion.name }}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%2280%22%3E%3Crect fill=%22%23333%22 width=%22100%22 height=%2280%22/%3E%3C/svg%3E'">
+        {% if heroSuggestion.starred %}
+            <span class="heroesprofile-star" title="Recommended/Meta Pick">★</span>
+        {% endif %}
+    </div>
+    <div class="heroesprofile-hero-stats">
+        <span class="badge badge-dark heroesprofile-sort-value" title="{{ sortField }}: {{ heroSuggestion[sortField] }}">
+            {{ heroSuggestion[sortField] | round(1) }}
+        </span>
+        {% if heroSuggestion.starred %}
+            <span class="badge badge-warning" title="Meta Pick">META</span>
+        {% endif %}
+    </div>
+</div>

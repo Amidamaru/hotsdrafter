@@ -225,6 +225,10 @@ class HotsDraftGui extends EventEmitter {
         this.sendEvent("gui", "detection.resume");
     }
 
+    resetDraft() {
+        this.sendEvent("gui", "draft.reset");
+    }
+
     quit() {
         this.sendEvent("gui", "quit");
     }

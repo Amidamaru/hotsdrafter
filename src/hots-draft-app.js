@@ -219,6 +219,9 @@ class HotsDraftApp extends EventEmitter {
             case "detection.resume":
                 this.statusDetectionPaused = false;
                 break;
+            case "draft.reset":
+                this.resetDraft();
+                break;
             case "hero.correct":
                 this.gameData.addHeroCorrection(...parameters);
                 break;
@@ -297,6 +300,17 @@ class HotsDraftApp extends EventEmitter {
     sendDraftState() {
         this.sendEvent("gui", "draft.status", this.statusDraftActive);
     }
+    resetDraft() {
+        console.log("[HotsDraftApp] resetDraft() - Resetting draft data");
+        this.statusDraftActive = false;
+        this.statusGameActive = false;
+        this.statusGameActiveLock = null;
+        this.screen.clear();
+        this.sendDraftState();
+        this.sendDraftData();
+        console.log("[HotsDraftApp] resetDraft() - Draft reset complete, waiting for new draft");
+    }
+
     init() {
         this.initDraftProvider();
         this.initTalentProvider();
@@ -408,7 +422,7 @@ class HotsDraftApp extends EventEmitter {
         if (!this.statusGameActive && (this.screen.getMap() !== null)) {
             setTimeout(() => {
                 this.update();
-            }, 100);
+            }, 500);
         } else {
             this.queueUpdate();
         }

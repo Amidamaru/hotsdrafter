@@ -83,25 +83,43 @@ class IcyVeinsProvider extends HotsTalentSuggestions {
         return new Promise((resolve, reject) => {
             this.talents = null;
             let playerName = this.app.getConfig().getOption("playerName");
+            console.log("[IcyVeins] update() - playerName from config: '" + playerName + "'");
+            console.log("[IcyVeins] update() - statusDraftData: " + (this.app.statusDraftData !== null ? "EXISTS" : "NULL"));
+            
             if ((playerName !== "") && (this.app.statusDraftData !== null)) {
+                console.log("[IcyVeins] update() - Checking " + this.app.statusDraftData.players.length + " players...");
+                
                 // Check the selected hero
                 let playerHero = null;
                 for (let i = 0; i < this.app.statusDraftData.players.length; i++) {
                     let player = this.app.statusDraftData.players[i];
+                    console.log("[IcyVeins] update() - Player " + i + ": name='" + player.playerName + "', hero='" + player.heroName + "', team=" + player.team);
+                    
                     if (player.playerName === playerName) {
+                        console.log("[IcyVeins] update() - MATCH! Player '" + playerName + "' picked hero: '" + player.heroName + "'");
                         playerHero = this.getHeroByName(player.heroName);
+                        console.log("[IcyVeins] update() - getHeroByName result: " + (playerHero !== null ? playerHero.name + " (URL: " + playerHero.url + ")" : "NOT FOUND"));
                         break;
                     }
                 }
                 if (playerHero !== null) {
+                    console.log("[IcyVeins] update() - Setting talents to: " + playerHero.name);
                     this.talents = playerHero;
+                } else {
+                    console.log("[IcyVeins] update() - No hero found for player: " + playerName);
                 }
+            } else {
+                console.log("[IcyVeins] update() - SKIPPING: playerName empty or no draftData");
             }
+            
             if (this.talents === null) {
+                console.log("[IcyVeins] update() - No talents to display");
                 this.emit("change");
                 resolve();
             } else {
+                console.log("[IcyVeins] update() - Parsing build for: " + this.talents.name);
                 this.parseBuild(this.talents).then(() => {
+                    console.log("[IcyVeins] update() - Build parsed successfully");
                     this.emit("change");
                     resolve();
                 }).catch((error) => {

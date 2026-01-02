@@ -15,13 +15,17 @@
                 <h3 data-content="map-name">{{ gui.draft.map }}</h3>
                 {% if gui.draft.teamActive %}
                     <div class="draft-phase mt-2">
-                        <h5 class="text-{% if gui.draft.teamActive == 'blue' %}info{% else %}danger{% endif %}">
-                            {% if gui.draft.teamActive == 'blue' %}
-                                {% if gui.draft.banActive %}BLAU BANNT{% else %}BLAU PICKT{% endif %}
-                            {% else %}
-                                {% if gui.draft.banActive %}ROT BANNT{% else %}ROT PICKT{% endif %}
-                            {% endif %}
-                        </h5>
+                        {% if gui.draft.teamActive == 'unknown' %}
+                            <h5 class="text-warning">❓ KEINE AHNUNG</h5>
+                        {% else %}
+                            <h5 class="text-{% if gui.draft.teamActive == 'blue' %}info{% else %}danger{% endif %}">
+                                {% if gui.draft.teamActive == 'blue' %}
+                                    {% if gui.draft.banActive %}BLAU BANNT{% else %}BLAU PICKT{% endif %}
+                                {% else %}
+                                    {% if gui.draft.banActive %}ROT BANNT{% else %}ROT PICKT{% endif %}
+                                {% endif %}
+                            </h5>
+                        {% endif %}
                     </div>
                 {% endif %}
             </div>
@@ -32,7 +36,9 @@
             </div>
         </div>
         <div class="suggestions mt-2">
-            {% include "../"~gui.draft.provider.template with gui.draft.provider.templateData %}
+            {% if gui.draft.talentProvider %}
+                {% include "../"~gui.draft.talentProvider.template with gui.draft.talentProvider.templateData %}
+            {% endif %}
         </div>
     </div>
     <div class="team-red align-self-stretch bg-danger border-left border-danger p-2">

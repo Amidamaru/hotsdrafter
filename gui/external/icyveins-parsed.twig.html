@@ -1,5 +1,8 @@
 <div class="container">
-    <h2 class="text-center">{{ talents.name }} - Builds and Tips</h2>
+    <div class="text-center mb-3">
+        <h2 style="display: inline-block; margin-right: 10px;">{{ talents.name }} - Builds and Tips</h2>
+        <button class="btn btn-sm btn-info" onclick="send('talentProvider.refresh')">🔄 Refresh</button>
+    </div>
 
     {% if (talents.parsed.strengths is not empty) or (talents.parsed.weaknesses is not empty) %}
     <div class="row icyveins-hero-strengths-and-weaknesses mb-3">

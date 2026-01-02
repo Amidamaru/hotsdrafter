@@ -60,20 +60,27 @@ class HotsGameData extends EventEmitter {
                 "TEMPEL VON HANAMURA": "HANAMURA TEMPLE",
                 "ALTERACPASS": "ALTERAC PASS",
                 "SCHLACHTFELD DER EWIGKEIT": "BATTLEFIELD OF ETERNITY",
-                "SCHWARZHERZS BUCHT": "BLACKHEART'S BAY",
-                "BRAXIS WAFFENPLATZ": "BRAXIS HOLDOUT",
+                "SCHWARZHERZS' RACHE": "BLACKHEART'S BAY",
+                "SCHWARZHERZ RACHE": "BLACKHEART'S BAY",
+                "AUSSENPOSTEN BRAXIS": "BRAXIS HOLDOUT",
                 "VERFLUCHTES TAL": "CURSED HOLLOW",
-                "DAS DRACHENHEIM": "DRAGON SHIRE",
-                "GARTEN DES SCHRECKENS": "GARDEN OF TERROR",
-                "VERFLUCHTE GRUBENBAU": "HAUNTED MINES",
+                "DRACHENGARTEN": "DRAGON SHIRE",
+                "DRACHENGÄRTEN": "DRAGON SHIRE",
+                "GARTEN DER ANGSTE": "GARDEN OF TERROR",
+                "GARTEN DER ÄNGSTE": "GARDEN OF TERROR",
+                "GEISTERMINEN": "HAUNTED MINES",
                 "HÖLLENFEUER-SCHREINE": "INFERNAL SHRINES",
-                "HÖHLEN DES VERLORENEN FELDZUGES": "LOST CAVERNS",
-                "HIMMELSTEMPEL": "SKY TEMPLE",
+                "HÖLLENSCHREINE": "INFERNAL SHRINES",
+                "HOLLENSCHREINE": "INFERNAL SHRINES",
+                "VERGESSENE HÖHLE": "LOST CAVERNS",
+                "VERGESSENE HOHLE": "LOST CAVERNS",
+                "TEMPEL DES HIMMELS": "SKY TEMPLE",
                 "GRABKAMMER DER SPINNENKONIGIN": "TOMB OF THE SPIDER QUEEN",
                 "GRABKAMMER DER SPINNENKÖNIGIN": "TOMB OF THE SPIDER QUEEN",
-                "TÜRME DES VERDERBENS": "TOWERS OF DOOM",
-                "VOLSKAYA-FABRIK": "VOLSKAYA FOUNDRY",
-                "SPRENGSTOFFFRACHTER": "WARHEAD JUNCTION"
+                "TÜRME DES UNHEILS": "TOWERS OF DOOM",
+                "TURME DES UNHEILS": "TOWERS OF DOOM",
+                "VOLSKAYA-FERTIGUNG": "VOLSKAYA FOUNDRY",
+                "SPRENGKOPFMANUFAKTUR": "WARHEAD JUNCTION"
             }
         };
         this.heroTranslations = {
@@ -89,7 +96,7 @@ class HotsGameData extends EventEmitter {
                 "Auriel": "Auriel",
                 "Azmodan": "Azmodan",
                 "Blaze": "Blaze",
-                "Brightwing": "Brightwing",
+                "Funkelchen": "Brightwing",
                 "Cassia": "Cassia",
                 "Chen": "Chen",
                 "Cho": "Cho",
@@ -123,7 +130,7 @@ class HotsGameData extends EventEmitter {
                 "Li Li": "Li Li",
                 "Li-Ming": "Li-Ming",
                 "Lt. Morales": "Lt. Morales",
-                "Lúcio": "Lúcio",
+                "Lucio": "Lúcio",
                 "Lunara": "Lunara",
                 "Maiev": "Maiev",
                 "Mal'Ganis": "Mal'Ganis",
@@ -321,6 +328,11 @@ class HotsGameData extends EventEmitter {
         if (typeof language === "undefined") {
             language = this.language;
         }
+        
+        // First, apply fixHeroName to normalize and apply substitutions (e.g., "LUCIO" -> "LÚCIO")
+        name = this.fixHeroName(name);
+        
+        // Then check corrections table for user-provided mappings
         if (!this.heroes.corrections.hasOwnProperty(language)) {
           this.heroes.corrections[language] = {};
         }
@@ -349,11 +361,16 @@ class HotsGameData extends EventEmitter {
         return name;
     }
     fixHeroName(name) {
-        name = name.toUpperCase().trim();
-        if (this.substitutions.hasOwnProperty(name)) {
-          name = this.substitutions[name];
+        name = name.trim();
+        // Check substitutions table (case-insensitive) BEFORE converting to uppercase
+        let nameLower = name.toLowerCase();
+        for (let key in this.substitutions) {
+            if (key.toLowerCase() === nameLower) {
+                return this.substitutions[key];
+            }
         }
-        return name;
+        // If no substitution found, just return uppercase
+        return name.toUpperCase();
     }
     getMapId(mapName, language) {
         if (typeof language === "undefined") {
@@ -448,6 +465,18 @@ class HotsGameData extends EventEmitter {
         
         ocrText = ocrText.trim();
         
+        // First, check if we have a direct translation (e.g., German -> English)
+        // This handles cases like "FUNKELCHEN" -> "Brightwing"
+        if (this.heroTranslations.hasOwnProperty("de-de")) {
+            for (let germanName in this.heroTranslations["de-de"]) {
+                if (germanName.toUpperCase() === ocrText.toUpperCase()) {
+                    let englishName = this.heroTranslations["de-de"][germanName];
+                    console.log("[findBestHeroNameMatch] OCR: '" + ocrText + "' -> Direct translation: '" + englishName + "'");
+                    return englishName.toUpperCase();
+                }
+            }
+        }
+        
         // Helper: Calculate simple string similarity (0-1, higher is better)
         const stringSimilarity = (str1, str2) => {
             str1 = str1.toLowerCase();
@@ -456,8 +485,17 @@ class HotsGameData extends EventEmitter {
             // Exact match
             if (str1 === str2) return 1.0;
             
-            // One contains the other
-            if (str1.includes(str2) || str2.includes(str1)) return 0.9;
+            // One contains the other - BUT: Only if the shorter string is at least 60% of the longer
+            // This prevents "CHEN" matching "FUNKELCHEN"
+            let minLen = Math.min(str1.length, str2.length);
+            let maxLen = Math.max(str1.length, str2.length);
+            if (str1.includes(str2) || str2.includes(str1)) {
+                if (minLen / maxLen >= 0.6) {
+                    return 0.9;
+                } else {
+                    return 0.5; // Lower score for partial matches with big length difference
+                }
+            }
             
             // Check if str1 starts with str2 or vice versa
             if (str1.startsWith(str2) || str2.startsWith(str1)) return 0.8;
@@ -812,11 +850,13 @@ class HotsGameData extends EventEmitter {
             
             let heroCount = 0;
             heroList.forEach(heroName => {
-                // Convert hero name to ID (lowercase, remove special characters)
+                // Convert hero name to ID (lowercase, remove special characters AND accents)
                 let heroId = heroName
                     .toLowerCase()
-                    .replace(/[.']/g, '')  // Remove apostrophes and periods
-                    .replace(/\s+/g, '');   // Remove spaces
+                    .normalize('NFD')                   // Decompose accents
+                    .replace(/[\u0300-\u036f]/g, '')    // Remove diacritics
+                    .replace(/[.']/g, '')               // Remove apostrophes and periods
+                    .replace(/\s+/g, '');               // Remove spaces
                 
                 self.addHero(heroId, heroName, language);
                 self.addHeroDetails(heroId, {name: heroName, slug: heroId}, language);

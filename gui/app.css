@@ -101,7 +101,8 @@
 .team-blue-bans .card-img-top,
 .team-red-bans .card-img-top {
     height: 64px;
-    width: auto;
+    width: 108px;
+    object-fit: cover;
 }
 
 .provider-heroescounters .heroescounters-hero {

@@ -192,15 +192,9 @@ class HotsDraftScreen extends EventEmitter {
         if (!this.debugEnabled()) {
             return;
         }
-        let imgOriginalBase64 = null;
-        let imgCleanupBase64 = null;
-        // Save images to get buffers
-        const tempDebugPath1 = "debug/debug_orig_" + Date.now() + ".png";
-        const tempDebugPath2 = "debug/debug_clean_" + Date.now() + ".png";
-        imgOriginal.write(tempDebugPath1);
-        imgCleanup.write(tempDebugPath2);
-        imgOriginalBase64 = fs.readFileSync(tempDebugPath1).toString('base64');
-        imgCleanupBase64 = fs.readFileSync(tempDebugPath2).toString('base64');
+        // Convert Jimp images directly to Base64 in memory without file system
+        let imgOriginalBase64 = imgOriginal.getBuffer('image/png').toString('base64');
+        let imgCleanupBase64 = imgCleanup.getBuffer('image/png').toString('base64');
         
         // Push debug data
         this.debugData.push({
@@ -404,6 +398,9 @@ class HotsDraftScreen extends EventEmitter {
                 console.log("[HotsDraftScreen] detectTimer() - Found BLUE team timer");
                 this.teamActive = "blue";
                 this.banActive = false;
+                console.log("╔════════════════════════════════════════╗");
+                console.log("║  🔵 BLAU WÄHLT (PICK)                 ║");
+                console.log("╚════════════════════════════════════════╝");
                 resolve(true);
                 return;
             } else if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["red"])) {
@@ -411,6 +408,9 @@ class HotsDraftScreen extends EventEmitter {
                 console.log("[HotsDraftScreen] detectTimer() - Found RED team timer");
                 this.teamActive = "red";
                 this.banActive = false;
+                console.log("╔════════════════════════════════════════╗");
+                console.log("║  🔴 ROT WÄHLT (PICK)                  ║");
+                console.log("╚════════════════════════════════════════╝");
                 resolve(true);
                 return;
           } else if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["ban"])) {
@@ -477,12 +477,18 @@ class HotsDraftScreen extends EventEmitter {
                     console.log("[HotsDraftScreen] detectTimer() - RED team is banning (more matches)");
                     this.teamActive = "red";
                     this.banActive = true;
+                    console.log("╔════════════════════════════════════════╗");
+                    console.log("║  🔴 ROT BANNT                         ║");
+                    console.log("╚════════════════════════════════════════╝");
                     resolve(true);
                     return;
                 } else if (blueMatchCount > redMatchCount) {
                     console.log("[HotsDraftScreen] detectTimer() - BLUE team is banning (more matches)");
                     this.teamActive = "blue";
                     this.banActive = true;
+                    console.log("╔════════════════════════════════════════╗");
+                    console.log("║  🔵 BLAU BANNT                        ║");
+                    console.log("╚════════════════════════════════════════╝");
                     resolve(true);
                     return;
                 } else if (blueMatchCount === redMatchCount && blueMatchCount > 0) {
@@ -496,8 +502,12 @@ class HotsDraftScreen extends EventEmitter {
                     // Fall through to error below
                 }
             }
-            this.teamActive = null;
+            this.teamActive = "unknown";
+            this.banActive = false;
             console.log("[HotsDraftScreen] detectTimer() - ERROR: Could not find any timer colors (blue/red/ban)");
+            console.log("╔════════════════════════════════════════╗");
+            console.log("║  ❓ KEINE AHNUNG                      ║");
+            console.log("╚════════════════════════════════════════╝");
             reject(new Error("Failed to detect pick counter"));
         });
     }
@@ -821,13 +831,13 @@ class HotsDraftScreen extends EventEmitter {
                     return;
                 }
                 
-                console.log("[HeroName] detectHeroName() - Reading buffer from file");
+                if(this.debugEnabled()) console.log("[HeroName] detectHeroName() - Reading buffer from file");
                 const buffer = fs.readFileSync(tempHeroPath);
-                console.log("[HeroName] detectHeroName() - Buffer read, size: " + buffer.length);
+                if(this.debugEnabled()) console.log("[HeroName] detectHeroName() - Buffer read, size: " + buffer.length);
                 
                 detections.push(
                     Promise.resolve(buffer).then((buffer) => {
-                        console.log("[HeroName OCR] " + team.color + " player " + index + " - Starting Tesseract OCR with languages: " + JSON.stringify(this.tessLangs));
+                        if(this.debugEnabled()) console.log("[HeroName OCR] " + team.color + " player " + index + " - Starting Tesseract OCR with languages: " + JSON.stringify(this.tessLangs));
                         imageHeroName = buffer;
                         return ocrCluster.recognize(buffer, this.tessLangs, this.tessParamsHeroName);
                     }).then((result) => {
@@ -844,18 +854,22 @@ class HotsDraftScreen extends EventEmitter {
                             console.log("[HeroName OCR] " + team.color + " player " + index + " - TEXT TOO SHORT (< 3 chars), ignoring as noise");
                             return null;
                         }
-                        if (result.confidence < 50) {
-                            console.log("[HeroName OCR] " + team.color + " player " + index + " - CONFIDENCE TOO LOW (" + result.confidence + " < 50), ignoring as noise");
-                            return null;
-                        }
+                        
                         // Check if it's only common OCR noise characters (C, N, X, O, I, 0, 1)
                         if (/^[CNXOI01\s]+$/i.test(ocrRawText)) {
                             console.log("[HeroName OCR] " + team.color + " player " + index + " - ONLY NOISE CHARACTERS ('" + ocrRawText + "'), ignoring");
                             return null;
                         }
                         
+                        // Apply substitutions first (e.g., "LUCIO" -> "LÚCIO")
                         let heroName = this.app.gameData.correctHeroName(ocrRawText);
                         console.log("[HeroName OCR] " + team.color + " player " + index + " - AFTER correctHeroName: '" + heroName + "'");
+                        
+                        // Check confidence AFTER substitution - known names can have lower confidence
+                        if (result.confidence < 38) {
+                            console.log("[HeroName OCR] " + team.color + " player " + index + " - CONFIDENCE TOO LOW (" + result.confidence + " < 40), ignoring as noise");
+                            return null;
+                        }
                         
                         // If hero name doesn't exist, try fuzzy matching to find best match
                         if (!this.app.gameData.heroExists(heroName, this.app.gameData.language)) {

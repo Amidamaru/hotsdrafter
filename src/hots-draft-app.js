@@ -39,6 +39,8 @@ class HotsDraftApp extends EventEmitter {
         this.statusDetectionRunning = false;
         this.statusDetectionPaused = false;
         this.statusUpdatePending = false;
+        this.lastPlayerHero = null;  // Track hero changes for auto-refresh
+        this.talentUpdateTimeout = null;  // Debounce talent provider updates
         // Initialize
         this.registerEvents();
     }
@@ -91,6 +93,11 @@ class HotsDraftApp extends EventEmitter {
                         });
                     }
                 }
+            }
+        });
+        this.screen.on("detect.teams.update", () => {
+            if (this.statusDraftActive) {
+                this.sendDraftData();
             }
         });
         this.screen.on("detect.error", (error) => {
@@ -237,6 +244,13 @@ class HotsDraftApp extends EventEmitter {
             case "talentProvider.reload":
                 this.initTalentProvider();
                 break;
+            case "talentProvider.refresh":
+                console.log("[HotsDraftApp] Refreshing talent provider...");
+                this.talentProvider.update().then(() => {
+                    console.log("[HotsDraftApp] Talent provider refreshed");
+                    // Don't call sendTalentData() here - the provider emits 'change' event
+                });
+                break;
             case "update.forced":
                 this.updateForced();
                 break;
@@ -254,9 +268,39 @@ class HotsDraftApp extends EventEmitter {
         this.sendEvent("gui", "config", HotsHelpers.getConfig().options);
     }
     sendDraftData() {
-        let draftData = this.collectDraftData();
-        console.log("[HotsDraftApp] sendDraftData() - Sending draft with " + draftData.bans.length + " bans, " + draftData.players.length + " players, teamActive=" + draftData.teamActive + ", banActive=" + draftData.banActive);
-        this.sendEvent("gui", "draft", draftData);
+        // Update statusDraftData first so providers can access it
+        this.statusDraftData = this.collectDraftData();
+        console.log("[HotsDraftApp] sendDraftData() - Sending draft with " + this.statusDraftData.bans.length + " bans, " + this.statusDraftData.players.length + " players, teamActive=" + this.statusDraftData.teamActive + ", banActive=" + this.statusDraftData.banActive);
+        
+        // Auto-update talent provider when player hero changes (debounced to prevent spam)
+        let currentPlayerHero = null;
+        let playerName = this.getConfig().getOption("playerName");
+        for (let i = 0; i < this.statusDraftData.players.length; i++) {
+            if (this.statusDraftData.players[i].playerName === playerName) {
+                currentPlayerHero = this.statusDraftData.players[i].heroName;
+                break;
+            }
+        }
+        
+        // If hero changed, schedule talent provider update (debounced - max once per 500ms)
+        if (currentPlayerHero !== this.lastPlayerHero && currentPlayerHero !== null) {
+            console.log("[HotsDraftApp] sendDraftData() - Player hero changed from '" + (this.lastPlayerHero || "none") + "' to '" + currentPlayerHero + "', scheduling talent provider update");
+            this.lastPlayerHero = currentPlayerHero;
+            
+            // Clear existing timeout
+            if (this.talentUpdateTimeout) {
+                clearTimeout(this.talentUpdateTimeout);
+            }
+            
+            // Schedule update with 500ms debounce
+            this.talentUpdateTimeout = setTimeout(() => {
+                console.log("[HotsDraftApp] Debounced talent provider update executing...");
+                this.talentProvider.update();
+                this.talentUpdateTimeout = null;
+            }, 500);
+        }
+        
+        this.sendEvent("gui", "draft", this.statusDraftData);
     }
     sendTalentData() {
         this.sendEvent("gui", "talents", this.collectTalentData());
@@ -618,7 +662,7 @@ class HotsDraftApp extends EventEmitter {
     triggerGameStart() {
         // Game started
         this.updateDraftData();
-        this.sendTalentData();
+        // Don't send talent data here - wait for auto-update when hero is picked
         this.screen.clear();
         this.emit("game.started");
         this.sendEvent("gui", "game.start");
@@ -643,6 +687,7 @@ class HotsDraftApp extends EventEmitter {
             teamActive: this.screen.getTeamActive(),
             banActive: this.screen.banActive,
             provider: this.collectProviderData(this.draftProvider),
+            talentProvider: this.collectProviderData(this.talentProvider),
             bans: [],
             bansLocked: {},
             players: []

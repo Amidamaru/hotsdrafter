@@ -62,7 +62,7 @@ class HotsGameData extends EventEmitter {
                 "SCHLACHTFELD DER EWIGKEIT": "BATTLEFIELD OF ETERNITY",
                 "SCHWARZHERZS BUCHT": "BLACKHEART'S BAY",
                 "BRAXIS WAFFENPLATZ": "BRAXIS HOLDOUT",
-                "DER VERFLUCHTE HOHLE": "CURSED HOLLOW",
+                "VERFLUCHTES TAL": "CURSED HOLLOW",
                 "DAS DRACHENHEIM": "DRAGON SHIRE",
                 "GARTEN DES SCHRECKENS": "GARDEN OF TERROR",
                 "VERFLUCHTE GRUBENBAU": "HAUNTED MINES",
@@ -74,6 +74,100 @@ class HotsGameData extends EventEmitter {
                 "TÜRME DES VERDERBENS": "TOWERS OF DOOM",
                 "VOLSKAYA-FABRIK": "VOLSKAYA FOUNDRY",
                 "SPRENGSTOFFFRACHTER": "WARHEAD JUNCTION"
+            }
+        };
+        this.heroTranslations = {
+            "de-de": {
+                "Abathur": "Abathur",
+                "Alarak": "Alarak",
+                "Alexstrasza": "Alexstrasza",
+                "Ana": "Ana",
+                "Anduin": "Anduin",
+                "Anub'arak": "Anub'arak",
+                "Artanis": "Artanis",
+                "Arthas": "Arthas",
+                "Auriel": "Auriel",
+                "Azmodan": "Azmodan",
+                "Blaze": "Blaze",
+                "Brightwing": "Brightwing",
+                "Cassia": "Cassia",
+                "Chen": "Chen",
+                "Cho": "Cho",
+                "Chromie": "Chromie",
+                "D.Va": "D.Va",
+                "Todesschwinge": "Deathwing",
+                "Deckard": "Deckard",
+                "Dehaka": "Dehaka",
+                "Diablo": "Diablo",
+                "E.T.C.": "E.T.C.",
+                "Falstad": "Falstad",
+                "Fenix": "Fenix",
+                "Gall": "Gall",
+                "Garrosh": "Garrosh",
+                "Gazlowe": "Gazlowe",
+                "Genji": "Genji",
+                "Graumähne": "Greymane",
+                "Gul'dan": "Gul'dan",
+                "Hanzo": "Hanzo",
+                "Hogger": "Hogger",
+                "Illidan": "Illidan",
+                "Imperius": "Imperius",
+                "Jaina": "Jaina",
+                "Johanna": "Johanna",
+                "Junkrat": "Junkrat",
+                "Kael'thas": "Kael'thas",
+                "Kel'Thuzad": "Kel'Thuzad",
+                "Kerrigan": "Kerrigan",
+                "Kharazim": "Kharazim",
+                "Leoric": "Leoric",
+                "Li Li": "Li Li",
+                "Li-Ming": "Li-Ming",
+                "Lt. Morales": "Lt. Morales",
+                "Lúcio": "Lúcio",
+                "Lunara": "Lunara",
+                "Maiev": "Maiev",
+                "Mal'Ganis": "Mal'Ganis",
+                "Malfurion": "Malfurion",
+                "Malthael": "Malthael",
+                "Medivh": "Medivh",
+                "Mei": "Mei",
+                "Mephisto": "Mephisto",
+                "Muradin": "Muradin",
+                "Murky": "Murky",
+                "Nazeebo": "Nazeebo",
+                "Nova": "Nova",
+                "Orphea": "Orphea",
+                "Probius": "Probius",
+                "Qhira": "Qhira",
+                "Ragnaros": "Ragnaros",
+                "Raynor": "Raynor",
+                "Rehgar": "Rehgar",
+                "Rexxar": "Rexxar",
+                "Samuro": "Samuro",
+                "Sgt. Hammer": "Sgt. Hammer",
+                "Sonya": "Sonya",
+                "Kleiner": "Stitches",
+                "Stukov": "Stukov",
+                "Sylvanas": "Sylvanas",
+                "Tassadar": "Tassadar",
+                "DER SCHLÄCHTER": "The Butcher",
+                "The Lost Vikings": "The Lost Vikings",
+                "Thrall": "Thrall",
+                "Tracer": "Tracer",
+                "Tychus": "Tychus",
+                "Tyrael": "Tyrael",
+                "Tyrande": "Tyrande",
+                "Uther": "Uther",
+                "Valeera": "Valeera",
+                "Valla": "Valla",
+                "Varian": "Varian",
+                "Whitemane": "Whitemane",
+                "Xul": "Xul",
+                "Yrel": "Yrel",
+                "Zagara": "Zagara",
+                "Zarya": "Zarya",
+                "Zeratul": "Zeratul",
+                "Zul'jin": "Zul'jin"
             }
         };
         this.replays = {
@@ -345,6 +439,62 @@ class HotsGameData extends EventEmitter {
         let heroId = this.getHeroId(heroName);
         // Return the hero name in the desired language
         return this.getHeroName(heroId, language);
+    }
+    findBestHeroNameMatch(ocrText, language) {
+        // Fuzzy match to find the best hero name from the list
+        if (typeof language === "undefined") {
+            language = this.language;
+        }
+        
+        ocrText = ocrText.trim();
+        
+        // Helper: Calculate simple string similarity (0-1, higher is better)
+        const stringSimilarity = (str1, str2) => {
+            str1 = str1.toLowerCase();
+            str2 = str2.toLowerCase();
+            
+            // Exact match
+            if (str1 === str2) return 1.0;
+            
+            // One contains the other
+            if (str1.includes(str2) || str2.includes(str1)) return 0.9;
+            
+            // Check if str1 starts with str2 or vice versa
+            if (str1.startsWith(str2) || str2.startsWith(str1)) return 0.8;
+            
+            // Levenshtein-like distance: count matching characters at start
+            let matchCount = 0;
+            for (let i = 0; i < Math.min(str1.length, str2.length); i++) {
+                if (str1[i] === str2[i]) matchCount++;
+                else break;
+            }
+            if (matchCount > 0) return 0.5 + (matchCount / Math.max(str1.length, str2.length)) * 0.5;
+            
+            return 0;
+        };
+        
+        // Get all hero names in the desired language
+        let heroNames = this.getHeroNames(language);
+        let bestMatch = null;
+        let bestScore = 0;
+        
+        for (let heroId in heroNames) {
+            let heroName = heroNames[heroId];
+            let score = stringSimilarity(ocrText, heroName);
+            
+            if (score > bestScore) {
+                bestScore = score;
+                bestMatch = heroName;
+            }
+        }
+        
+        // Only return a match if similarity is reasonably high (> 0.6)
+        if (bestScore > 0.6) {
+            console.log("[findBestHeroNameMatch] OCR: '" + ocrText + "' -> Best match: '" + bestMatch + "' (score: " + bestScore.toFixed(2) + ")");
+            return bestMatch;
+        }
+        
+        return null;
     }
     getHeroNames(language) {
         if (typeof language === "undefined") {

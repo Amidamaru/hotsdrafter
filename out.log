@@ -1,0 +1,1742 @@
+
+> hotsdrafter@1.2.6 start
+> electron-forge start
+
+[33mÔØ»[39m Checking your system
+[33mÔØ»[39m Checking package manager version
+[32mÔ£ö[39m Found npm@11.6.2
+[32mÔ£ö[39m Checking your system
+[?25h[33mÔØ»[39m Locating application
+[32mÔ£ö[39m Locating application
+[33mÔØ»[39m Loading configuration
+[32mÔ£ö[39m Loading configuration
+[33mÔØ»[39m Preparing native dependencies
+[32mÔ£ö[39m Preparing native dependencies
+[33mÔØ»[39m Running generateAssets hook
+[32mÔ£ö[39m Running generateAssets hook
+[33mÔØ»[39m Running preStart hook
+[32mÔ£ö[39m Running preStart hook
+[32mÔ£ö[39m Launched Electron app. Type rs in terminal to restart main process.
+[?25h
+
+[Main] Found 2 display(s)
+[Main] Display 0: HP 25x - bounds: x=2039, y=175, width=1423, height=801
+[Main] Display 1: LG ULTRAGEAR - bounds: x=0, y=0, width=2039, height=854
+[Main] Opening app on primary display (HP 25x): 1423x801
+[3264:0102/003346.891:ERROR:CONSOLE:1] "Request Autofill.enable failed. {"code":-32601,"message":"'Autofill.enable' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+[3264:0102/003346.891:ERROR:CONSOLE:1] "Request Autofill.setAddresses failed. {"code":-32601,"message":"'Autofill.setAddresses' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+[GameData] load() - Cache version: 5, languageOptions count: 2
+[GameData] load() - After load, languageOptions count: 2
+[GameData] initializeStaticHeroes() - Loaded 180 heroes
+[HotsDraftApp] registerEvents() - Sending initial gameData and displays to GUI
+[HotsDraftApp] sendGameData() - Sending languageOptions, heroes, maps, etc. to GUI
+[HotsDraftApp] startInit() - Called, scheduling init() after 100ms
+[GameData] Starting update()...
+[HotsDraftApp] sendReadyState() - Sending ready.status=false to GUI
+[GameData] update() - Starting updateReplays...
+[GameData] update() - Starting updateSaves...
+[GameData] update() - Starting updateMaps(en-us)...
+[GameData] update() - Starting updateHeroes(en-us)...
+[GameData] updateReplays() - No accounts or storage dir configured, skipping
+[GameData] updateMaps(en-us) - Starting...
+[GameData] updateMaps(en-us) - Fetching from https://www.heroescounters.com/map
+[GameData] updateHeroes(en-us) - Starting...
+[GameData] updateHeroes(en-us) - Calling updateHeroesFromResponse...
+Loaded 90 heroes from hardcoded list
+[GameData] update() - Adding language-specific updates for de
+[GameData] updateMaps(de) - Starting...
+[GameData] updateMaps(de) - Skipping (only en-us supported)
+[GameData] updateHeroes(de) - Starting...
+[GameData] updateHeroes(de) - Calling updateHeroesFromResponse...
+Loaded 90 heroes from hardcoded list
+[HotsDraftApp] sendGameData() - Sending languageOptions, heroes, maps, etc. to GUI
+[GameData] updateHeroes(en-us) - updateHeroesFromResponse done
+[GameData] updateHeroes(de) - updateHeroesFromResponse done
+[GameData] updateHeroes(en-us) - Done, calling progressTaskDone()
+[GameData] updateHeroes(de) - Done, calling progressTaskDone()
+[HotsDraftApp] startInit() - Now calling init()
+[GameData] Starting update()...
+[HotsDraftApp] sendReadyState() - Sending ready.status=false to GUI
+[GameData] update() - Starting updateReplays...
+[GameData] update() - Starting updateSaves...
+[GameData] update() - Starting updateMaps(en-us)...
+[GameData] update() - Starting updateHeroes(en-us)...
+[GameData] updateMaps(en-us) - Starting...
+[GameData] updateMaps(en-us) - Fetching from https://www.heroescounters.com/map
+[GameData] updateHeroes(en-us) - Starting...
+[GameData] updateHeroes(en-us) - Calling updateHeroesFromResponse...
+Loaded 90 heroes from hardcoded list
+[GameData] update() - Adding language-specific updates for de
+[GameData] updateMaps(de) - Starting...
+[GameData] updateMaps(de) - Skipping (only en-us supported)
+[GameData] updateHeroes(de) - Starting...
+[GameData] updateHeroes(de) - Calling updateHeroesFromResponse...
+Loaded 90 heroes from hardcoded list
+[HotsDraftApp] sendGameData() - Sending languageOptions, heroes, maps, etc. to GUI
+[GameData] updateHeroes(en-us) - updateHeroesFromResponse done
+[GameData] updateHeroes(de) - updateHeroesFromResponse done
+[GameData] updateHeroes(en-us) - Done, calling progressTaskDone()
+[GameData] updateHeroes(de) - Done, calling progressTaskDone()
+[HotsDraftApp] detectDisplays() - Found 2 display(s)
+[HotsDraftApp] updateReadyState() - ready=false, statusGameDataPending=true, displays=YES
+[HotsDraftApp] updateReadyState() - Check: !statusGameDataPending=false, displays!==null=true
+[HotsDraftApp] updateReadyState() - NOT ready yet: statusGameDataPending=true, displays=true
+[HotsDraftApp] detectDisplays() - Found 2 display(s)
+[HotsDraftApp] updateReadyState() - ready=false, statusGameDataPending=true, displays=YES
+[HotsDraftApp] updateReadyState() - Check: !statusGameDataPending=false, displays!==null=true
+[HotsDraftApp] updateReadyState() - NOT ready yet: statusGameDataPending=true, displays=true
+[GameData] updateMaps(en-us) - Got response with status 200
+[GameData] updateMaps(en-us) - Got 10503 bytes, parsing...
+Loaded 16 maps from heroescounters.com
+[GameData] updateMaps(en-us) - Maps parsing done
+[GameData] updateMaps(en-us) - Done, calling progressTaskDone()
+[GameData] update() - All promises settled, resolving...
+[GameData] update() - Final then(), calling progressTaskDone()
+[GameData] update() - Emitting update.done
+[HotsDraftApp] sendGameData() - Sending languageOptions, heroes, maps, etc. to GUI
+[HotsDraftApp] updateReadyState() - ready=false, statusGameDataPending=false, displays=YES
+[HotsDraftApp] updateReadyState() - Check: !statusGameDataPending=true, displays!==null=true
+[HotsDraftApp] updateReadyState() - Setting ready=true and emitting 'ready' event
+[HotsDraftApp] sendReadyState() - Sending ready.status=true to GUI
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[GameData] updateMaps(en-us) - Got response with status 200
+[GameData] updateMaps(en-us) - Got 10503 bytes, parsing...
+Loaded 16 maps from heroescounters.com
+[GameData] updateMaps(en-us) - Maps parsing done
+[GameData] updateMaps(en-us) - Done, calling progressTaskDone()
+[GameData] update() - All promises settled, resolving...
+[GameData] update() - Final then(), calling progressTaskDone()
+[GameData] update() - Emitting update.done
+[HotsDraftApp] sendGameData() - Sending languageOptions, heroes, maps, etc. to GUI
+[HotsDraftApp] updateReadyState() - ready=true, statusGameDataPending=false, displays=YES
+[HotsDraftApp] updateReadyState() - Already ready, skipping
+[loadBanImages] Loaded abathur (hash: 1f075b0b...)
+[loadBanImages] Loaded alexstrasza (hash: 0d3e1c3e...)
+[loadBanImages] Loaded alarak (hash: 9c1e1e1e...)
+[loadBanImages] Loaded ana (hash: 1c3e6475...)
+[loadBanImages] Loaded anduin (hash: c3999d19...)
+[loadBanImages] Loaded anubarak (hash: a7c1c745...)
+[loadBanImages] Loaded artanis (hash: 0f0f0f8e...)
+[loadBanImages] Loaded arthas (hash: 0f0f0f27...)
+[loadBanImages] Loaded auriel (hash: 9e23a3a3...)
+[loadBanImages] Loaded azmodan (hash: 1e1e0b3d...)
+[loadBanImages] Loaded blaze (hash: f8387c98...)
+[loadBanImages] Loaded brightwing (hash: 531e183f...)
+[loadBanImages] Loaded cassia (hash: 093f0f1e...)
+[loadBanImages] Loaded chen (hash: f1a12cbc...)
+[loadBanImages] Loaded cho (hash: 0f0f9ccc...)
+[loadBanImages] Loaded chromie (hash: 0e4fef01...)
+[loadBanImages] Loaded deckard (hash: c7c4ce8c...)
+[loadBanImages] Loaded deathwing (hash: 647c3c66...)
+[loadBanImages] Loaded dehaka (hash: 0f0f4747...)
+[loadBanImages] Loaded dva (hash: 785cc59c...)
+[loadBanImages] Loaded diablo (hash: 1e1ede09...)
+[loadBanImages] Loaded etc (hash: 1f83c19b...)
+[loadBanImages] Loaded fenix (hash: 0f0f1f16...)
+[loadBanImages] Loaded falstad (hash: 73381c9e...)
+[loadBanImages] Loaded garrosh (hash: 1c5e9e0e...)
+[loadBanImages] Loaded gazlowe (hash: 7c0e0f0f...)
+[loadBanImages] Loaded gall (hash: 889f9ccc...)
+[loadBanImages] Loaded genji (hash: 1c3e3e0e...)
+[loadBanImages] Loaded guldan (hash: 1e1e1b1e...)
+[loadBanImages] Loaded hanzo (hash: 072f1e1e...)
+[loadBanImages] Loaded greymane (hash: 0f0f0f0f...)
+[loadBanImages] Loaded hogger (hash: 43d37171...)
+[loadBanImages] Loaded illidan (hash: c6471f0b...)
+[loadBanImages] Loaded imperius (hash: c7838bc3...)
+[loadBanImages] Loaded jaina (hash: 1c3e3a3c...)
+[loadBanImages] Loaded johanna (hash: 3c3c1c3e...)
+[loadBanImages] Loaded kaelthas (hash: 387c7e0a...)
+[loadBanImages] Loaded junkrat (hash: cf03871e...)
+[loadBanImages] Loaded kelthuzad (hash: 189f3d1c...)
+[loadBanImages] Loaded kerrigan (hash: 79383c3c...)
+[loadBanImages] Loaded kharazim (hash: 183f1c1f...)
+[loadBanImages] Loaded leoric (hash: 1a3d78f0...)
+[loadBanImages] Loaded lili (hash: cf03131f...)
+[loadBanImages] Loaded liming (hash: 2c4f8e1e...)
+[loadBanImages] Loaded ltmorales (hash: e07c6f81...)
+[loadBanImages] Loaded lucio (hash: 1e1e1f0b...)
+[loadBanImages] Loaded lunara (hash: 4c5e331e...)
+[loadBanImages] Loaded maiev (hash: f0f098f4...)
+[loadBanImages] Loaded malfurion (hash: 81cf991d...)
+[loadBanImages] Loaded malganis (hash: 1e3c1f0b...)
+[loadBanImages] Loaded malthael (hash: 189f1f07...)
+[loadBanImages] Loaded medivh (hash: 2763033f...)
+[loadBanImages] Loaded mei (hash: e3c19d98...)
+[loadBanImages] Loaded mephisto (hash: 98d9f8b0...)
+[loadBanImages] Loaded muradin (hash: 195d6d83...)
+[loadBanImages] Loaded murky (hash: 0f0f1c1f...)
+[loadBanImages] Loaded nazeebo (hash: 381ffa18...)
+[loadBanImages] Loaded orphea (hash: 3e32c18f...)
+[loadBanImages] Loaded probius (hash: 3d191e1e...)
+[loadBanImages] Loaded nova (hash: 183f3c5c...)
+[loadBanImages] Loaded qhira (hash: 3c3c3c78...)
+[loadBanImages] Loaded raynor (hash: 1c3e3f09...)
+[loadBanImages] Loaded ragnaros (hash: 06e7c3c3...)
+[loadBanImages] Loaded rehgar (hash: 0f0f8f0d...)
+[loadBanImages] Loaded rexxar (hash: c327078f...)
+[loadBanImages] Loaded samuro (hash: 8d1e3f05...)
+[loadBanImages] Loaded sgthammer (hash: 7e8191b5...)
+[loadBanImages] Loaded sonya (hash: 1c3e1e1b...)
+[loadBanImages] Loaded stitches (hash: 0f1e1e0f...)
+[loadBanImages] Loaded stukov (hash: 1a3d1e1e...)
+[loadBanImages] Loaded sylvanas (hash: 0f0f2e0f...)
+[loadBanImages] Loaded tassadar (hash: 1c3e3e0d...)
+[loadBanImages] Loaded thebutcher (hash: 5c3913d9...)
+[loadBanImages] Loaded thrall (hash: 071f1f2c...)
+[loadBanImages] Loaded thelostvikings (hash: 1c7c163e...)
+[loadBanImages] Loaded tracer (hash: 3c1b0e1f...)
+[loadBanImages] Loaded tychus (hash: 38ce439d...)
+[loadBanImages] Loaded tyrande (hash: 037d8c9e...)
+[loadBanImages] Loaded uther (hash: 0c3f1c9e...)
+[loadBanImages] Loaded tyrael (hash: c0ddc1e3...)
+[loadBanImages] Loaded valeera (hash: cc8d471e...)
+[loadBanImages] Loaded valla (hash: 3c1e474b...)
+[loadBanImages] Loaded varian (hash: 87871b99...)
+[loadBanImages] Loaded whitemane (hash: 7c383c5c...)
+[loadBanImages] Loaded xul (hash: 1c3e0e3e...)
+[loadBanImages] Loaded yrel (hash: 3c1e7325...)
+[loadBanImages] Loaded zagara (hash: 0f0f0f1b...)
+[loadBanImages] Loaded zeratul (hash: 0f5c1c1f...)
+[loadBanImages] Loaded zarya (hash: 3c5c3c3c...)
+[loadBanImages] Loaded zuljin (hash: 8c7c2e1e...)
+[loadBanImages] Loaded 90 hero images with hashes
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[HotsDraftScreen] detectMap() - Saving processed map image to debug/mapName.png
+ALTERAC PASS
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+[HotsDraftApp] sendDraftData() - Sending draft with 0 bans, 0 players
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[blue] Ban 0 [HASH] Top 5: junkrat:100.00, greymane:84.00, fenix:82.00, hanzo:82.00, zagara:82.00
+[blue] Ban 0 [HASH] Best: junkrat distance:0, Second: distance:16, Threshold: 15
+[blue] Ban 0 [HASH] Ban hash: cf03871e1e8e8e4e...
+[blue] Ban 0 [HASH] Match hash: cf03871e1e8e8e4e...
+[blue] Ban 0: junkrat / distance:0 (gap: 16)
+[HeroName DEBUG] Ban 0 - matchBestHero: 'junkrat', heroNameTranslated: 'JUNKRAT', previous value: 'null' (empty: false)
+[HeroName DEBUG] Ban 0 - Updating from 'null' to 'JUNKRAT'
+[blue] Ban 1: EMPTY (no hero selected yet)
+[red] Ban 0 [HASH] Top 5: auriel:100.00, imperius:80.00, lucio:76.00, arthas:74.00, kharazim:74.00
+[red] Ban 0 [HASH] Best: auriel distance:0, Second: distance:20, Threshold: 15
+[red] Ban 0 [HASH] Ban hash: 9e23a3a383e3c387...
+[red] Ban 0 [HASH] Match hash: 9e23a3a383e3c387...
+[red] Ban 0: auriel / distance:0 (gap: 20)
+[HeroName DEBUG] Ban 0 - matchBestHero: 'auriel', heroNameTranslated: 'AURIEL', previous value: 'null' (empty: false)
+[HeroName DEBUG] Ban 0 - Updating from 'null' to 'AURIEL'
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[collectBanData] team=blue, index=0, heroName=JUNKRAT, locked=true
+[collectBanData] team=blue, index=1, heroName=null, locked=false
+[collectBanData] team=red, index=0, heroName=AURIEL, locked=true
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[HotsDraftApp] sendDraftData() - Sending draft with 4 bans, 10 players
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[HotsDraftScreen] detectMap() - Saving processed map image to debug/mapName.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+[GameData] updateReplays() - No accounts or storage dir configured, skipping
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[HotsDraftScreen] detectMap() - Saving processed map image to debug/mapName.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+[GameData] updateReplays() - No accounts or storage dir configured, skipping
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[HotsDraftScreen] detectMap() - Saving processed map image to debug/mapName.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection
+active team:  red
+HERE
+player:  red  - 4  is NOT locked
+[detectTeam] red - Waiting for all detections to complete (6 promises)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] blue player 2 - Image cleanup FAILED (colorIdent: blue-inactive)
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Blue player name when red team is picking - light purple/violet text","color":{"r":158,"g":136,"b":172},"toleranceLum":50,"toleranceHue":35},{"comment":"Blue player name variation - darker areas","color":{"r":140,"g":115,"b":160},"toleranceLum":50,"toleranceHue":35}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 1 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 2 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 3 - Image cleanup FAILED (colorIdent: red-active)
+  playerName colors: [{"comment":"Red team is currently picking/banning","color":{"r":210,"g":130,"b":155},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":200,"g":100,"b":130},"toleranceLum":40,"toleranceHue":15},{"comment":"Red team is currently picking/banning","color":{"r":195,"g":90,"b":105},"toleranceLum":30,"toleranceHue":15}]
+  boost colors: [{"comment":"Brighter parts of the boost icon","color":{"r":100,"g":200,"b":200},"toleranceLum":25,"toleranceHue":20},{"comment":"Darker parts of the boost icon","color":{"r":30,"g":80,"b":95},"toleranceLum":25,"toleranceHue":20}]
+[PlayerName] red player 4 - Image cleanup FAILED (colorIdent: red-active)
+[detectTeam] blue - All detections completed
+[detectTeam] blue - Team detection complete, resolving
+[detectTeam] blue - Emitting success event
+[red] Ban 1 [HASH] Top 5: lili:83.00, zagara:81.00, abathur:79.00, azmodan:79.00, rexxar:79.00
+[red] Ban 1 [HASH] Best: lili distance:17, Second: distance:19, Threshold: 15
+[red] Ban 1 [HASH] Ban hash: 9e07031f01fd01fd...
+[red] Ban 1 [HASH] Match hash: cf03131f393c191f...
+[red] Ban 1: no matching hero found (best distance: 17)
+[PlayerName OCR] blue player 0 - OCR returned null/empty result
+[PlayerName OCR] blue player 1 - OCR returned null/empty result
+[PlayerName OCR] blue player 3 - OCR returned null/empty result
+[PlayerName OCR] blue player 4 - OCR returned null/empty result
+[PlayerName OCR] red player 0 - OCR returned null/empty result
+[detectTeam] red - All detections completed
+[collectBanData] team=red, index=1, heroName=???, locked=false
+[detectTeam] red - Team detection complete, resolving
+[detectTeam] red - Emitting success event
+[HotsDraftApp] Taking screenshot from configured display ID: \\.\DISPLAY1 (3440x1440)
+[HotsDraftScreen] detectTimer() - Checking timer area at pos(1650,53) size(160x150)
+[HotsDraftScreen] detectTimer() - Found RED team timer
+[HotsDraftScreen] detectMap() - Looking for map at pos(1254,5) size(931x50)
+[HotsDraftScreen] detectMap() - Saving raw map area screenshot to debug/mapName_raw.png
+[detectTeam] Starting detection for blue team
+[detectTeam] blue - Starting ban detection
+[blue] Ban 1: EMPTY (no hero selected yet)
+[detectTeam] blue - Starting player 0 detection
+active team:  red
+HERE
+player:  blue  - 0  is NOT locked
+[HeroName PREPICK] Player 0 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 0 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 1 detection
+active team:  red
+HERE
+player:  blue  - 1  is NOT locked
+[HeroName PREPICK] Player 1 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 1 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 2 detection
+active team:  red
+HERE
+player:  blue  - 2  is NOT locked
+[HeroName PREPICK] Player 2 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 2 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 3 detection
+active team:  red
+HERE
+player:  blue  - 3  is NOT locked
+[HeroName PREPICK] Player 3 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 3 - NO PREPICK FOUND
+[detectTeam] blue - Starting player 4 detection
+active team:  red
+HERE
+player:  blue  - 4  is NOT locked
+[HeroName PREPICK] Player 4 - Checking fallback prepick (colorIdent): colorIdent='blue-inactive', cleanupResult=false
+[HeroName PREPICK] Player 4 - NO PREPICK FOUND
+[detectTeam] blue - Waiting for all detections to complete (6 promises)
+[detectTeam] Starting detection for red team
+[detectTeam] red - Starting ban detection
+[detectTeam] red - Starting player 0 detection
+active team:  red
+HERE
+player:  red  - 0  is NOT locked
+[detectTeam] red - Starting player 1 detection
+active team:  red
+HERE
+player:  red  - 1  is NOT locked
+[detectTeam] red - Starting player 2 detection
+active team:  red
+HERE
+player:  red  - 2  is NOT locked
+[detectTeam] red - Starting player 3 detection
+active team:  red
+HERE
+player:  red  - 3  is NOT locked
+[detectTeam] red - Starting player 4 detection

@@ -14,7 +14,7 @@ const TesseractCluster = require('./tesseract-cluster.js');
 const ocrCluster = new TesseractCluster(4);
 
 // Data files
-const DraftLayout = require('../data/draft-layout-3440x1440');
+const DraftLayout = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/draft-layout-3440x1440.jsonc'), 'utf8').replace(/\/\/.*$/gm, ''));
 
 class HotsDraftScreen extends EventEmitter {
 
@@ -24,7 +24,12 @@ class HotsDraftScreen extends EventEmitter {
         this.debugData = [];
         this.updateActive = false;
         this.tessLangs = HotsHelpers.getConfig().getTesseractLanguage();
-        this.tessParams = {};
+        this.tessParams = {
+            tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzäöü0123456789.\' -'
+        };
+        this.tessParamsHeroName = {
+            tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzäöü.\' -'
+        };
         this.offsets = {};
         this.banImages = null;
         this.banHashes = null; // Perceptual hashes for ban images
@@ -428,15 +433,12 @@ class HotsDraftScreen extends EventEmitter {
 
                     console.log(`[HotsDraftScreen] detectTimer() - Checking ${color} team ban area:`);
                     
-                    // Sample MORE points to count matches
+                    // Sample 4 points at specific x positions, all vertically centered
                     let samplePoints = [
-                        { x: Math.floor(banCheckImg.bitmap.width / 2), y: Math.floor(banCheckImg.bitmap.height / 2), name: "Center" },
-                        { x: 10, y: 10, name: "Top-Left" },
-                        { x: banCheckImg.bitmap.width - 10, y: 10, name: "Top-Right" },
-                        { x: 10, y: banCheckImg.bitmap.height - 10, name: "Bottom-Left" },
-                        { x: banCheckImg.bitmap.width - 10, y: banCheckImg.bitmap.height - 10, name: "Bottom-Right" },
-                        { x: Math.floor(banCheckImg.bitmap.width / 4), y: Math.floor(banCheckImg.bitmap.height / 2), name: "Left-Center" },
-                        { x: Math.floor(banCheckImg.bitmap.width * 3 / 4), y: Math.floor(banCheckImg.bitmap.height / 2), name: "Right-Center" }
+                        { x: 13, y: Math.floor(banCheckImg.bitmap.height / 2), name: "P1" },
+                        { x: 34, y: Math.floor(banCheckImg.bitmap.height / 2), name: "P2" },
+                        { x: 75, y: Math.floor(banCheckImg.bitmap.height / 2), name: "P3" },
+                        { x: 95, y: Math.floor(banCheckImg.bitmap.height / 2), name: "P4" }
                     ];
                     
                     let matchCount = 0;
@@ -735,6 +737,8 @@ class HotsDraftScreen extends EventEmitter {
             heroImgNameCropped.write("debug/ccc" + team.color + "_player" + index + "_Test.png");
 
             console.log("active team: ", this.teamActive);
+
+            // Hero bereits gelocked?
             if (HotsHelpers.imageBackgroundMatch(heroImgNameCropped, DraftLayout["colors"]["heroBackgroundLocked"][colorIdent])) {
                 // Hero locked!
                 console.log("player: ", team.color, " -", index, " is locked");
@@ -744,27 +748,46 @@ class HotsDraftScreen extends EventEmitter {
                     heroLocked = true;
                 }
                 this.debugDataAdd(heroImgNameCropped, heroImgNameCropped, "heroNameLocked-"+colorIdent, DraftLayout["colors"]["heroNameLocked"][colorIdent], [], false);
+
+            // Wenn Hero noch nicht locked ist
             } else {
                 player.setLocked(false);
                 // Hero not locked!
                 console.log("HERE");
                 console.log("player: ", team.color,  " -", index, " is NOT locked");
+
+                //Wenn Team blau gerade gecheckt wird, dann schauen ob es ein Prepick ist
                 if (team.getColor() === "blue") {
                     let heroImgNameCroppedOrg = heroImgNameCropped.clone();
-                    if ((colorIdent == "blue-active") && HotsHelpers.imageCleanupName(heroImgNameCropped, DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"])) {
-                        HotsHelpers.imageOcrOptimize(heroImgNameCropped.invert());
-                        heroVisible = true;
-                        console.log("player: ", team.color,  " -", index, " is NOT locked - if blue-active");
-                        this.debugDataAdd(heroImgNameCropped, heroImgNameCropped, "heroNamePrepick-"+colorIdent+"-picking", DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"], [], true);
-                    } else if (HotsHelpers.imageCleanupName(heroImgNameCroppedOrg, DraftLayout["colors"]["heroNamePrepick"][colorIdent])) {
-                        heroImgNameCropped = heroImgNameCroppedOrg;
-                        HotsHelpers.imageOcrOptimize(heroImgNameCropped.invert());
-                        console.log("player: ", team.color,  " -", index, " is NOT locked - if not blue-active");
-                        heroVisible = true;
-                        this.debugDataAdd(heroImgNameCropped, heroImgNameCropped, "heroNamePrepick-"+colorIdent, DraftLayout["colors"]["heroNamePrepick"][colorIdent], [], true);
+
+                    //Wenn blau-active ist und ein Prepick vorhanden isst basierend auf der background farbe, dann setze heroVisible auf true
+                    if ((colorIdent == "blue-active") && DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"]) {
+                        let cleanupResult1 = HotsHelpers.imageCleanupName(heroImgNameCropped, DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"]);
+                        console.log("[HeroName PREPICK] Player " + index + " - Checking blue-active-picking: colorIdent='" + colorIdent + "', cleanupResult=" + cleanupResult1);
+                        if (cleanupResult1) {
+                            HotsHelpers.imageOcrOptimize(heroImgNameCropped.invert());
+                            heroVisible = true;
+                            console.log("[HeroName PREPICK] Player " + index + " - MATCHED blue-active-picking prepick!");
+                            this.debugDataAdd(heroImgNameCropped, heroImgNameCropped, "heroNamePrepick-"+colorIdent+"-picking", DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"], [], true);
+                        }
                     }
                     
-                console.log("AFTER HERE");
+                    //Wenn nicht blau-active isst und auch kein prepick per "blue-active-picking" erkannt wurde, dann prüfe mit blue-inactive oder blue-active auf ein prepick
+                    if (!heroVisible && DraftLayout["colors"]["heroNamePrepick"][colorIdent]) {
+                        let cleanupResult2 = HotsHelpers.imageCleanupName(heroImgNameCroppedOrg, DraftLayout["colors"]["heroNamePrepick"][colorIdent]);
+                        console.log("[HeroName PREPICK] Player " + index + " - Checking fallback prepick (colorIdent): colorIdent='" + colorIdent + "', cleanupResult=" + cleanupResult2);
+                        if (cleanupResult2) {
+                            heroImgNameCropped = heroImgNameCroppedOrg;
+                            HotsHelpers.imageOcrOptimize(heroImgNameCropped.invert());
+                            heroVisible = true;
+                            console.log("[HeroName PREPICK] Player " + index + " - MATCHED fallback prepick!");
+                            this.debugDataAdd(heroImgNameCropped, heroImgNameCropped, "heroNamePrepick-"+colorIdent, DraftLayout["colors"]["heroNamePrepick"][colorIdent], [], true);
+                        } else {
+                            console.log("[HeroName PREPICK] Player " + index + " - NO PREPICK FOUND");
+                        }
+                    } else if (!heroVisible) {
+                        console.log("[HeroName PREPICK] Player " + index + " - NO PREPICK CONFIG FOUND for colorIdent: " + colorIdent);
+                    }
                 }
             }
             if (heroVisible) {
@@ -776,15 +799,59 @@ class HotsDraftScreen extends EventEmitter {
                 detections.push(
                     Promise.resolve(buffer).then((buffer) => {
                         imageHeroName = buffer;
-                        return ocrCluster.recognize(buffer, this.tessLangs, this.tessParams);
+                        return ocrCluster.recognize(buffer, this.tessLangs, this.tessParamsHeroName);
                     }).then((result) => {
                         if (!result || !result.text) {
                             console.log("[HotsDraftScreen] detectHeroName() - OCR returned null/empty result for " + team.color + " player " + index);
                             return null;
                         }
-                        let heroName = this.app.gameData.correctHeroName(result.text.trim());
+                        let ocrRawText = result.text.trim();
+                        console.log("[HeroName OCR] " + team.color + " player " + index + " - OCR RAW TEXT: '" + ocrRawText + "' (confidence: " + result.confidence + ")");
+                        
+                        // Filter out OCR garbage: very short text or low confidence noise
+                        if (ocrRawText.length < 3) {
+                            console.log("[HeroName OCR] " + team.color + " player " + index + " - TEXT TOO SHORT (< 3 chars), ignoring as noise");
+                            return null;
+                        }
+                        if (result.confidence < 50) {
+                            console.log("[HeroName OCR] " + team.color + " player " + index + " - CONFIDENCE TOO LOW (" + result.confidence + " < 50), ignoring as noise");
+                            return null;
+                        }
+                        // Check if it's only common OCR noise characters (C, N, X, O, I, 0, 1)
+                        if (/^[CNXOI01\s]+$/i.test(ocrRawText)) {
+                            console.log("[HeroName OCR] " + team.color + " player " + index + " - ONLY NOISE CHARACTERS ('" + ocrRawText + "'), ignoring");
+                            return null;
+                        }
+                        
+                        let heroName = this.app.gameData.correctHeroName(ocrRawText);
+                        console.log("[HeroName OCR] " + team.color + " player " + index + " - AFTER correctHeroName: '" + heroName + "'");
+                        
+                        // If hero name doesn't exist, try fuzzy matching to find best match
+                        if (!this.app.gameData.heroExists(heroName, this.app.gameData.language)) {
+                            console.log("[HeroName OCR] " + team.color + " player " + index + " - Hero '" + heroName + "' not found, trying fuzzy match...");
+                            let fuzzyMatch = this.app.gameData.findBestHeroNameMatch(heroName, this.app.gameData.language);
+                            if (fuzzyMatch) {
+                                console.log("[HeroName OCR] " + team.color + " player " + index + " - Fuzzy matched: '" + heroName + "' -> '" + fuzzyMatch + "'");
+                                heroName = fuzzyMatch;
+                            } else {
+                                console.log("[HeroName OCR] " + team.color + " player " + index + " - No fuzzy match found, ignoring invalid hero name '" + heroName + "'");
+                                return null;
+                            }
+                        }
+                        
+                        // Translate German to English if needed
+                        if (this.app.gameData.language !== "en-us") {
+                            let translatedName = this.app.gameData.getHeroNameTranslation(heroName, "en-us");
+                            if (translatedName) {
+                                console.log("[HeroName OCR] " + team.color + " player " + index + " - TRANSLATED '" + heroName + "' -> '" + translatedName + "'");
+                                heroName = translatedName;
+                            }
+                        }
+                        
+                        console.log("[HeroName OCR] " + team.color + " player " + index + " - FINAL NAME: '" + heroName + "'");
+                        console.log("[HeroName OCR] " + team.color + " player " + index + " - Is valid hero: " + this.app.gameData.heroExists(heroName, "en-us"));
                         if (heroName !== pickText) {
-                            let detectionError = !this.app.gameData.heroExists(heroName);
+                            let detectionError = !this.app.gameData.heroExists(heroName, "en-us");
                             player.setCharacter(heroName, detectionError);
                             player.setImageHeroName(imageHeroName);
                             player.setLocked(heroLocked);
@@ -855,7 +922,7 @@ class HotsDraftScreen extends EventEmitter {
             
             if (!cleanupResult) {
                 // Log the error but continue - player name detection may fail on some frames
-                //console.log("[PlayerName] " + team.color + " player " + index + " - Image cleanup FAILED (colorIdent: " + colorIdent + ")");
+                console.log("[PlayerName] " + team.color + " player " + index + " - Image cleanup FAILED (colorIdent: " + colorIdent + ")");
                 if (this.debugEnabled()) {
                     console.log("[Detection] Player name cleanup failed for " + team.color + " player " + index + " - skipping OCR");
                 }
@@ -879,18 +946,17 @@ class HotsDraftScreen extends EventEmitter {
                     return ocrCluster.recognize(buffer, this.tessLangs+"+lat+rus+kor", this.tessParams);
                 }).then((result) => {
                     if (!result || !result.text) {
-                        // console.log("[PlayerName OCR] " + team.color + " player " + index + " - OCR returned null/empty result");
+                        console.log("[PlayerName OCR] " + team.color + " player " + index + " - OCR returned null/empty result");
                         return null;
                     }
                     let playerName = result.text.trim();
-                    // console.log("[PlayerName OCR] " + team.color + " player " + index + " - RAW: '" + playerName + "' (confidence: " + result.confidence + ")");
-                    // console.log("[PlayerName OCR] " + team.color + " player " + index + " - Image saved to: debug/" + team.color + "_player" + index + "_PlayerNameTest.png");
+                    console.log("[PlayerName OCR] " + team.color + " player " + index + " - OCR RAW TEXT: '" + playerName + "' (confidence: " + result.confidence + ")");
                     player.setName(playerName, playerNameFinal);
                     player.setImagePlayerName(imagePlayerName);
                     this.app.gameData.updatePlayerRecentPicks(player);
                     return playerName;
                 }).catch((error) => {
-                    // console.log("[PlayerName OCR] " + team.color + " player " + index + " - ERROR: " + error.message);
+                    console.log("[PlayerName OCR] " + team.color + " player " + index + " - OCR ERROR: " + error.message);
                     return null;
                 })
             );

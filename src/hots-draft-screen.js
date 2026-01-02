@@ -25,10 +25,10 @@ class HotsDraftScreen extends EventEmitter {
         this.updateActive = false;
         this.tessLangs = HotsHelpers.getConfig().getTesseractLanguage();
         this.tessParams = {
-            tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzäöü0123456789.\' -'
+            tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÜÖabcdefghijklmnopqrstuvwxyzäöü0123456789.\' -'
         };
         this.tessParamsHeroName = {
-            tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzäöü.\' -'
+            tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÜÖabcdefghijklmnopqrstuvwxyzäöü.\' -'
         };
         this.offsets = {};
         this.banImages = null;
@@ -433,13 +433,18 @@ class HotsDraftScreen extends EventEmitter {
 
                     console.log(`[HotsDraftScreen] detectTimer() - Checking ${color} team ban area:`);
                     
-                    // Sample 4 points at specific x positions, all vertically centered
-                    let samplePoints = [
-                        { x: 13, y: Math.floor(banCheckImg.bitmap.height / 2), name: "P1" },
-                        { x: 34, y: Math.floor(banCheckImg.bitmap.height / 2), name: "P2" },
-                        { x: 75, y: Math.floor(banCheckImg.bitmap.height / 2), name: "P3" },
-                        { x: 95, y: Math.floor(banCheckImg.bitmap.height / 2), name: "P4" }
-                    ];
+                    // Sample 20 points evenly distributed horizontally, all on vertical center
+                    let width = banCheckImg.bitmap.width;
+                    let centerY = Math.floor(banCheckImg.bitmap.height / 2);
+                    let spacing = width / 31; // 20 points with equal spacing including margins
+                    let samplePoints = [];
+                    for (let i = 1; i <= 30; i++) {
+                        samplePoints.push({
+                            x: Math.floor(i * spacing),
+                            y: centerY,
+                            name: "P" + i
+                        });
+                    }
                     
                     let matchCount = 0;
                     for (let point of samplePoints) {
@@ -736,31 +741,39 @@ class HotsDraftScreen extends EventEmitter {
             });
             heroImgNameCropped.write("debug/ccc" + team.color + "_player" + index + "_Test.png");
 
-            console.log("active team: ", this.teamActive);
-
+            console.log("[HeroName] " + team.color + " player " + index + " - Checking if hero is locked, colorIdent=" + colorIdent);
+            
             // Hero bereits gelocked?
-            if (HotsHelpers.imageBackgroundMatch(heroImgNameCropped, DraftLayout["colors"]["heroBackgroundLocked"][colorIdent])) {
+            let bgMatchResult = HotsHelpers.imageBackgroundMatch(heroImgNameCropped, DraftLayout["colors"]["heroBackgroundLocked"][colorIdent]);
+            console.log("[HeroName] " + team.color + " player " + index + " - Background match result: " + bgMatchResult);
+            
+            if (bgMatchResult) {
                 // Hero locked!
-                console.log("player: ", team.color, " -", index, " is locked");
-                if (HotsHelpers.imageCleanupName(heroImgNameCropped, DraftLayout["colors"]["heroNameLocked"][colorIdent], [], 0x000000FF, 0xFFFFFFFF)) {
+                console.log("[HeroName] " + team.color + " player " + index + " - Hero appears LOCKED, checking text cleanup");
+                let cleanupResult = HotsHelpers.imageCleanupName(heroImgNameCropped, DraftLayout["colors"]["heroNameLocked"][colorIdent], [], 0x000000FF, 0xFFFFFFFF);
+                console.log("[HeroName] " + team.color + " player " + index + " - Text cleanup result: " + cleanupResult);
+                
+                if (cleanupResult) {
                     HotsHelpers.imageOcrOptimize(heroImgNameCropped);
                     heroVisible = true;
                     heroLocked = true;
+                    console.log("[HeroName] " + team.color + " player " + index + " - LOCKED hero detected, will run OCR");
+                } else {
+                    console.log("[HeroName] " + team.color + " player " + index + " - LOCKED background but text cleanup FAILED");
                 }
                 this.debugDataAdd(heroImgNameCropped, heroImgNameCropped, "heroNameLocked-"+colorIdent, DraftLayout["colors"]["heroNameLocked"][colorIdent], [], false);
 
             // Wenn Hero noch nicht locked ist
             } else {
+                console.log("[HeroName] " + team.color + " player " + index + " - NOT locked (background check failed)");
                 player.setLocked(false);
                 // Hero not locked!
-                console.log("HERE");
-                console.log("player: ", team.color,  " -", index, " is NOT locked");
 
                 //Wenn Team blau gerade gecheckt wird, dann schauen ob es ein Prepick ist
                 if (team.getColor() === "blue") {
                     let heroImgNameCroppedOrg = heroImgNameCropped.clone();
 
-                    //Wenn blau-active ist und ein Prepick vorhanden isst basierend auf der background farbe, dann setze heroVisible auf true
+                    //Wenn blau-active ist und ein Prepick vorhanden isst basierend auf der text farbe, dann setze heroVisible auf true
                     if ((colorIdent == "blue-active") && DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"]) {
                         let cleanupResult1 = HotsHelpers.imageCleanupName(heroImgNameCropped, DraftLayout["colors"]["heroNamePrepick"][colorIdent+"-picking"]);
                         console.log("[HeroName PREPICK] Player " + index + " - Checking blue-active-picking: colorIdent='" + colorIdent + "', cleanupResult=" + cleanupResult1);
@@ -792,15 +805,33 @@ class HotsDraftScreen extends EventEmitter {
             }
             if (heroVisible) {
                 // Detect hero name using tesseract
+                console.log("[HeroName] detectHeroName() - Running OCR on hero name image for " + team.color + " player " + index);
                 let imageHeroName = null;
+                
+                // Write temp file - await the write promise
                 const tempHeroPath = "debug/" + team.color + "_player" + index + "_HeroName_temp.png";
-                await heroImgNameCropped.write(tempHeroPath);
+                console.log("[HeroName] detectHeroName() - Writing temp file to: " + tempHeroPath);
+                
+                try {
+                    await heroImgNameCropped.write(tempHeroPath);
+                    console.log("[HeroName] detectHeroName() - File written successfully");
+                } catch (writeError) {
+                    console.log("[HeroName] detectHeroName() - Write error: " + writeError.message);
+                    resolve(player);
+                    return;
+                }
+                
+                console.log("[HeroName] detectHeroName() - Reading buffer from file");
                 const buffer = fs.readFileSync(tempHeroPath);
+                console.log("[HeroName] detectHeroName() - Buffer read, size: " + buffer.length);
+                
                 detections.push(
                     Promise.resolve(buffer).then((buffer) => {
+                        console.log("[HeroName OCR] " + team.color + " player " + index + " - Starting Tesseract OCR with languages: " + JSON.stringify(this.tessLangs));
                         imageHeroName = buffer;
                         return ocrCluster.recognize(buffer, this.tessLangs, this.tessParamsHeroName);
                     }).then((result) => {
+                        console.log("[HeroName OCR] " + team.color + " player " + index + " - OCR completed, result: " + JSON.stringify(result));
                         if (!result || !result.text) {
                             console.log("[HotsDraftScreen] detectHeroName() - OCR returned null/empty result for " + team.color + " player " + index);
                             return null;
@@ -910,8 +941,8 @@ class HotsDraftScreen extends EventEmitter {
             
             // Log the colors we're looking for
             //console.log("[PlayerName] " + team.color + " player " + index + " - Expected colors for colorIdent '" + colorIdent + "':");
-            console.log("  playerName colors: " + JSON.stringify(DraftLayout["colors"]["playerName"][colorIdent]));
-            console.log("  boost colors: " + JSON.stringify(DraftLayout["colors"]["boost"]));
+           // console.log("  playerName colors: " + JSON.stringify(DraftLayout["colors"]["playerName"][colorIdent]));
+           // console.log("  boost colors: " + JSON.stringify(DraftLayout["colors"]["boost"]));
             
             let playerImgNameOriginal = (this.debugEnabled() ? playerImgNameCropped.clone() : null);
             let cleanupResult = HotsHelpers.imageCleanupName(

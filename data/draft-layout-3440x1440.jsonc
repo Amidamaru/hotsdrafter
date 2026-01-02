@@ -17,9 +17,9 @@
     "banActive": [
       {
         "comment": "Ban indicator color - dark red/purple when team is banning",
-        "color": { "r": 157, "g": 43, "b": 142 }, // #9D2B8E
+        "color": { "r": 157, "g": 15, "b": 139 }, // #960f82
         "toleranceLum": 50,
-        "toleranceHue": 35
+        "toleranceHue": 40
       }
     ],
     "timer": {
@@ -62,19 +62,20 @@
         "toleranceHue": 20
       }
     ],
-    "heroNamePrepick": {
+    "heroNamePrepick": {               
       "blue-active-picking": [
         {
           "comment": "Blue team is currently picking",
-          "color": { "r": 12, "g": 29, "b": 57 }, // #0C1D39
-          "toleranceLum": 35,
-          "toleranceHue": 110
+          "color": { "r": 175, "g": 197, "b": 221 }, // #afc5dd
+          // rgb(175, 197, 221)
+          "toleranceLum": 50,
+          "toleranceHue": 60
         }
       ],
       "blue-active": [
         {
           "comment": "Blue team is currently active, but not picking (banning or done picking)",
-          "color": { "r": 10, "g": 27, "b": 53 }, // #0A1B35
+          "color": { "r": 49, "g": 78, "b": 120 }, // rgb(49, 78, 120)
           "toleranceLum": 30,
           "toleranceHue": 60
         }
@@ -151,8 +152,8 @@
         {
           "comment": "Red team is locked, blue team is currently picking/banning",
           "color": { "r": 166, "g": 134, "b": 197 }, // #A686C5
-          "toleranceLum": 35,
-          "toleranceHue": 25
+          "toleranceLum": 40,
+          "toleranceHue": 40
         }
       ]
     },
@@ -162,13 +163,13 @@
           "comment": "Blue team is currently picking/banning",
           "color": { "r": 150, "g": 180, "b": 210 }, // #96B4D2
           "toleranceLum": 50,
-          "toleranceHue": 40
+          "toleranceHue": 60
         },
         {
           "comment": "Blue team is currently picking/banning",
           "color": { "r": 160, "g": 200, "b": 220 }, // #A0C8DC
           "toleranceLum": 50,
-          "toleranceHue": 40
+          "toleranceHue": 60
         }
       ],
       "blue-inactive": [
@@ -188,21 +189,9 @@
       "red-active": [
         {
           "comment": "Red team is currently picking/banning",
-          "color": { "r": 210, "g": 130, "b": 155 }, // #D2829B
-          "toleranceLum": 40,
-          "toleranceHue": 15
-        },
-        {
-          "comment": "Red team is currently picking/banning",
-          "color": { "r": 200, "g": 100, "b": 130 }, // #C86482
-          "toleranceLum": 40,
-          "toleranceHue": 15
-        },
-        {
-          "comment": "Red team is currently picking/banning",
-          "color": { "r": 195, "g": 90, "b": 105 }, // #C35A69
+          "color": { "r": 180, "g": 115, "b": 130 }, // #D2829B
           "toleranceLum": 30,
-          "toleranceHue": 15
+          "toleranceHue": 40
         }
       ],
       "red-inactive": [
@@ -326,7 +315,7 @@
       },
       "nameHeroRotated": {
         "x": 100,
-        "y": 300
+        "y": 295
       },
       "namePlayerRotated": {
         "x": 160,
@@ -337,13 +326,13 @@
       "players": [
         {
           "index": 0,
-          "x": 3140,
+          "x": 3144,
           "y": 75
         },
         {
           "index": 1,
           "x": 3015,
-          "y": 295
+          "y": 300
         },
         {
           "index": 2,
@@ -353,7 +342,7 @@
         {
           "index": 3,
           "x": 3015,
-          "y": 750
+          "y": 753
         },
         {
           "index": 4,
@@ -398,7 +387,7 @@
   },
   "pickText": {
     "en-us": "PICKING",
-    "de-de": "WÄHLT",
+    "de-de": "WAHLT",
     "en-gb": "PICKING",
     "es-es": "PICKING",
     "es-mx": "PICKING",

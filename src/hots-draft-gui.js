@@ -56,7 +56,7 @@ class HotsDraftGui extends EventEmitter {
                 break;
             case "draft":
                 this.draft = parameters[0];
-                console.log("[GUI] Received draft data: " + this.draft.bans.length + " bans, " + this.draft.players.length + " players");
+                console.log("[GUI] Received draft data: " + this.draft.bans.length + " bans, " + this.draft.players.length + " players, teamActive=" + this.draft.teamActive + ", banActive=" + this.draft.banActive);
                 this.refreshPage();
                 break;
             case "draft.status":

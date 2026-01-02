@@ -13,6 +13,17 @@
             </div>
             <div class="flex-grow-1 text-center">
                 <h3 data-content="map-name">{{ gui.draft.map }}</h3>
+                {% if gui.draft.teamActive %}
+                    <div class="draft-phase mt-2">
+                        <h5 class="text-{% if gui.draft.teamActive == 'blue' %}info{% else %}danger{% endif %}">
+                            {% if gui.draft.teamActive == 'blue' %}
+                                {% if gui.draft.banActive %}BLAU BANNT{% else %}BLAU PICKT{% endif %}
+                            {% else %}
+                                {% if gui.draft.banActive %}ROT BANNT{% else %}ROT PICKT{% endif %}
+                            {% endif %}
+                        </h5>
+                    </div>
+                {% endif %}
             </div>
             <div class="team-red-bans d-flex text-right">
             {% for ban in gui.draft.bans if ban.team == "red" %}

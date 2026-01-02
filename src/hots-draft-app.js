@@ -252,7 +252,7 @@ class HotsDraftApp extends EventEmitter {
     }
     sendDraftData() {
         let draftData = this.collectDraftData();
-        console.log("[HotsDraftApp] sendDraftData() - Sending draft with " + draftData.bans.length + " bans, " + draftData.players.length + " players");
+        console.log("[HotsDraftApp] sendDraftData() - Sending draft with " + draftData.bans.length + " bans, " + draftData.players.length + " players, teamActive=" + draftData.teamActive + ", banActive=" + draftData.banActive);
         this.sendEvent("gui", "draft", draftData);
     }
     sendTalentData() {
@@ -626,6 +626,8 @@ class HotsDraftApp extends EventEmitter {
     collectDraftData() {
         let draftData = {
             map: this.screen.getMap(),
+            teamActive: this.screen.getTeamActive(),
+            banActive: this.screen.banActive,
             provider: this.collectProviderData(this.draftProvider),
             bans: [],
             bansLocked: {},

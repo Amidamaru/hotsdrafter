@@ -164,6 +164,50 @@ class HotsDraftScreen extends EventEmitter {
         }
     }
     
+    saveHeroBanImageByHeroId(heroId) {
+        console.log("[HotsDraftScreen] saveHeroBanImageByHeroId() - heroId: " + heroId);
+        try {
+            // Get the hero name from gameData
+            let heroName = this.app.gameData.getHeroNameById(heroId);
+            if (!heroName) {
+                console.error("[HotsDraftScreen] Failed to get hero name for id: " + heroId);
+                return;
+            }
+            
+            // Normalize the hero name for filename (lowercase, remove special chars)
+            let heroFileName = heroName.toLowerCase().replace(/[^a-z0-9]/g, '');
+            
+            // Get the hero image path (crop version for bans)
+            let sourceImagePath = this.app.gameData.getHeroImage(heroName);
+            if (!sourceImagePath || !fs.existsSync(sourceImagePath)) {
+                console.error("[HotsDraftScreen] Hero image not found: " + sourceImagePath);
+                return;
+            }
+            
+            // Read the source image and save it to bans folder
+            let banHeroFile = path.join(HotsHelpers.getStorageDir(), "bans", heroFileName + ".png");
+            let banDir = path.dirname(banHeroFile);
+            
+            // Ensure bans directory exists
+            if (!fs.existsSync(banDir)) {
+                fs.mkdirSync(banDir, { recursive: true });
+            }
+            
+            // Copy the image
+            Jimp.read(sourceImagePath).then((image) => {
+                // Resize to ban comparison size
+                image.resize({ w: this.offsets["banSizeCompare"].x, h: this.offsets["banSizeCompare"].y });
+                image.write(banHeroFile);
+                this.banImages[heroFileName] = image;
+                console.log("[HotsDraftScreen] Ban image saved for hero: " + heroName + " -> " + banHeroFile);
+            }).catch((error) => {
+                console.error("[HotsDraftScreen] Failed to save ban image: " + error);
+            });
+        } catch (error) {
+            console.error("[HotsDraftScreen] saveHeroBanImageByHeroId error: " + error);
+        }
+    }
+    
     // Helper: Save jimp image to file and return buffer
     async jimpImageToBuffer(jimpImage, tempPath) {
         try {
@@ -398,9 +442,7 @@ class HotsDraftScreen extends EventEmitter {
                 console.log("[HotsDraftScreen] detectTimer() - Found BLUE team timer");
                 this.teamActive = "blue";
                 this.banActive = false;
-                console.log("╔════════════════════════════════════════╗");
-                console.log("║  🔵 BLAU WÄHLT (PICK)                 ║");
-                console.log("╚════════════════════════════════════════╝");
+                console.log("BLAU WAEHLT (PICK)");
                 resolve(true);
                 return;
             } else if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["red"])) {

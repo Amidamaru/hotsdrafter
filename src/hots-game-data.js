@@ -557,6 +557,31 @@ class HotsGameData extends EventEmitter {
         }
         return null;
     }
+    getHeroNameById(heroId, language) {
+        if (typeof language === "undefined") {
+            language = this.language;
+        }
+        if (!this.heroes.name.hasOwnProperty(language)) {
+            this.heroes.name[language] = {};
+        }
+        return this.heroes.name[language][heroId] || null;
+    }
+    getHeroes(language) {
+        if (typeof language === "undefined") {
+            language = this.language;
+        }
+        if (!this.heroes.name.hasOwnProperty(language)) {
+            this.heroes.name[language] = {};
+        }
+        let heroes = [];
+        for (let heroId in this.heroes.name[language]) {
+            heroes.push({
+                id: heroId,
+                name: this.heroes.name[language][heroId]
+            });
+        }
+        return heroes.sort((a, b) => a.name.localeCompare(b.name));
+    }
     getHeroImage(heroName, language) {
         if (typeof language === "undefined") {
             language = this.language;

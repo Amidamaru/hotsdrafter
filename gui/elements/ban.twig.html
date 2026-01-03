@@ -1,10 +1,10 @@
 <div class="card {% if heroName != "???" %}text-dark {% if locked %}bg-light{% else %}bg-warning{% endif %}{% else %}text-dark bg-danger{% endif %} mx-1" data-index="{{ index }}"
-      data-type="ban" data-team="{{ team }}" data-index="{{ index }}">
+      data-type="ban" data-team="{{ team }}" data-index="{{ index }}" data-failed="{% if heroName == "???" %}true{% endif %}" {% if heroName == "???" %}style="cursor: pointer;"{% endif %}>
     {% if heroName is not null %}
         {% if heroName != "???" %}
             <img class="card-img-top" src="{{ gui.getHeroImage( heroName ) }}" alt="{{ heroName }}">
         {% else %}
-            <img class="card-img-top" src="data:image/png;base64,{{ heroImage }}" alt="{{ heroName }}" data-failed="BAN">
+            <img class="card-img-top" src="data:image/png;base64,{{ heroImage }}" alt="{{ heroName }}" style="cursor: pointer;">
         {% endif %}
     {% else %}
         <div class="ban-hero-none card-img-top">?</div>

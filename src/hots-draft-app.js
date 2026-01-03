@@ -203,6 +203,10 @@ class HotsDraftApp extends EventEmitter {
             case "ban.save":
                 this.screen.saveHeroBanImage(...parameters);
                 break;
+            case "ban.manual-select":
+                console.log("[HotsDraftApp] handleEvent() - ban.manual-select: team=" + parameters[0] + ", index=" + parameters[1] + ", heroId=" + parameters[2]);
+                this.handleManualBanSelect(...parameters);
+                break;
             case "config.option.set":
                 console.log("[HotsDraftApp] handleEvent() - config.option.set: " + parameters[0] + " = " + parameters[1]);
                 HotsHelpers.getConfig().setOption(...parameters);
@@ -262,6 +266,25 @@ class HotsDraftApp extends EventEmitter {
                 this.init();
                 break;
         }
+    }
+    handleManualBanSelect(team, banIndex, heroId, heroName) {
+        console.log("[HotsDraftApp] handleManualBanSelect() - team=" + team + ", index=" + banIndex + ", heroId=" + heroId + ", heroName=" + heroName);
+        
+        // Get the team object
+        let teamObj = this.screen.getTeam(team);
+        if (!teamObj) {
+            console.error("[HotsDraftApp] Team not found: " + team);
+            return;
+        }
+        
+        // Update the ban with the selected hero
+        teamObj.addBan(banIndex, heroName);
+        
+        // Save the hero image to data/bans folder for future recognition
+        this.screen.saveHeroBanImageByHeroId(heroId);
+        
+        // Send updated draft data
+        this.sendDraftData();
     }
     sendEvent(channel, type, ...parameters) {
         if (this.debugEnabled()) console.log("[HotsDraftApp] sendEvent() - channel=" + channel + ", type=" + type);

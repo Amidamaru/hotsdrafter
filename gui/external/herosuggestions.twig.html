@@ -1,4 +1,4 @@
-<div data-type="draft-provider" class="provider-herosuggestions">
+<div data-type="draft-provider" class="provider-herosuggestions d-flex justify-content-center">
     {% if suggestions == "ERROR_EMPTY_RESPONSE" %}
         <div class="alert alert-danger">
             API returned no suggestions
@@ -8,7 +8,9 @@
             Need at least 4 heroes to get suggestions (currently waiting for more picks/bans)
         </div>
     {% elseif suggestions %}
-        {{ suggestions | raw }}
+        <div class="d-flex justify-content-center flex-wrap">
+            {{ suggestions | raw }}
+        </div>
     {% else %}
         <div class="alert alert-info">
             Waiting for draft data...

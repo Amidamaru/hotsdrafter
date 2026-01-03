@@ -80,8 +80,80 @@ class HotsDraftGui extends EventEmitter {
             e.preventDefault();
             this.quit();
         });
+        // Handle clicks on failed bans (???)
+        jQuery(document).on("click", "[data-type='ban'][data-failed='true']", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            let banElement = jQuery(e.currentTarget);
+            let team = banElement.attr("data-team");
+            let index = banElement.attr("data-index");
+            console.log("[GUI] Failed ban clicked - team: " + team + ", index: " + index);
+            this.showHeroSelectionModal(team, index);
+        });
         console.log("[GUI] registerEvents() - Menu button events registered");
     }
+    showHeroSelectionModal(team, banIndex) {
+        console.log("[GUI] showHeroSelectionModal - team: " + team + ", banIndex: " + banIndex);
+        if (!this.gameData) {
+            console.error("[GUI] gameData not available");
+            return;
+        }
+        
+        // Get all heroes
+        let allHeroes = this.gameData.getHeroes();
+        let heroOptions = allHeroes.map(hero => `<option value="${hero.id}">${hero.name}</option>`).join('');
+        
+        // Create modal HTML
+        let modalHtml = `
+            <div class="modal fade" id="heroSelectionModal" tabindex="-1" role="dialog" aria-labelledby="heroSelectionLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="heroSelectionLabel">Hero Selection für fehlgeschlagenen Ban</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <label for="heroSelector">Wähle einen Hero:</label>
+                            <select id="heroSelector" class="form-control">
+                                <option value="">-- Wähle einen Hero --</option>
+                                ${heroOptions}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                            <button type="button" class="btn btn-primary" id="confirmHeroSelection">Bestätigen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove old modal if exists
+        jQuery("#heroSelectionModal").remove();
+        
+        // Add modal to DOM
+        jQuery("body").append(modalHtml);
+        
+        // Show modal
+        jQuery("#heroSelectionModal").modal("show");
+        
+        // Handle confirmation
+        let self = this;
+        jQuery("#confirmHeroSelection").off("click").on("click", function() {
+            let selectedHeroId = jQuery("#heroSelector").val();
+            if (selectedHeroId) {
+                let hero = allHeroes.find(h => h.id == selectedHeroId);
+                if (hero) {
+                    console.log("[GUI] Selected hero: " + hero.name + " (id: " + hero.id + ")");
+                    self.sendEvent("gui", "ban.manual-select", [team, banIndex, hero.id, hero.name]);
+                    jQuery("#heroSelectionModal").modal("hide");
+                }
+            }
+        });
+    }
+
     handleEvent(event, type, parameters) {
         switch (type) {
             case "config":

@@ -1,5 +1,6 @@
 // Nodejs dependencies
 const axios = require('axios');
+const cheerio = require('cheerio');
 
 // Local classes
 const HotsDraftSuggestions = require('../hots-draft-suggestions.js');
@@ -197,13 +198,40 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
             return;
         }
 
-        // Store the response as-is (should be HTML string or object)
-        // If it's an object, convert to JSON string for storage
-        if (typeof response === 'string') {
-            this.suggestions = response;
-        } else {
-            this.suggestions = JSON.stringify(response);
+        let htmlContent = typeof response === 'string' ? response : JSON.stringify(response);
+        
+        // Parse HTML and add Draft Values under each hero
+        try {
+            const $ = cheerio.load(htmlContent);
+            
+            // Find all hero pictures and extract draft values
+            $('.rounded-picture').each((index, element) => {
+                const $element = $(element);
+                const dataContent = $element.attr('data-content') || '';
+                
+                // Extract HP Draft Value using regex
+                const draftValueMatch = dataContent.match(/HP Draft Value:\s*([\d.]+)/);
+                if (draftValueMatch && draftValueMatch[1]) {
+                    const draftValue = draftValueMatch[1];
+                    
+                    // Add CSS position relative to the link element if not already set
+                    if (!$element.attr('style') || !$element.attr('style').includes('position')) {
+                        $element.attr('style', (i, val) => (val || '') + '; position: relative; display: inline-block;');
+                    }
+                    
+                    // Add a small span with the draft value positioned at the bottom
+                    $element.append(`<span class="hero-draft-value" style="position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: bold; color: #ff6b00; white-space: nowrap; line-height: 1;">${draftValue}</span>`);
+                }
+            });
+            
+            htmlContent = $.html();
+            console.log("[HeroSuggestions] Draft values added to HTML");
+        } catch (error) {
+            console.error("[HeroSuggestions] Error parsing HTML: " + error.message);
+            // Continue with unmodified content if parsing fails
         }
+
+        this.suggestions = htmlContent;
         
         console.log("[HeroSuggestions] Suggestions loaded, length: " + String(this.suggestions).length);
 

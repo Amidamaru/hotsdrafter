@@ -247,7 +247,7 @@
     "y": 296
   },
   "nameSize": {
-    "x": 160,
+    "x": 170,
     "y": 160
   },
   "nameHeroSizeRotated": {
@@ -314,17 +314,17 @@
         "y": 80
       },
       "name": {
-        "x": 5,
+        "x": 10,
         "y": 130,
         "angle": 30.5
       },
       "nameHeroRotated": {
-        "x": 100,
-        "y": 295
+        "x": 70,
+        "y": 310
       },
       "namePlayerRotated": {
-        "x": 160,
-        "y": 460
+        "x": 150,
+        "y": 490
       }
     },
     "red": {

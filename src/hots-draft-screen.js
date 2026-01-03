@@ -28,7 +28,9 @@ class HotsDraftScreen extends EventEmitter {
             tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÜÖabcdefghijklmnopqrstuvwxyzäöü0123456789.\' -'
         };
         this.tessParamsHeroName = {
-            tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÜÖabcdefghijklmnopqrstuvwxyzäöü.\' -'
+            tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÜÖabcdefghijklmnopqrstuvwxyzäöü.\' -',
+            tesseract_create_pdf: '0',
+            tessedit_pageseg_mode: '7'  // Treat image as single text line
         };
         this.offsets = {};
         this.banImages = null;
@@ -883,8 +885,22 @@ class HotsDraftScreen extends EventEmitter {
                 }
                 
                 if(this.debugEnabled()) console.log("[HeroName] detectHeroName() - Reading buffer from file");
-                const buffer = fs.readFileSync(tempHeroPath);
-                if(this.debugEnabled()) console.log("[HeroName] detectHeroName() - Buffer read, size: " + buffer.length);
+                
+                // Save original for debugging
+                await heroImgNameCropped.write("debug/" + team.color + "_player" + index + "_HeroName_original.png");
+                
+                // Improve image preprocessing for better OCR
+                let preprocessedImg = heroImgNameCropped.clone()
+                    .scale({ f: 2 })       // Upscale 2x for better OCR recognition
+                    .greyscale()           // Convert to grayscale
+                    .contrast(1.0)         // Strong contrast boost
+                    .normalize()           // Normalize pixel values
+                    .brightness(0.15);     // Increase brightness
+                
+                const tempPreprocessedPath = "debug/" + team.color + "_player" + index + "_HeroName_preprocessed.png";
+                await preprocessedImg.write(tempPreprocessedPath);
+                const buffer = fs.readFileSync(tempPreprocessedPath);
+                if(this.debugEnabled()) console.log("[HeroName] detectHeroName() - Buffer read from preprocessed image (upscaled 2x), size: " + buffer.length);
                 
                 detections.push(
                     Promise.resolve(buffer).then((buffer) => {
@@ -918,9 +934,15 @@ class HotsDraftScreen extends EventEmitter {
                         let heroName = this.app.gameData.correctHeroName(ocrRawText);
                         console.log("[HeroName OCR] " + team.color + " player " + index + " - AFTER correctHeroName: '" + heroName + "'");
                         
-                        // Check confidence AFTER substitution - known names can have lower confidence
-                        if (result.confidence < 38) {
-                            console.log("[HeroName OCR] " + team.color + " player " + index + " - CONFIDENCE TOO LOW (" + result.confidence + " < 40), ignoring as noise");
+                        // Check if the hero name exists BEFORE confidence check
+                        let isValidHero = this.app.gameData.heroExists(heroName, this.app.gameData.language);
+                        
+                        // Confidence threshold depends on whether it's a recognized hero
+                        // If it's a valid hero, accept it even with very low confidence (OCR is noisy)
+                        let minConfidence = isValidHero ? 0 : 40; // Valid heroes accepted regardless of confidence
+                        
+                        if (result.confidence < minConfidence) {
+                            console.log("[HeroName OCR] " + team.color + " player " + index + " - CONFIDENCE TOO LOW (" + result.confidence + " < " + minConfidence + "), isValidHero=" + isValidHero + ", ignoring as noise");
                             return null;
                         }
                         
@@ -932,8 +954,9 @@ class HotsDraftScreen extends EventEmitter {
                                 console.log("[HeroName OCR] " + team.color + " player " + index + " - Fuzzy matched: '" + heroName + "' -> '" + fuzzyMatch + "'");
                                 heroName = fuzzyMatch;
                             } else {
-                                console.log("[HeroName OCR] " + team.color + " player " + index + " - No fuzzy match found, ignoring invalid hero name '" + heroName + "'");
-                                return null;
+                                // Still accept the hero even without perfect match if confidence indicates valid OCR
+                                // This handles cases where OCR is wrong but still recognizable (e.g., LILLE -> LILI)
+                                console.log("[HeroName OCR] " + team.color + " player " + index + " - No fuzzy match found, but attempting to use original text");
                             }
                         }
                         

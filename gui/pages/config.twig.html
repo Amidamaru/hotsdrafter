@@ -31,18 +31,18 @@
                     <option value="heroescounters"{% if gui.config and gui.config.draftProvider == "heroescounters" %} selected{% endif %}>
                         heroescounters.com
                     </option>
-                    <option value="heroesprofile"{% if gui.config and gui.config.draftProvider == "heroesprofile" %} selected{% endif %}>
-                        drafter.heroesprofile.com
+                    <option value="herosuggestions"{% if gui.config and gui.config.draftProvider == "herosuggestions" %} selected{% endif %}>
+                        Hero Suggestions (AI)
                     </option>
                 </select>
             </div>
         </div>
         <div class="form-group row">
-            <label for="draftProvider" class="col-sm-3 col-form-label">
+            <label for="talentProvider" class="col-sm-3 col-form-label">
                 Talent provider
             </label>
             <div class="col">
-                <select id="draftProvider" class="form-control">
+                <select id="talentProvider" class="form-control">
                     <option value="icyveins"{% if gui.config and gui.config.talentProvider == "icyveins" %} selected{% endif %}>
                         icy-veins.com
                     </option>

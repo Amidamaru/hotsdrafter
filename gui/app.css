@@ -283,3 +283,51 @@
     margin-left: -10px;
     margin-top: -30px;
 }
+
+/* Hero Suggestions Provider Styling */
+.provider-herosuggestions {
+    padding: 15px 0;
+}
+
+.provider-herosuggestions div[class*="rounded-item"] {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+}
+
+/* Limit to first 10 items */
+.provider-herosuggestions div[class*="rounded-item"]:nth-child(n+11) {
+    display: none;
+}
+
+.provider-herosuggestions .rounded-picture img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    border: 2px solid #ddd;
+    transition: all 0.2s ease;
+}
+
+.provider-herosuggestions .rounded-picture img:hover {
+    transform: scale(1.05);
+    border-color: #999;
+}
+
+/* Star indicator for starred heroes */
+.provider-herosuggestions .rounded-item.starred::after {
+    content: "⭐";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 20px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}

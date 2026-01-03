@@ -36,6 +36,9 @@
             </div>
         </div>
         <div class="suggestions mt-2">
+            {% if gui.draft.provider %}
+                {% include "../"~gui.draft.provider.template with gui.draft.provider.templateData %}
+            {% endif %}
             {% if gui.draft.talentProvider %}
                 {% include "../"~gui.draft.talentProvider.template with gui.draft.talentProvider.templateData %}
             {% endif %}

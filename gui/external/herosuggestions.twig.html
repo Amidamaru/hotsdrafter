@@ -1,0 +1,17 @@
+<div data-type="draft-provider" class="provider-herosuggestions">
+    {% if suggestions == "ERROR_EMPTY_RESPONSE" %}
+        <div class="alert alert-danger">
+            API returned no suggestions
+        </div>
+    {% elseif suggestions == "ERROR_INSUFFICIENT_HEROES" %}
+        <div class="alert alert-info">
+            Need at least 4 heroes to get suggestions (currently waiting for more picks/bans)
+        </div>
+    {% elseif suggestions %}
+        {{ suggestions | raw }}
+    {% else %}
+        <div class="alert alert-info">
+            Waiting for draft data...
+        </div>
+    {% endif %}
+</div>

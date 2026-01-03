@@ -162,7 +162,6 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
                 .then(response => {
                     this.updateActive = false;
                     console.log("[HeroSuggestions] API response received, status: " + response.status);
-                    console.log("[HeroSuggestions] Response data: " + JSON.stringify(response.data));
 
                     if (response.status !== 200) {
                         console.error("[HeroSuggestions] Invalid status code <" + response.status + ">");

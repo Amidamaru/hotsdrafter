@@ -505,9 +505,7 @@ class HotsDraftScreen extends EventEmitter {
             this.teamActive = "unknown";
             this.banActive = false;
             console.log("[HotsDraftScreen] detectTimer() - ERROR: Could not find any timer colors (blue/red/ban)");
-            console.log("╔════════════════════════════════════════╗");
             console.log("║  ❓ KEINE AHNUNG                      ║");
-            console.log("╚════════════════════════════════════════╝");
             reject(new Error("Failed to detect pick counter"));
         });
     }
@@ -670,9 +668,16 @@ class HotsDraftScreen extends EventEmitter {
                 } else {
                     console.log("[" + team.color + "] Ban "+i+": no matching hero found (best distance: " + matchBestDistance + ")");
                     bans.names[i] = "???";
-                    // Save the ban image and read buffer
+                    // Create a placeholder image instead of saving the unrecognized ban
+                    let sizeBan = this.offsets["banSize"];
+                    const placeholderImg = new Jimp({
+                        width: sizeBan.x,
+                        height: sizeBan.y,
+                        color: 0x1a1a1aff  // Dark gray background
+                    });
+                    // Add "?" text to the placeholder
                     const tempBanPath = 'debug/banImg_temp_' + i + '.png';
-                    await banImg.write(tempBanPath);
+                    await placeholderImg.write(tempBanPath);
                     const buffer = fs.readFileSync(tempBanPath);
                     bans.images[i] = buffer;
                 }

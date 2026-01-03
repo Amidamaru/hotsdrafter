@@ -78,38 +78,64 @@ class HotsHelpers {
         let matchesPositive = colorMatches;
         let matchesNegative = [];
         
-        // Top Left
-        let topLeftMatch = HotsHelpers.imagePixelMatch(image, 0, 4, matchesPositive, matchesNegative);
-        if (topLeftMatch) {
-            matchCount++;
-        }
-        //console.log("[imageBackgroundMatch] Top Left (0,0): " + (topLeftMatch ? "YES" : "NO"));
+        // Sample points: center, vertical 1/3 & 2/3, horizontal 1/3 & 2/3
+        let samplePoints = [
+            { x: Math.floor(image.bitmap.width / 2), y: Math.floor(image.bitmap.height / 2), name: "Center" },
+            { x: Math.floor(image.bitmap.width / 2), y: Math.floor(image.bitmap.height / 3), name: "Vertical 1/3" },
+            { x: Math.floor(image.bitmap.width / 2), y: Math.floor(2 * image.bitmap.height / 3), name: "Vertical 2/3" },
+            { x: Math.floor(image.bitmap.width / 3), y: Math.floor(image.bitmap.height / 2), name: "Horizontal 1/3" },
+            { x: Math.floor(2 * image.bitmap.width / 3), y: Math.floor(image.bitmap.height / 2), name: "Horizontal 2/3" }
+        ];
         
-        // Top Center
-        let topCenterMatch = HotsHelpers.imagePixelMatch(image, Math.floor(image.bitmap.width / 2), 4, matchesPositive, matchesNegative);
-        if (topCenterMatch) {
-            matchCount++;
+        for (let point of samplePoints) {
+            let match = HotsHelpers.imagePixelMatch(image, point.x, point.y, matchesPositive, matchesNegative);
+            if (match) {
+                matchCount++;
+            }
+            //console.log("[imageBackgroundMatch] " + point.name + " (" + point.x + "," + point.y + "): " + (match ? "YES" : "NO"));
         }
-        //console.log("[imageBackgroundMatch] Top Center (" + Math.floor(image.bitmap.width / 2) + ",0): " + (topCenterMatch ? "YES" : "NO"));
         
-        // Center Left
-        let centerLeftMatch = HotsHelpers.imagePixelMatch(image, 0, Math.floor(image.bitmap.height / 2), matchesPositive, matchesNegative);
-        if (centerLeftMatch) {
-            matchCount++;
-        }
-        //console.log("[imageBackgroundMatch] Center Left (0," + Math.floor(image.bitmap.height / 2) + "): " + (centerLeftMatch ? "YES" : "NO"));
-        
-        // Bottom Center
-        let bottomCenterMatch = HotsHelpers.imagePixelMatch(image, Math.floor(image.bitmap.width / 2), image.bitmap.height-1, matchesPositive, matchesNegative);
-        if (bottomCenterMatch) {
-            matchCount++;
-        }
-        //console.log("[imageBackgroundMatch] Bottom Center (" + Math.floor(image.bitmap.width / 2) + "," + (image.bitmap.height-1) + "): " + (bottomCenterMatch ? "YES" : "NO"));
-        
-        //console.log("[imageBackgroundMatch] Color expectations:", colorMatches);
         let required = (5 - tolerance);
         let result = matchCount >= required;
         //console.log("[imageBackgroundMatch] Total: " + matchCount + " matches, Required: " + required + ", Tolerance: " + tolerance + " => " + (result ? "MATCHED" : "NOT matched"));
+        
+        return result;
+    }
+    static imageLockedHeroBackgroundMatch(image, colorMatches, tolerance, teamColor) {
+        if (typeof tolerance === "undefined") {
+            tolerance = 1;
+        }
+        if (typeof teamColor === "undefined") {
+            teamColor = null;
+        }
+        let matchCount = 0;
+        let matchesPositive = colorMatches;
+        let matchesNegative = [];
+        
+        // Sample points customized for locked heroes - 4 points: left, right, top, bottom middle
+        let samplePoints = [
+            { x: Math.floor(image.bitmap.width / 4)+2, y: Math.floor(image.bitmap.height / 2), name: "Left Middle" },
+            { x: Math.floor(3 * image.bitmap.width / 4) - 2, y: Math.floor(image.bitmap.height / 2), name: "Right Middle" },
+            { x: Math.floor(image.bitmap.width / 2), y: Math.floor(image.bitmap.height / 4) + 2, name: "Top Middle" },
+            { x: Math.floor(image.bitmap.width / 2), y: Math.floor(3 * image.bitmap.height / 4) - 2, name: "Bottom Middle" }
+        ];
+        
+        if (teamColor === "red") {
+            console.log("[imageLockedHeroBackgroundMatch] Image dimensions: " + image.bitmap.width + "x" + image.bitmap.height);
+            console.log("[imageLockedHeroBackgroundMatch] Sample Points: " + JSON.stringify(samplePoints));
+        }
+        
+        for (let point of samplePoints) {
+            let match = HotsHelpers.imagePixelMatch(image, point.x, point.y, matchesPositive, matchesNegative);
+            if (match) {
+                matchCount++;
+            }
+            //console.log("[imageLockedHeroBackgroundMatch] " + point.name + " (" + point.x + "," + point.y + "): " + (match ? "YES" : "NO"));
+        }
+        
+        let required = (4 - tolerance);
+        let result = matchCount >= required;
+        //console.log("[imageLockedHeroBackgroundMatch] Total: " + matchCount + " matches, Required: " + required + ", Tolerance: " + tolerance + " => " + (result ? "MATCHED" : "NOT matched"));
         
         return result;
     }

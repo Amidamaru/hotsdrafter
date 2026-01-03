@@ -37,8 +37,9 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
         // Get draft screen data
         console.log("[HeroSuggestions] Collecting heroes, picks and map from screen...");
         
-        let allHeroes = [];  // bans + picks
-        let teamPicks = [];  // locked heroes on blue team
+        let allBans = [];      // only bans
+        let allPicks = [];     // only picks
+        let teamPicks = [];    // locked heroes on blue team
         let mapName = "";
 
         // Get current map - map is already the English name from screen
@@ -62,7 +63,7 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
                     console.log("[HeroSuggestions] Blue pick " + i + ": " + heroName);
                     if (heroName && heroName !== "???") {
                         teamPicks.push(heroName);
-                        allHeroes.push(heroName);
+                        allPicks.push(heroName);
                     }
                 }
             }
@@ -77,7 +78,7 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
                 if (bansRed[i] && bansRed[i] !== "???" && bansRed[i] !== null) {
                     let heroName = this.app.gameData.fixHeroName(bansRed[i]);  // Normalize name
                     console.log("[HeroSuggestions] Red ban: " + heroName);
-                    allHeroes.push(heroName);
+                    allBans.push(heroName);
                 }
             }
             
@@ -89,7 +90,7 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
                     heroName = this.app.gameData.fixHeroName(heroName);  // Normalize name
                     console.log("[HeroSuggestions] Red pick " + i + ": " + heroName);
                     if (heroName && heroName !== "???") {
-                        allHeroes.push(heroName);
+                        allPicks.push(heroName);
                     }
                 }
             }
@@ -102,20 +103,23 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
                 if (bansBlue[i] && bansBlue[i] !== "???" && bansBlue[i] !== null) {
                     let heroName = this.app.gameData.fixHeroName(bansBlue[i]);  // Normalize name
                     console.log("[HeroSuggestions] Blue ban: " + heroName);
-                    allHeroes.push(heroName);
+                    allBans.push(heroName);
                 }
             }
         }
 
         // Remove duplicates and sort
-        allHeroes = [...new Set(allHeroes)];
+        allBans = [...new Set(allBans)];
+        allPicks = [...new Set(allPicks)];
         teamPicks = [...new Set(teamPicks)];
 
-        console.log("[HeroSuggestions] All heroes (bans+picks): " + allHeroes.join(", "));
+        console.log("[HeroSuggestions] All bans: " + allBans.join(", "));
+        console.log("[HeroSuggestions] All picks: " + allPicks.join(", "));
         console.log("[HeroSuggestions] Team picks: " + teamPicks.join(", "));
         console.log("[HeroSuggestions] Map: " + mapName);
 
         // Check if we have at least 4 heroes - otherwise don't call API
+        let allHeroes = allBans.concat(allPicks);
         if (allHeroes.length < 4) {
             console.log("[HeroSuggestions] Not enough heroes (" + allHeroes.length + "/4), skipping API call");
             this.suggestions = "ERROR_INSUFFICIENT_HEROES";
@@ -126,8 +130,9 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
 
         // Create signature to detect changes
         let signature = JSON.stringify({
-            heroes: allHeroes.sort().join(","),
-            picks: teamPicks.sort().join(","),
+            bans: allBans.sort().join(","),
+            picks: allPicks.sort().join(","),
+            teampicks: teamPicks.sort().join(","),
             map: mapName
         });
 
@@ -148,9 +153,9 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
                 .toUpperCase();
         };
 
-        // Build API query string with normalized names
+        // Build API query string with normalized names - BANS first, then PICKS
         let queryParams = new URLSearchParams();
-        queryParams.append('heroes', allHeroes.map(normalizeForAPI).join(','));
+        queryParams.append('heroes', allBans.map(normalizeForAPI).join(',') + (allPicks.length > 0 ? ',' + allPicks.map(normalizeForAPI).join(',') : ''));
         queryParams.append('map', mapName);
         queryParams.append('teampicks', teamPicks.map(normalizeForAPI).join(','));
 

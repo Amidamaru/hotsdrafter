@@ -6,9 +6,9 @@ class HotsDraftTeam extends EventEmitter {
     constructor(color) {
         super();
         this.color = color;
-        this.bans = [null, null];
+        this.bans = [null, null, null];
         this.bansLocked = 0;
-        this.banImageData = [null, null];
+        this.banImageData = [null, null, null];
         this.players = [];
     }
     addBan(index, hero) {

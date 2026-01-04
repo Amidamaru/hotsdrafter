@@ -53,7 +53,8 @@ class HotsGameData extends EventEmitter {
         };
         this.substitutions = {
             "ETC": "E.T.C.",
-            "LUCIO": "LÚCIO"
+            "LUCIO": "LÚCIO",
+            "OHIRA": "QHIRA"
         };
         this.mapTranslations = {
             "de": {

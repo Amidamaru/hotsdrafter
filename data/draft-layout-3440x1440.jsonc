@@ -243,19 +243,19 @@
     "y": 85
   },
   "playerSize": {
-    "x": 300,
+    "x": 290,
     "y": 296
   },
   "nameSize": {
-    "x": 170,
+    "x": 160,
     "y": 160
   },
   "nameHeroSizeRotated": {
-    "x": 812,
+    "x": 750,
     "y": 154
   },
   "namePlayerSizeRotated": {
-    "x": 896,
+    "x": 770,
     "y": 91
   },
   "teams": {

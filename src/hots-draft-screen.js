@@ -937,7 +937,22 @@ class HotsDraftScreen extends EventEmitter {
                         }
                         let ocrRawText = result.text.trim();
                         console.log("[HeroName OCR] " + team.color + " player " + index + " - OCR RAW TEXT: '" + ocrRawText + "' (confidence: " + result.confidence + ")");
+                        console.log("[HeroName OCR] " + team.color + " player " + index + " - pickText value: '" + (pickText || "UNDEFINED") + "'");
 
+                        
+                        // If OCR detected "WÄHLT"/"PICKING" (the pick text), it means hero is currently being picked, not a hero name
+                        // Remove umlauts from both texts for comparison (WÄHLT vs WAHLT)
+                        let pickTextNormalized = pickText ? pickText.toUpperCase().replace(/[ÄÖÜ]/g, (c) => ({Ä:'A', Ö:'O', Ü:'U'}[c])) : "";
+                        let ocrRawTextNormalized = ocrRawText.toUpperCase().replace(/[ÄÖÜ]/g, (c) => ({Ä:'A', Ö:'O', Ü:'U'}[c]));
+                        console.log("[HeroName OCR] " + team.color + " player " + index + " - Normalized comparison: pickText='" + pickTextNormalized + "', ocrText='" + ocrRawTextNormalized + "'");
+                        
+                        // Check both against configured pickText AND common picking indicators (WAHLT, PICKING)
+                        if ((pickTextNormalized && ocrRawTextNormalized === pickTextNormalized) || 
+                            (ocrRawTextNormalized === "WAHLT" || ocrRawTextNormalized === "PICKING")) {
+                            console.log("[HeroName OCR] " + team.color + " player " + index + " - Detected pick text '" + pickText + "' (OCR: '" + ocrRawText + "'), showing no hero (player is currently picking)");
+                            // Don't set any character - show empty hero slot like normal
+                            return null;
+                        }
                         
                         // Filter out OCR garbage: very short text or low confidence noise
                         if (ocrRawText.length < 3) {

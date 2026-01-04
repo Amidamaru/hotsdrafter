@@ -21,7 +21,19 @@
             Specialist
         </a>
     </div>
-    <div class="d-flex">
+    
+    <!-- Loading Spinner -->
+    <div id="draftProviderSpinner" style="display:none;" class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Lädt...</span>
+            </div>
+            <p class="mt-2">Lade Hero-Vorschläge...</p>
+        </div>
+    </div>
+    
+    <!-- Suggestions Content -->
+    <div id="draftProviderContent" class="d-flex">
         <table class="table table-bordered table-sm table-secondary mr-3 flex-grow-1">
             <tr>
                 <th colspan="4" class="text-center">
@@ -69,4 +81,23 @@
             {% endfor %}
         </table>
     </div>
+    <!-- End of Suggestions Content -->
 </div>
+
+<script>
+// Handle draft provider updates with loading spinner
+jQuery(document).on('draftProvider.init', function() {
+    console.log('[DraftProvider] Initialized');
+    // Hide spinner, show content
+    jQuery('#draftProviderSpinner').hide();
+    jQuery('#draftProviderContent').show();
+});
+
+// Listen for update start
+jQuery(document).on('update.start', function() {
+    console.log('[DraftProvider] Update started - showing spinner');
+    // Show spinner, hide content
+    jQuery('#draftProviderSpinner').show();
+    jQuery('#draftProviderContent').hide();
+});
+</script>

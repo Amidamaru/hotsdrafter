@@ -119,7 +119,7 @@
           "comment": "Blue team is currently picking/banning",
           "color": { "r": 75, "g": 50, "b": 80 }, // #4B3250
           "toleranceLum": 35,
-          "toleranceHue": 20
+          "toleranceHue": 30
         }
       ]
     },

@@ -955,8 +955,8 @@ class HotsDraftScreen extends EventEmitter {
                         let heroName = this.app.gameData.correctHeroName(ocrRawText);
                         console.log("[HeroName OCR] " + team.color + " player " + index + " - AFTER correctHeroName: '" + heroName + "'");
                         
-                        // Remove OCR noise characters that commonly appear at the end: |, -, _, `, ', etc.
-                        let cleanedHeroName = heroName.replace(/[\|\-_`'\s]+$/g, '').trim();
+                        // Remove OCR noise characters from BOTH ends: |, -, _, `, ', etc.
+                        let cleanedHeroName = heroName.replace(/^[\|\-_`'\s]+|[\|\-_`'\s]+$/g, '').trim();
                         if (cleanedHeroName !== heroName) {
                             console.log("[HeroName OCR] " + team.color + " player " + index + " - AFTER removing noise chars: '" + cleanedHeroName + "'");
                             heroName = cleanedHeroName;

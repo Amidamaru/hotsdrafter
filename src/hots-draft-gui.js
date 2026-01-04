@@ -284,16 +284,19 @@ class HotsDraftGui extends EventEmitter {
         return null;
     }
     getHeroImage(heroName) {
+        console.log("[getHeroImage] Called with heroName: '" + heroName + "'");
         if (!heroName) {
+            console.log("[getHeroImage] heroName is empty/null, returning null");
             return null;
         }
-        heroName = this.fixHeroName(heroName);
-        let heroId = this.getHeroId(heroName);
-        if (heroId === null) {
-            return null;
-        }
-        // Use local bans folder instead of AppData storage
-        return path.join(__dirname, "..", "data", "bans", heroId+".png");
+        console.log("[getHeroImage] gameData available: " + (this.gameData ? 'YES' : 'NO'));
+        
+        // The heroName comes from the backend in English (e.g., "liming")
+        // Don't try to translate it - just use it directly as the filename
+        const banFileName = heroName.toLowerCase().replace(/[^a-z0-9]/g, '') + ".png";
+        const imagePath = "../data/bans/" + banFileName;
+        console.log("[getHeroImage] Using heroName directly as filename. banFileName: '" + banFileName + "', final path: '" + imagePath + "'");
+        return imagePath;
     }
 
     reloadDraftProvider() {
@@ -555,6 +558,7 @@ class HotsDraftGui extends EventEmitter {
 
     updateBan(banData) {
         console.log("[GUI updateBan] team=" + banData.team + ", index=" + banData.index + ", heroName=" + banData.heroName);
+        console.log("[GUI updateBan] Full banData: " + JSON.stringify(banData));
         // Update local draft data
         for (let i = 0; i < this.draft.bans.length; i++) {
             if ((this.draft.bans[i].team == banData.team) && (this.draft.bans[i].index == banData.index)) {
@@ -569,10 +573,12 @@ class HotsDraftGui extends EventEmitter {
             // TODO: Render the whole page in this case?
             return;
         }
+        console.log("[GUI updateBan] Rendering ban with heroName: " + banData.heroName);
         Twig.renderFile(templates.elementBan, Object.assign({ gui: this }, banData), (error, html) => {
             if (error) {
                 console.error(error);
             } else {
+                console.log("[GUI updateBan] Ban HTML rendered successfully for " + banData.heroName);
                 jQuery(selector).replaceWith(html);
                 jQuery(document).trigger("ban.init", jQuery(selector));
             }

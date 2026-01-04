@@ -452,9 +452,7 @@ class HotsDraftScreen extends EventEmitter {
                 console.log("[HotsDraftScreen] detectTimer() - Found RED team timer");
                 this.teamActive = "red";
                 this.banActive = false;
-                console.log("╔════════════════════════════════════════╗");
-                console.log("║  🔴 ROT WÄHLT (PICK)                  ║");
-                console.log("╚════════════════════════════════════════╝");
+                console.log(" ROT WÄHLT (PICK)");
                 resolve(true);
                 return;
           } else if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["ban"])) {
@@ -694,8 +692,31 @@ class HotsDraftScreen extends EventEmitter {
                     // Additional check: gap between best and second-best must be significant
                     let distanceGap = matchSecondDistance - matchBestDistance;
                     console.log("[" + team.color + "] Ban "+i+": " + matchBestHero + " / distance:" + matchBestDistance + " (gap: " + distanceGap + ")");
-                    this.banImages[matchBestHero].write("debug/" + team.color + "_ban" + i + "_BestCompare.png");
-                    let heroNameTranslated = (matchBestHero === "_fail" ? "--FAIL--" : this.app.gameData.getHeroName(matchBestHero));
+                    
+                    // Check if ban image exists
+                    if (this.banImages.hasOwnProperty(matchBestHero)) {
+                        this.banImages[matchBestHero].write("debug/" + team.color + "_ban" + i + "_BestCompare.png");
+                    } else {
+                        console.log("[" + team.color + "] Ban "+i+": WARNING - Ban image not found for '" + matchBestHero + "'");
+                        console.log("[" + team.color + "] Ban "+i+": Available ban images: " + Object.keys(this.banImages).slice(0, 10).join(", ") + "...");
+                    }
+                    // matchBestHero is a hero name (e.g., "liming"), but we need to get its translated name
+                    // First try to get it directly as a name, then try to find it by ID
+                    let heroNameTranslated = matchBestHero;
+                    if (matchBestHero !== "_fail") {
+                        // Try to find the hero ID from the name
+                        let heroId = this.app.gameData.getHeroId(matchBestHero);
+                        if (heroId) {
+                            // Get the hero name in English
+                            heroNameTranslated = this.app.gameData.getHeroName(heroId, "en-us");
+                            console.log("[HeroName DEBUG] Ban " + i + " - Resolved hero ID " + heroId + " from name '" + matchBestHero + "' -> '" + heroNameTranslated + "'");
+                        } else {
+                            console.log("[HeroName DEBUG] Ban " + i + " - Could not resolve hero ID from name '" + matchBestHero + "'");
+                            heroNameTranslated = matchBestHero; // Use the original name if no ID found
+                        }
+                    } else {
+                        heroNameTranslated = "--FAIL--";
+                    }
                     console.log("[HeroName DEBUG] Ban " + i + " - matchBestHero: '" + matchBestHero + "', heroNameTranslated: '" + heroNameTranslated + "', previous value: '" + bans.names[i] + "' (empty: " + (heroNameTranslated === "") + ")");
                     if (bans.names[i] !== heroNameTranslated) {
                         console.log("[HeroName DEBUG] Ban " + i + " - Updating from '" + bans.names[i] + "' to '" + heroNameTranslated + "'");
@@ -979,12 +1000,22 @@ class HotsDraftScreen extends EventEmitter {
                         }
                         return heroName;
                     }).catch((error) => {
-                        console.log("[HotsDraftScreen] detectHeroName() - OCR error for " + team.color + " player " + index + ": " + error.message);
+                        console.log("[HotsDraftScreen] detectHeroName() - OCR error for " + team.color + " player " + index + ": " + (error ? error.message : "unknown error"));
+                        if (error && error.stack) {
+                            console.log("[HotsDraftScreen] detectHeroName() - Stack trace: " + error.stack);
+                        }
                         return null;
                     })
                 )
             }
             resolve(player);
+        }).catch((error) => {
+            console.log("[HotsDraftScreen] detectHeroName() - Outer catch for " + team.color + " player " + index + ": " + (error ? error.message : "unknown error"));
+            if (error && error.stack) {
+                console.log("[HotsDraftScreen] detectHeroName() - Outer stack trace: " + error.stack);
+            }
+            // Still return the player object even if there was an error
+            return player;
         });
     }
     detectPlayerName(playerImgName, player, playerNameFinal, detections, index, team, colorIdent) {

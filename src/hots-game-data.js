@@ -129,6 +129,7 @@ class HotsGameData extends EventEmitter {
                 "Leoric": "Leoric",
                 "Li Li": "Li Li",
                 "Li-Ming": "Li-Ming",
+                "LiMing": "LiMing",
                 "Lt. Morales": "Lt. Morales",
                 "Lucio": "Lúcio",
                 "Lunara": "Lunara",
@@ -445,7 +446,12 @@ class HotsGameData extends EventEmitter {
         if (!this.heroes.name.hasOwnProperty(language)) {
             this.heroes.name[language] = {};
         }
-        return this.heroes.name[language][heroId];
+        let heroName = this.heroes.name[language][heroId];
+        if (typeof heroName === "undefined") {
+            console.log("[getHeroName] WARNING: Hero '" + heroId + "' not found in language '" + language + "'");
+            console.log("[getHeroName] Available hero IDs in '" + language + "': " + Object.keys(this.heroes.name[language]).slice(0, 10).join(", ") + "...");
+        }
+        return heroName;
     }
     getHeroNameTranslation(heroName, language) {
         if (language === this.language) {

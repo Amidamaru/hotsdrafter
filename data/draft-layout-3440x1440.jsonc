@@ -83,8 +83,8 @@
       "blue-inactive": [
         {
           "comment": "Red team is currently picking/banning",
-          "color": { "r": 37, "g": 29, "b": 38 }, // #251D26
-          "toleranceLum": 25,
+          "color": { "r": 55, "g": 40, "b": 59 }, // rgb(55, 40, 59)
+          "toleranceLum": 35,
           "toleranceHue": 45
         }
       ]

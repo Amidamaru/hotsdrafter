@@ -84,8 +84,8 @@
         {
           "comment": "Red team is currently picking/banning",
           "color": { "r": 74, "g": 59, "b": 76 }, // rgb(74, 59, 76)
-          "toleranceLum": 25,
-          "toleranceHue": 25
+          "toleranceLum": 30,
+          "toleranceHue": 60
         }
       ]
     },
@@ -252,7 +252,7 @@
   },
   "nameHeroSizeRotated": {
     "x": 750,
-    "y": 154
+    "y": 140
   },
   "namePlayerSizeRotated": {
     "x": 770,

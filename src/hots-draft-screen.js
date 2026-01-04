@@ -898,7 +898,7 @@ class HotsDraftScreen extends EventEmitter {
                 
                 try {
                     await heroImgNameCropped.write(tempHeroPath);
-                    console.log("[HeroName] detectHeroName() - File written successfully");
+                    //console.log("[HeroName] detectHeroName() - File written successfully");
                 } catch (writeError) {
                     console.log("[HeroName] detectHeroName() - Write error: " + writeError.message);
                     resolve(player);

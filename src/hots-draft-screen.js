@@ -955,8 +955,26 @@ class HotsDraftScreen extends EventEmitter {
                         let heroName = this.app.gameData.correctHeroName(ocrRawText);
                         console.log("[HeroName OCR] " + team.color + " player " + index + " - AFTER correctHeroName: '" + heroName + "'");
                         
-                        // Check if the hero name exists BEFORE confidence check
+                        // Remove OCR noise characters that commonly appear at the end: |, -, _, `, ', etc.
+                        let cleanedHeroName = heroName.replace(/[\|\-_`'\s]+$/g, '').trim();
+                        if (cleanedHeroName !== heroName) {
+                            console.log("[HeroName OCR] " + team.color + " player " + index + " - AFTER removing noise chars: '" + cleanedHeroName + "'");
+                            heroName = cleanedHeroName;
+                        }
+                        
+                        // Try fuzzy matching FIRST if hero not found directly
+                        if (!this.app.gameData.heroExists(heroName, this.app.gameData.language)) {
+                            console.log("[HeroName OCR] " + team.color + " player " + index + " - Hero '" + heroName + "' not found, trying fuzzy match...");
+                            let fuzzyMatch = this.app.gameData.findBestHeroNameMatch(heroName, this.app.gameData.language);
+                            if (fuzzyMatch) {
+                                console.log("[HeroName OCR] " + team.color + " player " + index + " - Fuzzy matched: '" + heroName + "' -> '" + fuzzyMatch + "'");
+                                heroName = fuzzyMatch;
+                            }
+                        }
+                        
+                        // Now check if the hero name exists BEFORE confidence check
                         let isValidHero = this.app.gameData.heroExists(heroName, this.app.gameData.language);
+                        console.log("[HeroName OCR] " + team.color + " player " + index + " - isValidHero (after fuzzy): " + isValidHero);
                         
                         // Confidence threshold depends on whether it's a recognized hero
                         // If it's a valid hero, accept it even with very low confidence (OCR is noisy)
@@ -965,20 +983,6 @@ class HotsDraftScreen extends EventEmitter {
                         if (result.confidence < minConfidence) {
                             console.log("[HeroName OCR] " + team.color + " player " + index + " - CONFIDENCE TOO LOW (" + result.confidence + " < " + minConfidence + "), isValidHero=" + isValidHero + ", ignoring as noise");
                             return null;
-                        }
-                        
-                        // If hero name doesn't exist, try fuzzy matching to find best match
-                        if (!this.app.gameData.heroExists(heroName, this.app.gameData.language)) {
-                            console.log("[HeroName OCR] " + team.color + " player " + index + " - Hero '" + heroName + "' not found, trying fuzzy match...");
-                            let fuzzyMatch = this.app.gameData.findBestHeroNameMatch(heroName, this.app.gameData.language);
-                            if (fuzzyMatch) {
-                                console.log("[HeroName OCR] " + team.color + " player " + index + " - Fuzzy matched: '" + heroName + "' -> '" + fuzzyMatch + "'");
-                                heroName = fuzzyMatch;
-                            } else {
-                                // Still accept the hero even without perfect match if confidence indicates valid OCR
-                                // This handles cases where OCR is wrong but still recognizable (e.g., LILLE -> LILI)
-                                console.log("[HeroName OCR] " + team.color + " player " + index + " - No fuzzy match found, but attempting to use original text");
-                            }
                         }
                         
                         // Translate German to English if needed

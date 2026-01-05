@@ -41,6 +41,12 @@ class HotsDraftScreen extends EventEmitter {
         this.mapLock = 0;
         this.teams = [];
         this.teamActive = null;
+        
+        // OCR optimization: track recognized heroes to avoid re-scanning
+        this.recognizedBans = {};        // { "blue_0": { hero: "LIMING", confidence: 95 }, ... }
+        this.recognizedHeroes = {};      // { "blue_player_1": { hero: "ILLIDAN", confidence: 92 }, ... }
+        this.ocrConfidenceLockedThreshold = 80;  // Confidence threshold: if >= this, don't re-scan
+        
         // Update handling
         this.on("update.started", () => {
             this.updateActive = true;
@@ -255,6 +261,8 @@ class HotsDraftScreen extends EventEmitter {
     clear() {
         this.map = null;
         this.teams = [];
+        this.recognizedBans = {};
+        this.recognizedHeroes = {};
         this.emit("change");
     }
     detect(screenshotFile) {
@@ -627,6 +635,17 @@ class HotsDraftScreen extends EventEmitter {
                 let posBan = posBans[i];
                 let banImg = this.screenshot.clone().crop({ x: posBan.x, y: posBan.y, w: sizeBan.x, h: sizeBan.y });
                 
+                // OCR Optimization: Check if this ban was already recognized with high confidence
+                let banKey = team.color + "_" + i;
+                if (this.recognizedBans[banKey] && this.recognizedBans[banKey].confidence >= this.ocrConfidenceLockedThreshold) {
+                    console.log("[" + team.color + "] Ban "+i+": ⏭️  SKIPPING OCR - already recognized (hero='" + this.recognizedBans[banKey].hero + "', confidence=" + this.recognizedBans[banKey].confidence + ", threshold=" + this.ocrConfidenceLockedThreshold + ")");
+                    bans.names[i] = this.recognizedBans[banKey].hero;
+                    if (!this.banActive && (bans.locked == i)) {
+                        bans.locked++;
+                    }
+                    continue;
+                }
+                
                 // Debug output - always save raw ban image
                 banImg.write("debug/" + team.color + "_ban" + i + "_Test.png");
                 
@@ -719,8 +738,12 @@ class HotsDraftScreen extends EventEmitter {
                     }
                     console.log("[HeroName DEBUG] Ban " + i + " - matchBestHero: '" + matchBestHero + "', heroNameTranslated: '" + heroNameTranslated + "', previous value: '" + bans.names[i] + "' (empty: " + (heroNameTranslated === "") + ")");
                     if (bans.names[i] !== heroNameTranslated) {
-                        console.log("[HeroName DEBUG] Ban " + i + " - Updating from '" + bans.names[i] + "' to '" + heroNameTranslated + "'");
+                        console.log("[" + team.color + "] Ban "+i+": ✅ RECOGNIZED via hash (hero='" + heroNameTranslated + "', confidence=100, distance=" + matchBestDistance + ")");
                         bans.names[i] = heroNameTranslated;
+                        // Store this recognition for future optimization
+                        let banKey = team.color + "_" + i;
+                        this.recognizedBans[banKey] = { hero: heroNameTranslated, confidence: 100 }; // Hash match = very high confidence
+                        console.log("[" + team.color + "] Ban "+i+": 💾 CACHED for future frames (key='" + banKey + "')");
                     }
                     // Lock bans that are detected properly and can not change to save detection time
                     if (!this.banActive && (bans.locked == i)) {
@@ -829,6 +852,15 @@ class HotsDraftScreen extends EventEmitter {
                 // Hero locked!
                 console.log("[HeroName] " + team.color + " player " + index + " - Hero appears LOCKED, checking text cleanup");
                 console.log("[HeroName] " + team.color + " player " + index + " - Expected hero name colors for colorIdent: " + JSON.stringify(DraftLayout["colors"]["heroNameLocked"][colorIdent]));
+                
+                // OCR Optimization: Check if this locked hero was already recognized with high confidence
+                let heroKey = team.color + "_player_" + index;
+                if (this.recognizedHeroes[heroKey] && this.recognizedHeroes[heroKey].confidence >= this.ocrConfidenceLockedThreshold && player.isLocked()) {
+                    console.log("[HeroName] " + team.color + " player " + index + " - SKIPPING OCR - already recognized as '" + this.recognizedHeroes[heroKey].hero + "' with confidence " + this.recognizedHeroes[heroKey].confidence);
+                    resolve(player);
+                    return;
+                }
+                
                 let cleanupResult = HotsHelpers.imageCleanupName(heroImgNameCropped, DraftLayout["colors"]["heroNameLocked"][colorIdent], [], 0x000000FF, 0xFFFFFFFF);
                 console.log("[HeroName] " + team.color + " player " + index + " - Text cleanup result: " + cleanupResult);
                 
@@ -1016,6 +1048,13 @@ class HotsDraftScreen extends EventEmitter {
                             player.setCharacter(heroName, detectionError);
                             player.setImageHeroName(imageHeroName);
                             player.setLocked(heroLocked);
+                            
+                            // Store this recognition for future optimization (if valid hero and locked)
+                            if (heroLocked && !detectionError && result.confidence >= this.ocrConfidenceLockedThreshold) {
+                                let heroKey = team.color + "_player_" + index;
+                                this.recognizedHeroes[heroKey] = { hero: heroName, confidence: result.confidence };
+                                console.log("[HeroName OCR] " + team.color + " player " + index + " - Stored recognition for key '" + heroKey + "' with confidence " + result.confidence);
+                            }
                         }
                         return heroName;
                     }).catch((error) => {
@@ -1039,7 +1078,7 @@ class HotsDraftScreen extends EventEmitter {
     }
     detectPlayerName(playerImgName, player, playerNameFinal, detections, index, team, colorIdent) {
         return new Promise(async (resolve, reject) => {
-            //console.log("[PlayerName] " + team.color + " player " + index + " - Starting detection with colorIdent: " + colorIdent);
+            console.log("[PlayerName] " + team.color + " player " + index + " - Starting detection with colorIdent: " + colorIdent);
             
             // Get rotation angle from layout
             let nameAngle = DraftLayout["teams"][team.getColor()]["name"]["angle"];
@@ -1060,7 +1099,7 @@ class HotsDraftScreen extends EventEmitter {
             // Save ORIGINAL rotated/cropped image BEFORE cleanup for debugging
             let beforeCleanupPath = "debug/" + team.color + "_player" + index + "_BEFORE_cleanup.png";
             await playerImgNameRotated.clone().write(beforeCleanupPath);
-            //console.log("[PlayerName] " + team.color + " player " + index + " - Saved BEFORE cleanup to: " + beforeCleanupPath);
+            console.log("[PlayerName] " + team.color + " player " + index + " - Saved BEFORE cleanup to: " + beforeCleanupPath);
             
             // Log sample pixels from the image
             let w = playerImgNameCropped.bitmap.width;
@@ -1070,19 +1109,19 @@ class HotsDraftScreen extends EventEmitter {
                 { x: 10, y: 10, name: "Top-Left" },
                 { x: w-10, y: 10, name: "Top-Right" }
             ];
-            //console.log("[PlayerName] " + team.color + " player " + index + " - Sample pixel colors:");
+            console.log("[PlayerName] " + team.color + " player " + index + " - Sample pixel colors:");
             for (let point of samplePoints) {
                 let colorHex = playerImgNameCropped.getPixelColor(point.x, point.y);
                 let r = (colorHex >> 24) & 0xFF;
                 let g = (colorHex >> 16) & 0xFF;
                 let b = (colorHex >> 8) & 0xFF;
-                //console.log("  " + point.name + " (" + point.x + "," + point.y + "): RGB(" + r + ", " + g + ", " + b + ")");
+                console.log("  " + point.name + " (" + point.x + "," + point.y + "): RGB(" + r + ", " + g + ", " + b + ")");
             }
             
             // Log the colors we're looking for
-            //console.log("[PlayerName] " + team.color + " player " + index + " - Expected colors for colorIdent '" + colorIdent + "':");
-           // console.log("  playerName colors: " + JSON.stringify(DraftLayout["colors"]["playerName"][colorIdent]));
-           // console.log("  boost colors: " + JSON.stringify(DraftLayout["colors"]["boost"]));
+            console.log("[PlayerName] " + team.color + " player " + index + " - Expected colors for colorIdent '" + colorIdent + "':");
+            console.log("  playerName colors: " + JSON.stringify(DraftLayout["colors"]["playerName"][colorIdent]));
+            console.log("  boost colors: " + JSON.stringify(DraftLayout["colors"]["boost"]));
             
             let playerImgNameOriginal = (this.debugEnabled() ? playerImgNameCropped.clone() : null);
             let cleanupResult = HotsHelpers.imageCleanupName(

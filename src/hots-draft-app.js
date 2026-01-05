@@ -42,6 +42,7 @@ class HotsDraftApp extends EventEmitter {
         this.lastPlayerHero = null;  // Track hero changes for auto-refresh
         this.talentUpdateTimeout = null;  // Debounce talent provider updates
         this.lastDraftDataHash = null;  // Prevent sending duplicate draft data
+        this.timerUpdateInterval = null;  // Fast timer status updates (200ms instead of 1000ms)
         // Initialize
         this.registerEvents();
     }
@@ -546,6 +547,43 @@ class HotsDraftApp extends EventEmitter {
             }, 1000);
         }
     }
+    
+    updateTimerOnly() {
+        // Fast timer-only update for responsive UI (no OCR, no hero detection - just timer status)
+        if (this.statusDetectionRunning || this.screen.updateActive) {
+            return;
+        }
+        this.statusDetectionRunning = true;
+        let screenshotOptions = { format: 'png' };
+        
+        // Use the configured gameDisplay from settings
+        let gameDisplayConfig = HotsHelpers.getConfig().getOption("gameDisplay");
+        if (gameDisplayConfig !== null && this.displays && this.displays.length > 0) {
+            for (let i = 0; i < this.displays.length; i++) {
+                if (this.displays[i].id === gameDisplayConfig) {
+                    screenshotOptions.screen = this.displays[i].id;
+                    break;
+                }
+            }
+        } else if (this.displays && this.displays.length > 1) {
+            screenshotOptions.screen = this.displays[1].id;
+        }
+        
+        screenshot(screenshotOptions).then((img) => {
+            this.statusDetectionRunning = false;
+            // Store screenshot in screen object so detectTimer can use it
+            this.screen.screenshot = img;
+            // Quick timer detection only
+            this.screen.detectTimer().then(() => {
+                // Send full draft data so timer status is included in GUI update
+                this.sendDraftData();
+            }).catch((error) => {
+                // Silently fail for timer-only updates
+            });
+        }).catch((error) => {
+            this.statusDetectionRunning = false;
+        });
+    }
     submitReplayData() {
         if (this.statusDraftData === null) {
             return;
@@ -707,12 +745,31 @@ class HotsDraftApp extends EventEmitter {
         this.emit("game.started");
         this.sendEvent("gui", "game.start");
         this.setDebugStep("Waiting for game to end...");
+        
+        // Start fast timer-only update interval (200ms for responsive UI)
+        if (this.timerUpdateInterval) {
+            clearInterval(this.timerUpdateInterval);
+        }
+        this.timerUpdateInterval = setInterval(() => {
+            this.updateTimerOnly();
+        }, 200);
+        
         if (this.debugEnabled()) {
             console.log("=== GAME STARTED ===");
+            console.log("[FastTimer] Started 200ms update interval");
         }
     }
     triggerGameEnd() {
         // Game ended
+        // Stop fast timer update interval
+        if (this.timerUpdateInterval) {
+            clearInterval(this.timerUpdateInterval);
+            this.timerUpdateInterval = null;
+            if (this.debugEnabled()) {
+                console.log("[FastTimer] Stopped update interval");
+            }
+        }
+        
         this.submitReplayData();
         this.sendGameData();
         this.emit("game.ended");

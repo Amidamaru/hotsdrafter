@@ -11,7 +11,7 @@ const HotsDraftPlayer = require('./hots-draft-player.js');
 const HotsHelpers = require('./hots-helpers.js');
 const TesseractCluster = require('./tesseract-cluster.js');
 
-const ocrCluster = new TesseractCluster(4);
+const ocrCluster = new TesseractCluster(16);
 
 // Data files
 const DraftLayout = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/draft-layout-3440x1440.jsonc'), 'utf8').replace(/\/\/.*$/gm, ''));

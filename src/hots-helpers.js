@@ -120,10 +120,10 @@ class HotsHelpers {
             { x: Math.floor(image.bitmap.width / 2), y: Math.floor(3 * image.bitmap.height / 4) - 2, name: "Bottom Middle" }
         ];
         
-        if (teamColor === "red") {
-            console.log("[imageLockedHeroBackgroundMatch] Image dimensions: " + image.bitmap.width + "x" + image.bitmap.height);
-            console.log("[imageLockedHeroBackgroundMatch] Sample Points: " + JSON.stringify(samplePoints));
-        }
+        // if (teamColor === "red") {
+            // console.log("[imageLockedHeroBackgroundMatch] Image dimensions: " + image.bitmap.width + "x" + image.bitmap.height);
+            // console.log("[imageLockedHeroBackgroundMatch] Sample Points: " + JSON.stringify(samplePoints));
+        // }
         
         for (let point of samplePoints) {
             let match = HotsHelpers.imagePixelMatch(image, point.x, point.y, matchesPositive, matchesNegative);

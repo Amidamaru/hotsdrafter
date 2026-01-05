@@ -162,13 +162,14 @@ class HotsDraftGui extends EventEmitter {
             case "draft":
                 this.draft = parameters[0];
                 console.log("[GUI] Received draft data: " + this.draft.bans.length + " bans, " + this.draft.players.length + " players, teamActive=" + this.draft.teamActive + ", banActive=" + this.draft.banActive);
-                // If page not rendered yet, do initial render
-                if (jQuery(".page").html() === "" || jQuery(".page").find("[data-type='draft']").length === 0) {
-                    console.log("[GUI] Initial draft data - rendering page");
-                    this.refreshPage();
+                // If draft-phase element exists, use minimal update instead of full refresh
+                if (jQuery(".draft-phase").length > 0) {
+                    console.log("[GUI] Draft-phase element found - updating draft display (teamActive=" + this.draft.teamActive + ", banActive=" + this.draft.banActive + ")");
+                    this.updateDraftDisplay();
                 } else {
-                    // Page already rendered, don't refresh to preserve tabs
-                    console.log("[GUI] Page already rendered - skipping full refresh");
+                    // First render or page needs to be rebuilt
+                    console.log("[GUI] Draft-phase element not found - rendering page");
+                    this.refreshPage();
                 }
                 break;
             case "draft.status":
@@ -359,9 +360,9 @@ class HotsDraftGui extends EventEmitter {
     }
 
     renderPage() {
-        console.log("[GUI] renderPage() - Rendering page: " + this.page);
+        // console.log("[GUI] renderPage() - Rendering page: " + this.page);
         if (this.modalActive) {
-            console.log("[GUI] renderPage() - Modal is active, skipping render");
+            // console.log("[GUI] renderPage() - Modal is active, skipping render");
             return;
         }
         Twig.renderFile(templates[this.page], {
@@ -370,12 +371,12 @@ class HotsDraftGui extends EventEmitter {
             if (error) {
                 console.error("[GUI] renderPage() - Twig render error:", error);
             } else {
-                console.log("[GUI] renderPage() - Page rendered successfully, inserting into DOM");
+                // console.log("[GUI] renderPage() - Page rendered successfully, inserting into DOM");
                 jQuery(".page").html(html);
                 // Execute inline scripts (jQuery.html() doesn't execute them automatically)
                 jQuery(".page").find("script").each((index, element) => {
                     let scriptContent = jQuery(element).text();
-                    console.log("[GUI] renderPage() - Executing script #" + index);
+                    // console.log("[GUI] renderPage() - Executing script #" + index);
                     try {
                         eval(scriptContent);
                     } catch (err) {
@@ -384,10 +385,10 @@ class HotsDraftGui extends EventEmitter {
                 });
                 // After rendering, manually bind events for config page
                 if (this.page === "config") {
-                    console.log("[GUI] renderPage() - Config page detected, calling bindConfigPageEvents()");
+                    // console.log("[GUI] renderPage() - Config page detected, calling bindConfigPageEvents()");
                     this.bindConfigPageEvents();
                 } else {
-                    console.log("[GUI] renderPage() - Page is '" + this.page + "', not config");
+                    // console.log("[GUI] renderPage() - Page is '" + this.page + "', not config");
                 }
             }
         });
@@ -395,8 +396,8 @@ class HotsDraftGui extends EventEmitter {
 
     bindConfigPageEvents() {
         // Bind all form field change events for config page
-        console.log("[GUI] bindConfigPageEvents() - Binding config page events...");
-        console.log("[GUI] this.gameData = " + JSON.stringify(this.gameData));
+        // console.log("[GUI] bindConfigPageEvents() - Binding config page events...");
+        // console.log("[GUI] this.gameData = " + JSON.stringify(this.gameData));
         
         // Simple text/select fields
         jQuery("#playerBattleTag").on("change keyup", (e) => {
@@ -408,19 +409,19 @@ class HotsDraftGui extends EventEmitter {
         });
 
         jQuery("#language").on("change", (e) => {
-            console.log("[GUI] Language changed to: " + e.target.value);
+            // console.log("[GUI] Language changed to: " + e.target.value);
             this.setConfigOption("language", e.target.value);
         });
         
         // Debug: Check if language dropdown has options
         let languageOptions = jQuery("#language option").length;
         let languageValue = jQuery("#language").val();
-        console.log("[GUI] Language dropdown found with " + languageOptions + " options, current value: " + languageValue);
+        // console.log("[GUI] Language dropdown found with " + languageOptions + " options, current value: " + languageValue);
         
         // Log all available options
-        jQuery("#language option").each((index, option) => {
-            console.log("[GUI]   Option " + index + ": value='" + option.value + "', text='" + option.text + "'");
-        });
+        // jQuery("#language option").each((index, option) => {
+            // console.log("[GUI]   Option " + index + ": value='" + option.value + "', text='" + option.text + "'");
+        // });
 
         jQuery("#draftProvider").on("change", (e) => {
             this.setConfigOption("draftProvider", e.target.value);
@@ -524,11 +525,35 @@ class HotsDraftGui extends EventEmitter {
     updateDraftDisplay() {
         // Update draft display without full page refresh to preserve UI state
         // This is a minimal update that preserves tabs and other UI elements
-        console.log("[HotsDraftGui] updateDraftDisplay() - Minimal draft update");
+        console.log("[HotsDraftGui] updateDraftDisplay() - Minimal draft update: teamActive=" + this.draft.teamActive + ", banActive=" + this.draft.banActive);
         
-        // For now, just log that we're doing a minimal update
-        // The template will automatically reflect changes via binding
-        // If needed, specific elements can be updated here
+        // Update the draft-phase element with current teamActive/banActive status
+        let draftPhaseElement = jQuery(".draft-phase h5");
+        if (draftPhaseElement.length > 0) {
+            // Build new status text based on teamActive and banActive
+            let statusText = "";
+            let statusColor = "";
+            
+            if (this.draft.teamActive === 'unknown') {
+                statusText = "KEINE AHNUNG";
+                statusColor = "warning";
+            } else if (this.draft.teamActive === 'blue') {
+                statusText = this.draft.banActive ? "BLAU BANNT" : "BLAU PICKT";
+                statusColor = "info";
+            } else if (this.draft.teamActive === 'red') {
+                statusText = this.draft.banActive ? "ROT BANNT" : "ROT PICKT";
+                statusColor = "danger";
+            }
+            
+            // Update the element
+            if (statusText) {
+                draftPhaseElement.text(statusText);
+                draftPhaseElement.attr("class", "text-" + statusColor);
+                console.log("[HotsDraftGui] updateDraftDisplay() - Updated draft phase to: " + statusText + " (color: " + statusColor + ")");
+            }
+        } else {
+            console.log("[HotsDraftGui] updateDraftDisplay() - draft-phase element not found, skipping update");
+        }
     }
 
     renderDetectionTunerContent(targetElement, cbDone) {

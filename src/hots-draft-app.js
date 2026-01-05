@@ -4,6 +4,7 @@ const screenshot = require('screenshot-desktop');
 const Twig = require('twig');
 const HotsReplay = require('hots-replay');
 const EventEmitter = require('events');
+const { Jimp } = require('jimp');
 
 // Local classes
 const HotsDraftScreen = require('../src/hots-draft-screen.js');
@@ -43,6 +44,9 @@ class HotsDraftApp extends EventEmitter {
         this.talentUpdateTimeout = null;  // Debounce talent provider updates
         this.lastDraftDataHash = null;  // Prevent sending duplicate draft data
         this.timerUpdateInterval = null;  // Fast timer status updates (200ms instead of 1000ms)
+        this.lastTimerState = null;  // Track previous timer state to detect changes
+        this.detectionAbortController = null;  // Abort controller for aborting detections on timer change
+        this.timerDetectionRunning = false;  // Separate flag for timer-only detection (runs parallel to full detection)
         // Initialize
         this.registerEvents();
     }
@@ -74,7 +78,33 @@ class HotsDraftApp extends EventEmitter {
             this.startDetection();
         });
         this.on("draft.started", () => {
+            console.log("📋 [DRAFT STARTED] Starting fast timer update interval for draft phase!");
+            // Start fast timer-only update interval when draft starts (not when game starts)
+            if (this.timerUpdateInterval) {
+                const ts = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                console.log(`[${ts}] [FastTimer] Clearing existing interval`);
+                clearInterval(this.timerUpdateInterval);
+            }
+            const ts1 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+            console.log(`[${ts1}] [FastTimer] Starting 800ms update interval for draft...`);
+            this.timerUpdateInterval = setInterval(() => {
+                const ts2 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                console.log(`[${ts2}] [FastTimer] 800ms INTERVAL TICK - calling updateTimerOnly()`);
+                this.updateTimerOnly();
+            }, 800);
+            const ts3 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+            console.log(`[${ts3}] [FastTimer] Interval started with ID: ${this.timerUpdateInterval}`);
+            
             this.sendDraftData();
+        });
+        this.on("draft.ended", () => {
+            console.log("📋 [DRAFT ENDED] Stopping fast timer update interval!");
+            if (this.timerUpdateInterval) {
+                const ts = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                console.log(`[${ts}] [FastTimer] Stopping timer update interval (ID: ${this.timerUpdateInterval})`);
+                clearInterval(this.timerUpdateInterval);
+                this.timerUpdateInterval = null;
+            }
         });
         // Detection events
         this.screen.on("detect.teams.new", () => {
@@ -298,7 +328,16 @@ class HotsDraftApp extends EventEmitter {
     }
     sendDraftData() {
         // Update statusDraftData first so providers can access it
-        this.statusDraftData = this.collectDraftData();
+        let newDraftData = this.collectDraftData();
+        
+        // IMPORTANT: Keep the current teamActive and banActive from the previous statusDraftData
+        // Only the FastTimer is allowed to update these values for responsive UI!
+        if (this.statusDraftData) {
+            newDraftData.teamActive = this.statusDraftData.teamActive;
+            newDraftData.banActive = this.statusDraftData.banActive;
+        }
+        
+        this.statusDraftData = newDraftData;
         console.log("[HotsDraftApp] sendDraftData() - Sending draft with " + this.statusDraftData.bans.length + " bans, " + this.statusDraftData.players.length + " players, teamActive=" + this.statusDraftData.teamActive + ", banActive=" + this.statusDraftData.banActive);
         
         // Auto-update talent provider when player hero changes (debounced to prevent spam)
@@ -372,6 +411,21 @@ class HotsDraftApp extends EventEmitter {
     }
     sendDraftState() {
         this.sendEvent("gui", "draft.status", this.statusDraftActive);
+    }
+    sendTimerUpdate() {
+        // Fast timer-only update - create NEW object to force GUI update
+        if (this.statusDraftData) {
+            // Create a COPY with updated timer fields (forces GUI to recognize change)
+            let updatedDraft = Object.assign({}, this.statusDraftData, {
+                teamActive: this.screen.getTeamActive(),
+                banActive: this.screen.banActive
+            });
+            console.log("[HotsDraftApp] sendTimerUpdate() - Sending NEW draft object with timer: teamActive=" + updatedDraft.teamActive + ", banActive=" + updatedDraft.banActive);
+            // Send as new object (GUI will see it as new data!)
+            this.sendEvent("gui", "draft", updatedDraft);
+        } else {
+            console.log("[HotsDraftApp] sendTimerUpdate() - No draft data yet, skipping");
+        }
     }
     resetDraft() {
         console.log("[HotsDraftApp] resetDraft() - Resetting draft data");
@@ -548,12 +602,45 @@ class HotsDraftApp extends EventEmitter {
         }
     }
     
+    checkAndHandleTimerChange() {
+        // Build current timer state string
+        let currentTimerState = (this.screen.teamActive !== null ? this.screen.teamActive : "unknown") + "-" + (this.screen.banActive ? "ban" : "pick");
+        
+        const ts = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+        console.log(`[${ts}] [FastTimer.checkAndHandleTimerChange] lastTimerState=${this.lastTimerState !== null ? `"${this.lastTimerState}"` : "null"}, currentTimerState="${currentTimerState}"`);
+        
+        // Check if timer state changed
+        if (this.lastTimerState !== null && this.lastTimerState !== currentTimerState) {
+            console.log("❌ [TimerChange] Timer state changed from \"" + this.lastTimerState + "\" to \"" + currentTimerState + "\" - Aborting old detections!");
+            
+            // Abort any ongoing detections
+            if (this.detectionAbortController) {
+                this.detectionAbortController.abort();
+            }
+            // Create new abort controller for next detection cycle
+            this.detectionAbortController = new AbortController();
+            
+            // Trigger immediate full detection with new state
+            console.log("[TimerChange] Starting new detection cycle with new timer state...");
+            this.statusUpdatePending = false;  // Clear pending flag so update can run immediately
+            this.update();
+        }
+        
+        // Update last known state
+        this.lastTimerState = currentTimerState;
+    }
+    
     updateTimerOnly() {
         // Fast timer-only update for responsive UI (no OCR, no hero detection - just timer status)
-        if (this.statusDetectionRunning || this.screen.updateActive) {
+        // SEPARATE from full detection - runs in PARALLEL!
+        if (this.timerDetectionRunning) {
+            const ts = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+            console.log(`[${ts}] [FastTimer] SKIPPED (previous timer detection still running)`);
             return;
         }
-        this.statusDetectionRunning = true;
+        const ts1 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+        console.log(`[${ts1}] [FastTimer] Starting PARALLEL timer detection...`);
+        this.timerDetectionRunning = true;
         let screenshotOptions = { format: 'png' };
         
         // Use the configured gameDisplay from settings
@@ -569,19 +656,46 @@ class HotsDraftApp extends EventEmitter {
             screenshotOptions.screen = this.displays[1].id;
         }
         
+        const ts2 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+        console.log(`[${ts2}] [FastTimer] Taking screenshot...`);
         screenshot(screenshotOptions).then((img) => {
-            this.statusDetectionRunning = false;
-            // Store screenshot in screen object so detectTimer can use it
-            this.screen.screenshot = img;
-            // Quick timer detection only
-            this.screen.detectTimer().then(() => {
-                // Send full draft data so timer status is included in GUI update
-                this.sendDraftData();
+            const ts3 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+            console.log(`[${ts3}] [FastTimer]  Screenshot captured, size=${img.length} bytes`);
+            this.timerDetectionRunning = false;
+            // Convert Buffer to Jimp image so detectTimer can use .clone(), .crop(), etc.
+            const ts4 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+            console.log(`[${ts4}] [FastTimer] Converting Buffer to Jimp...`);
+            Jimp.read(img).then((screenshotImage) => {
+                const ts5 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                console.log(`[${ts5}] [FastTimer] Jimp image ready, calling detectTimer()...`);
+                // Store Jimp image in screen object so detectTimer can use it
+                this.screen.screenshot = screenshotImage;
+                // Quick timer detection only
+                this.screen.detectTimer().then(() => {
+                    const ts6 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                    console.log(`[${ts6}] [FastTimer] Timer detected! teamActive=${this.screen.teamActive}, banActive=${this.screen.banActive}`);
+                    // Check if timer state changed and handle it
+                    this.checkAndHandleTimerChange();
+                    // Send ONLY timer data - ultra fast!
+                    const ts7 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                    console.log(`[${ts7}] [FastTimer] Sending TIMER-ONLY update to GUI...`);
+                    this.sendTimerUpdate();
+                    const ts8 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                    console.log(`[${ts8}] [FastTimer] Timer update sent!`);
+                }).catch((error) => {
+                    // Silently fail for timer-only updates
+                    const ts9 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                    console.log(`[${ts9}] [FastTimer] Timer detection failed: ${error.message}`);
+                });
             }).catch((error) => {
-                // Silently fail for timer-only updates
+                this.timerDetectionRunning = false;
+                const ts10 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                console.log(`[${ts10}] [FastTimer] Failed to convert screenshot to Jimp: ${error.message}`);
             });
         }).catch((error) => {
-            this.statusDetectionRunning = false;
+            this.timerDetectionRunning = false;
+            const ts11 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+            console.log(`[${ts11}] [FastTimer] Screenshot capture failed: ${error.message}`);
         });
     }
     submitReplayData() {
@@ -647,16 +761,22 @@ class HotsDraftApp extends EventEmitter {
         });
     }
     update() {
+        // console.log("[HotsDraftApp.update] ⚡ UPDATE CALLED!");
         if (this.debugEnabled()) console.log("[HotsDraftApp] update() - Starting...");
         this.statusUpdatePending = false;
         // Update game files
+        // console.log("[HotsDraftApp.update] Calling updateGameFiles()...");
         if (this.debugEnabled()) console.log("[HotsDraftApp] update() - Calling updateGameFiles...");
         this.updateGameFiles().then(() => {
+            // console.log("[HotsDraftApp.update] updateGameFiles() DONE, now checking status...");
+            // console.log("[HotsDraftApp.update] statusGameActive=" + this.statusGameActive);
             if (this.debugEnabled()) console.log("[HotsDraftApp] update() - updateGameFiles done");
             // Update status
             if (this.statusGameActive) {
+                // console.log("[HotsDraftApp.update] Game is ACTIVE - checking if draft ended...");
                 if (this.statusDraftActive) {
                     // Draft just ended
+                    // console.log("[HotsDraftApp.update] Draft was active, ending it now!");
                     this.statusDraftActive = false;
                     this.emit("draft.ended");
                     this.sendDraftState();
@@ -665,11 +785,14 @@ class HotsDraftApp extends EventEmitter {
                     }
                 }
             } else {
+                // console.log("[HotsDraftApp.update] Game is NOT active - checking draft status...");
                 // Check draft status
                 if (this.screen.getMap() !== null) {
                     // Draft is active
+                    // console.log("[HotsDraftApp] update() - Draft is ACTIVE! map=" + this.screen.getMap() + ", statusDraftActive=" + this.statusDraftActive);
                     if (!this.statusDraftActive) {
                         // Draft just started
+                        // console.log("[HotsDraftApp] update() - 🎬 DRAFT JUST STARTED!");
                         this.statusDraftActive = true;
                         this.emit("draft.started");
                         this.sendDraftState();
@@ -679,6 +802,7 @@ class HotsDraftApp extends EventEmitter {
                     }
                 } else {
                     // Draft not active
+                    // console.log("[HotsDraftApp] update() - Draft is NOT active (map=null), statusDraftActive=" + this.statusDraftActive);
                     if (this.statusDraftActive) {
                         // Draft just ended
                         this.statusDraftActive = false;
@@ -694,29 +818,42 @@ class HotsDraftApp extends EventEmitter {
             if (this.debugEnabled()) console.log("[HotsDraftApp] update() - Calling checkNextUpdate...");
             this.checkNextUpdate();
         }).catch((error) => {
+            // console.log("[HotsDraftApp.update] updateGameFiles() REJECTED with error: " + error.message);
             if (this.debugEnabled()) console.warn("[HotsDraftApp] update() - Error in updateGameFiles:", error);
             if (this.debugEnabled()) console.log("[HotsDraftApp] update() - Calling checkNextUpdate anyway...");
             this.checkNextUpdate();
         });
     }
     updateGameFiles() {
+        // console.log("[updateGameFiles] 🚀 Starting updateGameFiles...");
         if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - Starting...");
         return this.gameData.updateSaves().then(() => {
+            // console.log("[updateGameFiles] ✅ updateSaves() done");
             if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - updateSaves done, calling updateReplays...");
             return this.gameData.updateReplays();
         }).then(() => {
+            // console.log("[updateGameFiles] ✅ updateReplays() done, checking game state...");
             if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - updateReplays done, updating status...");
-            this.statusTempModTime = this.gameData.updateTempModTime();
-            this.statusGameSaveFile = this.gameData.getLatestSave();
-            this.statusGameLastReplay = this.gameData.getLatestReplay();
-            // Check if game state changed
-            let gameActive = this.isGameActive();
+            let gameActive;  // Declare here so it's available outside the try block
+            try {
+                this.statusTempModTime = this.gameData.updateTempModTime();
+                this.statusGameSaveFile = this.gameData.getLatestSave();
+                this.statusGameLastReplay = this.gameData.getLatestReplay();
+                // Check if game state changed
+                gameActive = this.isGameActive();
+                // console.log("[GameState] isGameActive()=" + gameActive + ", statusGameActive=" + this.statusGameActive);
+            } catch (error) {
+                // console.log("[updateGameFiles] ❌ ERROR during game state check: " + error.message);
+                throw error;
+            }
             if (this.statusGameActive !== gameActive) {
+                // console.log("[GameState] Game state changed! statusGameActive: " + this.statusGameActive + " -> " + gameActive);
                 this.statusGameActive = gameActive
                 if (gameActive) {
-                    if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - Game started");
+                    // console.log("[GameState] ✅ Game STARTED - calling triggerGameStart()");
                     this.triggerGameStart();
                 } else {
+                    // console.log("[GameState] ❌ Game ENDED - calling triggerGameEnd()");
                     if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - Game ended");
                     this.triggerGameEnd();
                 }
@@ -725,6 +862,7 @@ class HotsDraftApp extends EventEmitter {
             if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - Calling uploadReplays...");
             return this.gameData.uploadReplays();
         }).then((uploadCount) => {
+            // console.log("[updateGameFiles] ✅ uploadReplays() done, count=" + uploadCount);
             if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - uploadReplays done, count=" + uploadCount);
             if (uploadCount > 0) {
                 // Save updated game data and send it to the gui
@@ -733,12 +871,15 @@ class HotsDraftApp extends EventEmitter {
             }
             if (this.debugEnabled()) console.log("[HotsDraftApp] updateGameFiles() - Done");
         }).catch((error) => {
+            // console.log("[updateGameFiles] ❌ ERROR in updateGameFiles: " + error.message);
+            // console.log("[updateGameFiles] Stack: " + (error.stack || "no stack"));
             if (this.debugEnabled()) console.warn("[HotsDraftApp] updateGameFiles() - Error:", error);
             // Continue anyway
         });
     }
     triggerGameStart() {
-        // Game started
+        // Game started (timer is already running from draft.started event)
+        console.log("🎮 [GAME START] Game has started!");
         this.updateDraftData();
         // Don't send talent data here - wait for auto-update when hero is picked
         this.screen.clear();
@@ -746,28 +887,26 @@ class HotsDraftApp extends EventEmitter {
         this.sendEvent("gui", "game.start");
         this.setDebugStep("Waiting for game to end...");
         
-        // Start fast timer-only update interval (200ms for responsive UI)
-        if (this.timerUpdateInterval) {
-            clearInterval(this.timerUpdateInterval);
-        }
-        this.timerUpdateInterval = setInterval(() => {
-            this.updateTimerOnly();
-        }, 200);
-        
         if (this.debugEnabled()) {
             console.log("=== GAME STARTED ===");
-            console.log("[FastTimer] Started 200ms update interval");
         }
     }
     triggerGameEnd() {
         // Game ended
+        console.log("🎮 [GAME END] Game has ended!");
         // Stop fast timer update interval
         if (this.timerUpdateInterval) {
+            const ts = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+            console.log(`[${ts}] [FastTimer] Stopping timer update interval (ID: ${this.timerUpdateInterval})`);
             clearInterval(this.timerUpdateInterval);
             this.timerUpdateInterval = null;
             if (this.debugEnabled()) {
-                console.log("[FastTimer] Stopped update interval");
+                const ts1 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                console.log(`[${ts1}] [FastTimer] Stopped update interval`);
             }
+        } else {
+            const ts2 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+            console.log(`[${ts2}] [FastTimer] No interval to stop`);
         }
         
         this.submitReplayData();
@@ -825,7 +964,7 @@ class HotsDraftApp extends EventEmitter {
             heroName: team.getBanHero(index),
             heroImage: (banImage !== null ? banImage.toString('base64') : null)
         };
-        console.log("[collectBanData] team=" + team.getColor() + ", index=" + index + ", heroName=" + banData.heroName + ", locked=" + banData.locked);
+        // console.log("[collectBanData] team=" + team.getColor() + ", index=" + index + ", heroName=" + banData.heroName + ", locked=" + banData.locked);
         return banData;
     }
     collectPlayerData(player) {

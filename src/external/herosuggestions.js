@@ -18,7 +18,7 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
     }
 
     init() {
-        console.log("[HeroSuggestions] Provider initialized");
+        // console.log("[HeroSuggestions] Provider initialized");
         this.updateActive = false;
         return new Promise((resolve, reject) => {
             resolve(true);
@@ -26,9 +26,9 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
     }
 
     update() {
-        console.log("[HeroSuggestions] update() called");
+        // console.log("[HeroSuggestions] update() called");
         if (this.updateActive) {
-            console.log("[HeroSuggestions] Update already active, marking as pending");
+            // console.log("[HeroSuggestions] Update already active, marking as pending");
             this.updatePending = true;
             return;
         }
@@ -36,7 +36,7 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
         this.updateActive = true;
 
         // Get draft screen data
-        console.log("[HeroSuggestions] Collecting heroes, picks and map from screen...");
+        // console.log("[HeroSuggestions] Collecting heroes, picks and map from screen...");
         
         let allBans = [];      // only bans
         let allPicks = [];     // only picks
@@ -47,21 +47,21 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
         let map = this.screen.getMap();
         if (map) {
             mapName = map;  // screen.getMap() returns the English map name directly
-            console.log("[HeroSuggestions] Map: " + mapName);
+            // console.log("[HeroSuggestions] Map: " + mapName);
         } else {
-            console.log("[HeroSuggestions] No map detected yet");
+            // console.log("[HeroSuggestions] No map detected yet");
         }
 
         // Get blue team picks
         let teamBlue = this.screen.getTeam("blue");
         if (teamBlue !== null) {
             let playersBlue = teamBlue.getPlayers();
-            console.log("[HeroSuggestions] Blue players: " + playersBlue.length);
+            // console.log("[HeroSuggestions] Blue players: " + playersBlue.length);
             for (let i = 0; i < playersBlue.length; i++) {
                 if (playersBlue[i].isLocked()) {
                     let heroName = playersBlue[i].getCharacter();
                     heroName = this.app.gameData.fixHeroName(heroName);  // Normalize name
-                    console.log("[HeroSuggestions] Blue pick " + i + ": " + heroName);
+                    // console.log("[HeroSuggestions] Blue pick " + i + ": " + heroName);
                     if (heroName && heroName !== "???") {
                         teamPicks.push(heroName);
                         allPicks.push(heroName);
@@ -74,22 +74,22 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
         let teamRed = this.screen.getTeam("red");
         if (teamRed !== null) {
             let bansRed = teamRed.getBans();
-            console.log("[HeroSuggestions] Red bans raw: " + JSON.stringify(bansRed));
+            // console.log("[HeroSuggestions] Red bans raw: " + JSON.stringify(bansRed));
             for (let i = 0; i < bansRed.length; i++) {
                 if (bansRed[i] && bansRed[i] !== "???" && bansRed[i] !== null) {
                     let heroName = this.app.gameData.fixHeroName(bansRed[i]);  // Normalize name
-                    console.log("[HeroSuggestions] Red ban: " + heroName);
+                    // console.log("[HeroSuggestions] Red ban: " + heroName);
                     allBans.push(heroName);
                 }
             }
             
             let playersRed = teamRed.getPlayers();
-            console.log("[HeroSuggestions] Red players: " + playersRed.length);
+            // console.log("[HeroSuggestions] Red players: " + playersRed.length);
             for (let i = 0; i < playersRed.length; i++) {
                 if (playersRed[i].isLocked()) {
                     let heroName = playersRed[i].getCharacter();
                     heroName = this.app.gameData.fixHeroName(heroName);  // Normalize name
-                    console.log("[HeroSuggestions] Red pick " + i + ": " + heroName);
+                    // console.log("[HeroSuggestions] Red pick " + i + ": " + heroName);
                     if (heroName && heroName !== "???") {
                         allPicks.push(heroName);
                     }
@@ -99,11 +99,11 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
 
         if (teamBlue !== null) {
             let bansBlue = teamBlue.getBans();
-            console.log("[HeroSuggestions] Blue bans raw: " + JSON.stringify(bansBlue));
+            // console.log("[HeroSuggestions] Blue bans raw: " + JSON.stringify(bansBlue));
             for (let i = 0; i < bansBlue.length; i++) {
                 if (bansBlue[i] && bansBlue[i] !== "???" && bansBlue[i] !== null) {
                     let heroName = this.app.gameData.fixHeroName(bansBlue[i]);  // Normalize name
-                    console.log("[HeroSuggestions] Blue ban: " + heroName);
+                    // console.log("[HeroSuggestions] Blue ban: " + heroName);
                     allBans.push(heroName);
                 }
             }
@@ -122,15 +122,15 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
             map: mapName
         };
 
-        console.log("[HeroSuggestions] All bans: " + allBans.join(", "));
-        console.log("[HeroSuggestions] All picks: " + allPicks.join(", "));
-        console.log("[HeroSuggestions] Team picks: " + teamPicks.join(", "));
-        console.log("[HeroSuggestions] Map: " + mapName);
+        // console.log("[HeroSuggestions] All bans: " + allBans.join(", "));
+        // console.log("[HeroSuggestions] All picks: " + allPicks.join(", "));
+        // console.log("[HeroSuggestions] Team picks: " + teamPicks.join(", "));
+        // console.log("[HeroSuggestions] Map: " + mapName);
 
         // Check if we have at least 4 heroes - otherwise don't call API
         let allHeroes = allBans.concat(allPicks);
         if (allHeroes.length < 4) {
-            console.log("[HeroSuggestions] Not enough heroes (" + allHeroes.length + "/4), skipping API call");
+            // console.log("[HeroSuggestions] Not enough heroes (" + allHeroes.length + "/4), skipping API call");
             this.suggestions = "ERROR_INSUFFICIENT_HEROES";
             this.emit("change");
             this.updateActive = false;
@@ -146,7 +146,7 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
         });
 
         if (signature === this.suggestionsForm) {
-            console.log("[HeroSuggestions] No changes detected, skipping API call");
+            // console.log("[HeroSuggestions] No changes detected, skipping API call");
             this.updateActive = false;
             return true;
         }
@@ -169,7 +169,7 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
         queryParams.append('teampicks', teamPicks.map(normalizeForAPI).join(','));
 
         let fullUrl = this.apiUrl + "?" + queryParams.toString();
-        console.log("[HeroSuggestions] ⭐ Making API call to: " + fullUrl);
+        // console.log("[HeroSuggestions] ⭐ Making API call to: " + fullUrl);
 
         return new Promise((resolve, reject) => {
             axios.get(fullUrl)

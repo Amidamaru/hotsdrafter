@@ -78,12 +78,24 @@
 </div>
 <script type="text/javascript">
 jQuery("[data-action=\"refreshTalents\"]").on("click", function() {
+    console.log("[IcyVeins] Refresh button clicked");
+    // Show spinner and hide content
     document.getElementById('talentLoadingSpinner').style.display = 'block';
+    jQuery(".provider-icyveins").children().not("#talentLoadingSpinner").hide();
+    console.log("[IcyVeins] Spinner shown, content hidden");
     gui.sendEvent("gui", "talentProvider.refresh");
 });
 
 jQuery("#icyveins-hero-builds a").on("click", function(e) {
     e.preventDefault();
     jQuery(this).tab('show');
+});
+
+// Hide spinner when talents are updated
+jQuery(document).on("talentProvider.updated", function() {
+    console.log("[IcyVeins] talentProvider.updated event received");
+    document.getElementById('talentLoadingSpinner').style.display = 'none';
+    jQuery(".provider-icyveins").children().not("#talentLoadingSpinner").show();
+    console.log("[IcyVeins] Spinner hidden, content shown");
 });
 </script>

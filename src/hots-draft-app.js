@@ -253,8 +253,10 @@ class HotsDraftApp extends EventEmitter {
             case "talentProvider.refresh":
                 console.log("[HotsDraftApp] Refreshing talent provider...");
                 this.talentProvider.update().then(() => {
-                    console.log("[HotsDraftApp] Talent provider refreshed");
-                    // Don't call sendTalentData() here - the provider emits 'change' event
+                    console.log("[HotsDraftApp] Talent provider refreshed, sending update to GUI");
+                    this.sendTalentProvider(this.talentProvider);
+                }).catch((error) => {
+                    console.error("[HotsDraftApp] Talent provider refresh failed: " + error);
                 });
                 break;
             case "update.forced":

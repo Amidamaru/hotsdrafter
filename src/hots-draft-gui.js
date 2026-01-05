@@ -687,10 +687,14 @@ class HotsDraftGui extends EventEmitter {
                         console.error(error);
                         jQuery("#talentLoadingSpinner").hide();
                     } else {
+                        console.log("[GUI] updateTalentProvider - Rendering new template and hiding spinner");
                         jQuery(selector).html(jQuery(html).html());
                         jQuery("#talentLoadingSpinner").hide();
                         jQuery(selector).find(".container").show();
+                        console.log("[GUI] updateTalentProvider - Spinner hidden, content shown");
                         jQuery(document).trigger("talentProvider.init", jQuery(selector));
+                        jQuery(document).trigger("talentProvider.updated");
+                        console.log("[GUI] updateTalentProvider - Events triggered");
                     }
                 });
             }, 300);

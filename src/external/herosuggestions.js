@@ -14,6 +14,7 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
         this.updateActive = false;
         this.updatePending = false;
         this.apiUrl = "https://n8n-vftr.sliplane.app/webhook/bc37491b-bd6e-43b3-900e-e9504c7c31e9";
+        this.lastApiInfo = {}; // Store API request info for display
     }
 
     init() {
@@ -112,6 +113,14 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
         allBans = [...new Set(allBans)];
         allPicks = [...new Set(allPicks)];
         teamPicks = [...new Set(teamPicks)];
+
+        // Store API info for display in template
+        this.lastApiInfo = {
+            banCount: allBans.length,
+            pickCount: allPicks.length,
+            teamPickCount: teamPicks.length,
+            map: mapName
+        };
 
         console.log("[HeroSuggestions] All bans: " + allBans.join(", "));
         console.log("[HeroSuggestions] All picks: " + allPicks.join(", "));
@@ -254,7 +263,8 @@ class HeroSuggestionsProvider extends HotsDraftSuggestions {
 
     getTemplateData() {
         return {
-            suggestions: this.suggestions
+            suggestions: this.suggestions,
+            apiInfo: this.lastApiInfo
         };
     }
 

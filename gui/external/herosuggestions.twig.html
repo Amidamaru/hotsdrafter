@@ -1,19 +1,24 @@
-<div data-type="draft-provider" class="provider-herosuggestions d-flex justify-content-center">
-    {% if suggestions == "ERROR_EMPTY_RESPONSE" %}
-        <div class="alert alert-danger">
-            API returned no suggestions
-        </div>
-    {% elseif suggestions == "ERROR_INSUFFICIENT_HEROES" %}
-        <div class="alert alert-info">
-            Need at least 4 heroes to get suggestions (currently waiting for more picks/bans)
-        </div>
-    {% elseif suggestions %}
-        <div class="d-flex justify-content-center flex-wrap">
+<div data-type="draft-provider" class="provider-herosuggestions d-flex flex-column">
+    <div class="api-info-line" style="text-align: center; font-size: 11px; color: #888; margin-bottom: 8px; padding: 4px 0; border-bottom: 1px solid #ddd;">
+        {% if apiInfo and (apiInfo.banCount or apiInfo.pickCount or apiInfo.teamPickCount) %}
+            API Request: <strong>{{ apiInfo.banCount }}</strong> Bans | <strong>{{ apiInfo.pickCount }}</strong> Picks | <strong>{{ apiInfo.teamPickCount }}</strong> Team Picks{% if apiInfo.map %} | Map: <strong>{{ apiInfo.map }}</strong>{% endif %}
+        {% endif %}
+    </div>
+    <div class="d-flex justify-content-center flex-wrap" style="padding-bottom: 8px; border-bottom: 1px solid #ddd;">
+        {% if suggestions == "ERROR_EMPTY_RESPONSE" %}
+            <div class="alert alert-danger">
+                API returned no suggestions
+            </div>
+        {% elseif suggestions == "ERROR_INSUFFICIENT_HEROES" %}
+            <div class="alert alert-info">
+                Need at least 4 heroes to get suggestions (currently waiting for more picks/bans)
+            </div>
+        {% elseif suggestions %}
             {{ suggestions | raw }}
-        </div>
-    {% else %}
-        <div class="alert alert-info">
-            Waiting for draft data...
-        </div>
-    {% endif %}
+        {% else %}
+            <div class="alert alert-info">
+                Waiting for draft data...
+            </div>
+        {% endif %}
+    </div>
 </div>

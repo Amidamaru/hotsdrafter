@@ -207,7 +207,7 @@ class HotsDraftScreen extends EventEmitter {
                 image.resize({ w: this.offsets["banSizeCompare"].x, h: this.offsets["banSizeCompare"].y });
                 image.write(banHeroFile);
                 this.banImages[heroFileName] = image;
-                console.log("[HotsDraftScreen] Ban image saved for hero: " + heroName + " -> " + banHeroFile);
+                // console.log("[HotsDraftScreen] Ban image saved for hero: " + heroName + " -> " + banHeroFile);
             }).catch((error) => {
                 console.error("[HotsDraftScreen] Failed to save ban image: " + error);
             });
@@ -539,6 +539,7 @@ class HotsDraftScreen extends EventEmitter {
                         let b = (colorHex >> 8) & 0xFF;
                         //console.log(`  ${point.name} (${point.x},${point.y}): RGB(${r}, ${g}, ${b})`);
                         
+                        
                         // Check if this pixel matches banActive color
                         if (HotsHelpers.imagePixelMatch(banCheckImg, point.x, point.y, DraftLayout["colors"]["banActive"], [])) {
                             matchCount++;
@@ -707,7 +708,7 @@ class HotsDraftScreen extends EventEmitter {
                 // OCR Optimization: Check if this ban was already recognized with high confidence
                 let banKey = team.color + "_" + i;
                 if (this.recognizedBans[banKey] && this.recognizedBans[banKey].confidence >= this.ocrConfidenceLockedThreshold) {
-                    console.log("[" + team.color + "] Ban "+i+": ⏭️  SKIPPING OCR - already recognized (hero='" + this.recognizedBans[banKey].hero + "', confidence=" + this.recognizedBans[banKey].confidence + ", threshold=" + this.ocrConfidenceLockedThreshold + ")");
+                    // console.log("[" + team.color + "] Ban "+i+": ⏭️  SKIPPING OCR - already recognized (hero='" + this.recognizedBans[banKey].hero + "', confidence=" + this.recognizedBans[banKey].confidence + ", threshold=" + this.ocrConfidenceLockedThreshold + ")");
                     bans.names[i] = this.recognizedBans[banKey].hero;
                     if (!this.banActive && (bans.locked == i)) {
                         bans.locked++;
@@ -720,7 +721,7 @@ class HotsDraftScreen extends EventEmitter {
                 
                 // Check if this ban slot is EMPTY (background only)
                 if (HotsHelpers.imageBackgroundMatch(banImg, DraftLayout["colors"]["banBackground"])) {
-                    console.log("[" + team.color + "] Ban "+i+": EMPTY (no hero selected yet)");
+                    // console.log("[" + team.color + "] Ban "+i+": EMPTY (no hero selected yet)");
                     // Ban slot is empty, skip it
                     continue;
                 }
@@ -768,25 +769,25 @@ class HotsDraftScreen extends EventEmitter {
                 
                 // Debug: show all scores
                 let topScores = Object.entries(heroScores).sort((a, b) => b[1] - a[1]).slice(0, 5);
-                console.log("[" + team.color + "] Ban "+i+" [HASH] Top 5: " + topScores.map(e => e[0] + ":" + e[1].toFixed(2)).join(", "));
-                console.log("[" + team.color + "] Ban "+i+" [HASH] Best: " + matchBestHero + " distance:" + matchBestDistance + ", Second: distance:" + matchSecondDistance + ", Threshold: 15");
-                console.log("[" + team.color + "] Ban "+i+" [HASH] Ban hash: " + banHash.substring(0, 16) + "...");
+                // console.log("[" + team.color + "] Ban "+i+" [HASH] Top 5: " + topScores.map(e => e[0] + ":" + e[1].toFixed(2)).join(", "));
+                // console.log("[" + team.color + "] Ban "+i+" [HASH] Best: " + matchBestHero + " distance:" + matchBestDistance + ", Second: distance:" + matchSecondDistance + ", Threshold: 15");
+                // console.log("[" + team.color + "] Ban "+i+" [HASH] Ban hash: " + banHash.substring(0, 16) + "...");
                 if (matchBestHero) {
-                    console.log("[" + team.color + "] Ban "+i+" [HASH] Match hash: " + this.banHashes[matchBestHero].substring(0, 16) + "...");
+                    // console.log("[" + team.color + "] Ban "+i+" [HASH] Match hash: " + this.banHashes[matchBestHero].substring(0, 16) + "...");
                 }
                 
                 // Hash distance threshold: 0 = identical, 1-10 = very similar, 11-20 = similar, >20 = different
-                if (matchBestHero !== null && matchBestDistance <= 10) {
+                if (matchBestHero !== null && matchBestsDistance <= 10) {
                     // Additional check: gap between best and second-best must be significant
                     let distanceGap = matchSecondDistance - matchBestDistance;
-                    console.log("[" + team.color + "] Ban "+i+": " + matchBestHero + " / distance:" + matchBestDistance + " (gap: " + distanceGap + ")");
+                    // console.log("[" + team.color + "] Ban "+i+": " + matchBestHero + " / distance:" + matchBestDistance + " (gap: " + distanceGap + ")");
                     
                     // Check if ban image exists
                     if (this.banImages.hasOwnProperty(matchBestHero)) {
                         this.banImages[matchBestHero].write("debug/" + team.color + "_ban" + i + "_BestCompare.png");
                     } else {
-                        console.log("[" + team.color + "] Ban "+i+": WARNING - Ban image not found for '" + matchBestHero + "'");
-                        console.log("[" + team.color + "] Ban "+i+": Available ban images: " + Object.keys(this.banImages).slice(0, 10).join(", ") + "...");
+                        // console.log("[" + team.color + "] Ban "+i+": WARNING - Ban image not found for '" + matchBestHero + "'");
+                        // console.log("[" + team.color + "] Ban "+i+": Available ban images: " + Object.keys(this.banImages).slice(0, 10).join(", ") + "...");
                     }
                     // matchBestHero is a hero name (e.g., "liming"), but we need to get its translated name
                     // First try to get it directly as a name, then try to find it by ID
@@ -807,19 +808,19 @@ class HotsDraftScreen extends EventEmitter {
                     }
                     // console.log("[HeroName DEBUG] Ban " + i + " - matchBestHero: '" + matchBestHero + "', heroNameTranslated: '" + heroNameTranslated + "', previous value: '" + bans.names[i] + "' (empty: " + (heroNameTranslated === "") + ")");
                     if (bans.names[i] !== heroNameTranslated) {
-                        console.log("[" + team.color + "] Ban "+i+": ✅ RECOGNIZED via hash (hero='" + heroNameTranslated + "', confidence=100, distance=" + matchBestDistance + ")");
+                        // console.log("[" + team.color + "] Ban "+i+": ✅ RECOGNIZED via hash (hero='" + heroNameTranslated + "', confidence=100, distance=" + matchBestDistance + ")");
                         bans.names[i] = heroNameTranslated;
                         // Store this recognition for future optimization
                         let banKey = team.color + "_" + i;
                         this.recognizedBans[banKey] = { hero: heroNameTranslated, confidence: 100 }; // Hash match = very high confidence
-                        console.log("[" + team.color + "] Ban "+i+": 💾 CACHED for future frames (key='" + banKey + "')");
+                        // console.log("[" + team.color + "] Ban "+i+": 💾 CACHED for future frames (key='" + banKey + "')");
                     }
                     // Lock bans that are detected properly and can not change to save detection time
                     if (!this.banActive && (bans.locked == i)) {
                         bans.locked++;
                     }
                 } else {
-                    console.log("[" + team.color + "] Ban "+i+": no matching hero found (best distance: " + matchBestDistance + ")");
+                    // console.log("[" + team.color + "] Ban "+i+": no matching hero found (best distance: " + matchBestDistance + ")");
                     bans.names[i] = "???";
                     // Create a placeholder image instead of saving the unrecognized ban
                     let sizeBan = this.offsets["banSize"];

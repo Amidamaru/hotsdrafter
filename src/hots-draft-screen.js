@@ -555,15 +555,9 @@ class HotsDraftScreen extends EventEmitter {
 
                 console.log(`[HotsDraftScreen] detectTimer() - Checking team ban area:`);
                 
-
-                //pixel 105 415
-
-
-
-                // Sample 20 points evenly distributed horizontally, all on vertical center
                 let width = banCheckImg.bitmap.width;
                 let centerY = Math.floor(banCheckImg.bitmap.height / 2);
-                let spacing = width / 31; // 20 points with equal spacing including margins
+                let spacing = width / 4; // 20 points with equal spacing including margins
                 let samplePoints = [];
                 for (let i = 1; i <= 4; i++) {
                     samplePoints.push({
@@ -581,20 +575,25 @@ class HotsDraftScreen extends EventEmitter {
                     let b = (colorHex >> 8) & 0xFF;
                     //console.log(`  ${point.name} (${point.x},${point.y}): RGB(${r}, ${g}, ${b})`);
                     
-
                     // Check if this pixel matches banActive color
                     if (HotsHelpers.imagePixelMatch(banCheckImg, point.x, point.y, DraftLayout["colors"]["banActive"], [])) {
-                        this.teamActive = "blue";
-                        this.banActive = true;
-                        console.log("     BLAU BANNT    ");
-                        resolve(true);
+                        matchCount++;
                     }
-                    else {
-                        this.teamActive = "red";
-                        this.banActive = true;
-                        console.log("   ROT BANNT     ");
-                        resolve(true);
-                    }
+                }
+                
+                // After checking all points, decide which team is banning
+                if (matchCount >= 2) {
+                    // At least half of the points matched - blue is banning
+                    this.teamActive = "blue";
+                    this.banActive = true;
+                    console.log("     BLAU BANNT    ");
+                    resolve(true);
+                } else {
+                    // Not enough matches - red is banning
+                    this.teamActive = "red";
+                    this.banActive = true;
+                    console.log("   ROT BANNT     ");
+                    resolve(true);
                 }
             }
             else {

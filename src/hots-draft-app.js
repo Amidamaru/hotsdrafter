@@ -474,8 +474,12 @@ class HotsDraftApp extends EventEmitter {
         this.talentProvider = this.createTalentProvider();
         this.talentProvider.init();
         this.talentProvider.on("change", () => {
-            if (this.statusGameActive) {
+            console.log("[HotsDraftApp] talentProvider change event - statusGameActive=" + this.statusGameActive + ", statusDraftActive=" + this.statusDraftActive);
+            if (this.statusGameActive || this.statusDraftActive) {
+                console.log("[HotsDraftApp] Sending talent provider update to GUI");
                 this.sendTalentProvider(this.talentProvider);
+            } else {
+                console.log("[HotsDraftApp] SKIPPING talent provider update - neither game nor draft active");
             }
         });
     }

@@ -62,16 +62,46 @@ class HotsDraftScreen extends EventEmitter {
         return HotsHelpers.getConfig().getOption("debugEnabled");
     }
     loadOffsets() {
+        if (!this.screenshot) {
+            console.error("[HotsDraftScreen] loadOffsets() - ERROR: screenshot not available");
+            return;
+        }
+        
+        if (!this.screenshot.bitmap) {
+            console.error("[HotsDraftScreen] loadOffsets() - ERROR: screenshot.bitmap not available");
+            return;
+        }
+        
         let baseSize = DraftLayout["screenSizeBase"];
+        if (!baseSize) {
+            console.error("[HotsDraftScreen] loadOffsets() - ERROR: DraftLayout.screenSizeBase not defined");
+            return;
+        }
+        
         let targetSize = { "x": this.screenshot.bitmap.width, "y": this.screenshot.bitmap.height };
+        // console.log("[HotsDraftScreen] loadOffsets() - baseSize=" + JSON.stringify(baseSize) + ", targetSize=" + JSON.stringify(targetSize));
+        
+        // Check if timerPos exists in DraftLayout
+        if (!DraftLayout["timerPos"]) {
+            console.error("[HotsDraftScreen] loadOffsets() - ERROR: DraftLayout.timerPos not defined");
+            return;
+        }
+        if (!DraftLayout["timerSize"]) {
+            console.error("[HotsDraftScreen] loadOffsets() - ERROR: DraftLayout.timerSize not defined");
+            return;
+        }
+        
+        this.offsets["timerPos"] = HotsHelpers.scaleOffset(DraftLayout["timerPos"], baseSize, targetSize);
+        this.offsets["timerSize"] = HotsHelpers.scaleOffset(DraftLayout["timerSize"], baseSize, targetSize);
+        
+        // console.log("[HotsDraftScreen] loadOffsets() - timerPos=" + JSON.stringify(this.offsets["timerPos"]) + ", timerSize=" + JSON.stringify(this.offsets["timerSize"]));
+        
         this.offsets["mapSize"] = HotsHelpers.scaleOffset(DraftLayout["mapSize"], baseSize, targetSize);
         this.offsets["mapPos"] = HotsHelpers.scaleOffset(DraftLayout["mapPos"], baseSize, targetSize);
         this.offsets["banSize"] = HotsHelpers.scaleOffset(DraftLayout["banSize"], baseSize, targetSize);
         this.offsets["banSizeCompare"] = HotsHelpers.scaleOffset(DraftLayout["banSizeCompare"], baseSize, targetSize);
         this.offsets["banCheckSize"] = HotsHelpers.scaleOffset(DraftLayout["banCheckSize"], baseSize, targetSize);
         this.offsets["banCropSize"] = HotsHelpers.scaleOffset(DraftLayout["banCropSize"], baseSize, targetSize);
-        this.offsets["timerPos"] = HotsHelpers.scaleOffset(DraftLayout["timerPos"], baseSize, targetSize);
-        this.offsets["timerSize"] = HotsHelpers.scaleOffset(DraftLayout["timerSize"], baseSize, targetSize);
         this.offsets["playerSize"] = HotsHelpers.scaleOffset(DraftLayout["playerSize"], baseSize, targetSize);
         this.offsets["nameSize"] = HotsHelpers.scaleOffset(DraftLayout["nameSize"], baseSize, targetSize);
         this.offsets["nameHeroSizeRotated"] = HotsHelpers.scaleOffset(DraftLayout["nameHeroSizeRotated"], baseSize, targetSize);
@@ -89,8 +119,7 @@ class HotsDraftScreen extends EventEmitter {
             this.offsets["teams"][team] = {
                 "players": players,
                 "bans": bans,
-                "banCheck": HotsHelpers.scaleOffset(DraftLayout["teams"][team]["banCheck"], baseSize, targetSize),
-                "banCropPos": HotsHelpers.scaleOffset(DraftLayout["teams"][team]["banCropPos"], baseSize, targetSize),
+                "banCheck": HotsHelpers.scaleOffset(DraftLayout["teams"]["blue"]["banCheck"], baseSize, targetSize),
                 "name": HotsHelpers.scaleOffset(DraftLayout["teams"][team]["name"], baseSize, targetSize),
                 "nameHeroRotated": HotsHelpers.scaleOffset(DraftLayout["teams"][team]["nameHeroRotated"], baseSize, targetSize),
                 "namePlayerRotated": HotsHelpers.scaleOffset(DraftLayout["teams"][team]["namePlayerRotated"], baseSize, targetSize)
@@ -476,15 +505,29 @@ class HotsDraftScreen extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             let timerPos = this.offsets["timerPos"];
             let timerSize = this.offsets["timerSize"];
-            let timerImg = this.screenshot.clone().crop({ x: timerPos.x, y: timerPos.y, w: timerSize.x, h: timerSize.y }).scale({ f: 0.5 });
-           // if (this.debugEnabled()) {
-                // Debug output - DON'T WAIT for write to finish, fire and forget
-                timerImg.write("debug/pickTimer.png").catch(() => {});
-                console.log("[HotsDraftScreen] detectTimer() - Checking timer area at pos(" + timerPos.x + "," + timerPos.y + ") size(" + timerSize.x + "x" + timerSize.y + ")");
+            
+            // Check if offsets are defined
+            if (!timerPos || !timerSize) {
+                reject(new Error("Timer offsets not initialized: timerPos=" + (timerPos ? "OK" : "UNDEFINED") + ", timerSize=" + (timerSize ? "OK" : "UNDEFINED")));
+                return;
+            }
+            
+            // Check if screenshot is available
+            if (!this.screenshot) {
+                reject(new Error("Screenshot not available"));
+                return;
+            }
+            
+            try {
+                let timerImg = this.screenshot.clone().crop({ x: timerPos.x, y: timerPos.y, w: timerSize.x, h: timerSize.y }).scale({ f: 0.5 });
+               // if (this.debugEnabled()) {
+                    // Debug output - DON'T WAIT for write to finish, fire and forget
+                    timerImg.write("debug/pickTimer.png").catch(() => {});
+                    console.log("[HotsDraftScreen] detectTimer() - Checking timer area at pos(" + timerPos.x + "," + timerPos.y + ") size(" + timerSize.x + "x" + timerSize.y + ")");
 
-            if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["blue"])) {
-                // Blue team active
-                console.log("[HotsDraftScreen] detectTimer() - Found BLUE team timer");
+                if (HotsHelpers.imageFindColor(timerImg, DraftLayout["colors"]["timer"]["blue"])) {
+                    // Blue team active
+                    console.log("[HotsDraftScreen] detectTimer() - Found BLUE team timer");
                 this.teamActive = "blue";
                 this.banActive = false;
                 console.log("BLAU WAEHLT (PICK)");
@@ -502,93 +545,69 @@ class HotsDraftScreen extends EventEmitter {
                 // Banning, check which team is banning
                 console.log("[HotsDraftScreen] detectTimer() - Found BAN phase timer");
                 let sizeBanCheck = this.offsets["banCheckSize"];
-                
-                // Check BOTH teams and COUNT matches
-                let blueMatchCount = 0;
-                let redMatchCount = 0;
-                
-                for (let color in this.offsets["teams"]) {
-                    // Get offsets
-                    let teamOffsets = this.offsets["teams"][color];
-                    let posBanCheck = teamOffsets["banCheck"];
-                    // Check bans
-                    let banCheckImg = this.screenshot.clone().crop({ x: posBanCheck.x, y: posBanCheck.y, w: sizeBanCheck.x, h: sizeBanCheck.y }).scale({ f: 0.5 });
-                    // Debug output - fire and forget, don't await
-                    banCheckImg.write("debug/" + color + "_banCheck.png").catch(() => {});
 
-                    console.log(`[HotsDraftScreen] detectTimer() - Checking ${color} team ban area:`);
-                    
-                    // Sample 20 points evenly distributed horizontally, all on vertical center
-                    let width = banCheckImg.bitmap.width;
-                    let centerY = Math.floor(banCheckImg.bitmap.height / 2);
-                    let spacing = width / 31; // 20 points with equal spacing including margins
-                    let samplePoints = [];
-                    for (let i = 1; i <= 30; i++) {
-                        samplePoints.push({
-                            x: Math.floor(i * spacing),
-                            y: centerY,
-                            name: "P" + i
-                        });
-                    }
-                    
-                    let matchCount = 0;
-                    for (let point of samplePoints) {
-                        let colorHex = banCheckImg.getPixelColor(point.x, point.y);
-                        let r = (colorHex >> 24) & 0xFF;
-                        let g = (colorHex >> 16) & 0xFF;
-                        let b = (colorHex >> 8) & 0xFF;
-                        //console.log(`  ${point.name} (${point.x},${point.y}): RGB(${r}, ${g}, ${b})`);
-                        
-                        
-                        // Check if this pixel matches banActive color
-                        if (HotsHelpers.imagePixelMatch(banCheckImg, point.x, point.y, DraftLayout["colors"]["banActive"], [])) {
-                            matchCount++;
-                            console.log(`    -> MATCH!`);
-                        }
-                    }
-                    
-                    console.log(`  ${color} team match count: ${matchCount}/${samplePoints.length}`);
-                    
-                    if (color === "blue") {
-                        blueMatchCount = matchCount;
-                    } else {
-                        redMatchCount = matchCount;
-                    }
+                let teamOffsets = this.offsets["teams"]["blue"];
+                let posBanCheck = teamOffsets["banCheck"];
+                // Check bans
+                let banCheckImg = this.screenshot.clone().crop({ x: posBanCheck.x, y: posBanCheck.y, w: sizeBanCheck.x, h: sizeBanCheck.y }).scale({ f: 0.5 });
+                // Debug output - fire and forget, don't await
+                banCheckImg.write("debug/banCheck.png").catch(() => {});
+
+                console.log(`[HotsDraftScreen] detectTimer() - Checking team ban area:`);
+                
+
+                //pixel 105 415
+
+
+
+                // Sample 20 points evenly distributed horizontally, all on vertical center
+                let width = banCheckImg.bitmap.width;
+                let centerY = Math.floor(banCheckImg.bitmap.height / 2);
+                let spacing = width / 31; // 20 points with equal spacing including margins
+                let samplePoints = [];
+                for (let i = 1; i <= 4; i++) {
+                    samplePoints.push({
+                        x: Math.floor(i * spacing),
+                        y: centerY,
+                        name: "P" + i
+                    });
                 }
                 
-                // Decide based on which team has MORE matches
-                console.log(`[HotsDraftScreen] detectTimer() - Blue matches: ${blueMatchCount}, Red matches: ${redMatchCount}`);
-                
-                if (redMatchCount > blueMatchCount) {
-                    console.log("[HotsDraftScreen] detectTimer() - RED team is banning (more matches)");
-                    this.teamActive = "red";
-                    this.banActive = true;
-                    console.log("   ROT BANNT     ");
-                    resolve(true);
-                    return;
-                } else if (blueMatchCount > redMatchCount) {
-                    console.log("[HotsDraftScreen] detectTimer() - BLUE team is banning (more matches)");
-                    this.teamActive = "blue";
-                    this.banActive = true;
-                    console.log("     BLAU BANNT                 ");
-                    resolve(true);
-                    return;
-                } else if (blueMatchCount === redMatchCount && blueMatchCount > 0) {
-                    console.log("[HotsDraftScreen] detectTimer() - WARNING: Same match count! Defaulting to blue");
-                    this.teamActive = "blue";
-                    this.banActive = true;
-                    resolve(true);
-                    return;
-                } else {
-                    console.log("[HotsDraftScreen] detectTimer() - ERROR: No team has enough ban indicator matches!");
-                    // Fall through to error below
+                let matchCount = 0;
+                for (let point of samplePoints) {
+                    let colorHex = banCheckImg.getPixelColor(point.x, point.y);
+                    let r = (colorHex >> 24) & 0xFF;
+                    let g = (colorHex >> 16) & 0xFF;
+                    let b = (colorHex >> 8) & 0xFF;
+                    //console.log(`  ${point.name} (${point.x},${point.y}): RGB(${r}, ${g}, ${b})`);
+                    
+
+                    // Check if this pixel matches banActive color
+                    if (HotsHelpers.imagePixelMatch(banCheckImg, point.x, point.y, DraftLayout["colors"]["banActive"], [])) {
+                        this.teamActive = "blue";
+                        this.banActive = true;
+                        console.log("     BLAU BANNT    ");
+                        resolve(true);
+                    }
+                    else {
+                        this.teamActive = "red";
+                        this.banActive = true;
+                        console.log("   ROT BANNT     ");
+                        resolve(true);
+                    }
                 }
             }
-            this.teamActive = "unknown";
-            this.banActive = false;
-            console.log("[HotsDraftScreen] detectTimer() - ERROR: Could not find any timer colors (blue/red/ban)");
-            console.log(" KEINE AHNUNG                   ");
-            reject(new Error("Failed to detect pick counter"));
+            else {
+                this.teamActive = "unknown";
+                this.banActive = false;
+                console.log("[HotsDraftScreen] detectTimer() - ERROR: Could not find any timer colors (blue/red/ban)");
+                console.log(" KEINE AHNUNG                   ");
+                reject(new Error("Failed to detect pick counter"));
+            }
+            } catch (error) {
+                console.error("[HotsDraftScreen] detectTimer() - Unexpected error: " + error.message + ", Stack: " + error.stack);
+                reject(error);
+            }
         });
     }
     detectTeams() {
@@ -777,7 +796,7 @@ class HotsDraftScreen extends EventEmitter {
                 }
                 
                 // Hash distance threshold: 0 = identical, 1-10 = very similar, 11-20 = similar, >20 = different
-                if (matchBestHero !== null && matchBestsDistance <= 10) {
+                if (matchBestHero !== null && matchBestDistance <= 10) {
                     // Additional check: gap between best and second-best must be significant
                     let distanceGap = matchSecondDistance - matchBestDistance;
                     // console.log("[" + team.color + "] Ban "+i+": " + matchBestHero + " / distance:" + matchBestDistance + " (gap: " + distanceGap + ")");

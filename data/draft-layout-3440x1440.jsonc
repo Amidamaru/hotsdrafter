@@ -16,10 +16,10 @@
     }],
     "banActive": [
       {
-        "comment": "Ban indicator color - dark red/purple when team is banning",
-        "color": { "r": 157, "g": 15, "b": 139 }, // #960f82
-        "toleranceLum": 50,
-        "toleranceHue": 20
+        "comment": "Ban indicator color - only blue -> if not blue, then red of course :)",
+        "color": { "r": 13, "g": 24, "b": 57 }, // rgb(13, 24, 57)
+        "toleranceLum": 30,
+        "toleranceHue": 30
       }
     ],
     "timer": {
@@ -235,8 +235,8 @@
     "y": 93
   },
   "banCheckSize": {
-    "x": 380,
-    "y": 75
+    "x": 5,
+    "y": 5
   },
   "banCropSize": {
     "x": 175,
@@ -306,12 +306,8 @@
         }
       ],
       "banCheck": {
-        "x": 370,
-        "y": 45
-      },
-      "banCropPos": {
-        "x": 120,
-        "y": 80
+        "x": 105,
+        "y": 415
       },
       "name": {
         "x": 10,
@@ -372,14 +368,6 @@
           "y": 28
         }
       ],
-      "banCheck": {
-        "x": 2710,
-        "y": 45
-      },
-      "banCropPos": {
-        "x": 70,
-        "y": 80
-      },
       "name": {
         "x": 120,
         "y": 120,

@@ -670,6 +670,8 @@ class HotsDraftApp extends EventEmitter {
                 console.log(`[${ts5}] [FastTimer] Jimp image ready, calling detectTimer()...`);
                 // Store Jimp image in screen object so detectTimer can use it
                 this.screen.screenshot = screenshotImage;
+                // Load offsets for this screenshot (in case resolution changed)
+                this.screen.loadOffsets();
                 // Quick timer detection only
                 this.screen.detectTimer().then(() => {
                     const ts6 = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
